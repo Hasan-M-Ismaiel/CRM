@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\ClientController;
+use App\Http\Controllers\Admin\ProjectController;
+use App\Http\Controllers\Admin\TaskController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,3 +24,16 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::middleware(['auth'])->group(function () {
+    Route::group([
+            // 'middleware' => ['is_admin'],
+            'prefix' => 'admin',
+            'as' => 'admin.'] ,function () {
+        Route::resource('users', UserController::class);
+        Route::resource('clients', ClientController::class);
+        Route::resource('projects', ProjectController::class);
+        Route::resource('tasks', TaskController::class);
+    });
+    // Route::resource('tasks', ::class)->only('index', 'show');
+});

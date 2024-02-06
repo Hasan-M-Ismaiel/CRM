@@ -3,14 +3,19 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, InteractsWithMedia;
 
     /**
      * The attributes that are mass assignable.
@@ -42,4 +47,29 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function projects ()
+    {
+        return $this->hasMany(Project::class);
+    }
+
+    protected function numberOfAssignedProjects(): Attribute
+    {
+        $numeberOfAssignedProjects = $this->projects()->count();
+        return Attribute::make(
+            get: fn () => $numeberOfAssignedProjects,
+        );
+    }
+
+    protected function numberOfCompletededProjects(): Attribute
+    {
+        $numeberOfCompletedProjects = Project::where('user_id', $this->id)
+                            ->where('status', true)
+                            ->count();
+
+        return Attribute::make(
+            get: fn () => $numeberOfCompletedProjects
+        );
+    }
+    
 }
