@@ -48,16 +48,19 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
+        // store the new user in the database
         $user = User::create([
             'name' => $request->validated('name'),
             'email' => $request->validated('email'),
             'password' => Hash::make($request->validated('password')),
         ]);
         
+        //if the user choose image then save it in the database media table
         if ($request->hasFile('image')) {
             $user->addMediaFromRequest('image')->toMediaCollection('users');
         } 
 
+        // get the role that set for the user and assign it 
         $role = Role::findById($request->role_id, 'web');
         $user->assignRole($role);
         
@@ -71,8 +74,8 @@ class UserController extends Controller
     {
         $user->with('projects');
         return view('admin.users.show', [
+            'page' => 'Showing User',
             'user' => $user,
-            'page' => 'Showing User'
         ]);
     }
 
@@ -81,11 +84,22 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        // get the roles to iterate throught them in the view
         $roles = DB::select('select name, id from roles');
+
+        // find the roles assigned for this user
+        $userRole = $user->getRoleNames()->get('0'); // admin - user
+        $rolesForUser = Role::whereIn('name', [$userRole])->get();
+
+        // here is the role id for user 
+        $userRoleId = $rolesForUser->first()->id;
+        
+        // return the edit view with the needed variables
         return view('admin.users.edit', [
-            'page' => 'Editing user',
-            'roles' => $roles,
-            'user' => $user,
+            'page'       => 'Editing user',
+            'roles'      => $roles,
+            'userRoleId' => $userRoleId,
+            'user'       => $user,
         ]);
     }
 
@@ -94,16 +108,24 @@ class UserController extends Controller
      */
     public function update(UserUpdateRequest $request, User $user)
     {
+        //check if the password match the old password - this should be like other way 
         if(!Hash::check($request->old_password, $user->password)){
             return back()->with("message", "old Password Doesn't match!");
         }
 
+        //update the user information
         $user->update([
             'name' => $request->validated('name'),
             'email' => $request->validated('email'),
             'password' => Hash::make($request->validated('password')),
         ]);
         
+        // remove all the roles form the user
+        $user->roles()->detach();
+        // assign the new role to the user
+        $user->assignRole($$request->role_id);
+
+        //check if the user update the image - if true - then delete the old one from the strorage
         if ($request->hasFile('image')) {
                 $user->clearMediaCollection('articles');
                 $user->addMediaFromRequest('image')->toMediaCollection('articles');

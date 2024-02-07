@@ -14,11 +14,13 @@
                                         <h5 class="card-title col">{{ $client->name }}</h5>
                                         <span class="border-start border-3 border-primary ps-2 "> VAT: {{ $client->VAT }}</span>
                                         <br>
-                                        <br>
+                                        <hr>
                                         <p class="card-text my-2">
-                                            <span class="px-2 py-1 bg-secondary rounded">client address:</span> {{ $client->address }}
-                                            <br>
-                                            <p> # projects: <span class="px-2 py-2 badge bg-danger">{{ $client->numberOfProjects }}</span></p>
+                                            <div><strong>Client address:</strong> {{ $client->address }}</div>
+                                            <div><strong>#Projects: </strong>{{ $client->numberOfProjects }}</div>
+                                            @foreach ($client->projects as $project)
+                                                <div><strong>Project #{{$loop->iteration}}:</strong> <a href="{{ route('admin.projects.show', $project) }}" style="text-decoration: none;">{{ $project->title }}</a></div>
+                                            @endforeach
                                         </p>
                                     </div>
                                     <div class="m-4">

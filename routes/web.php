@@ -32,6 +32,8 @@ Route::middleware(['auth'])->group(function () {
             'as' => 'admin.'] ,function () {
         Route::resource('users', UserController::class);
         Route::resource('clients', ClientController::class);
+        Route::get('projects/{project}/assign/create', [ProjectController::class, 'assignCreate'])->name('projects.assignCreate');
+        Route::patch('projects/{project}/assign', [ProjectController::class, 'assignStore'])->name('projects.assignStore');
         Route::resource('projects', ProjectController::class);
         Route::resource('tasks', TaskController::class);
     });

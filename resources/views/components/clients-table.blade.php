@@ -6,7 +6,8 @@
             <th scope="col">#</th>
             <th scope="col">Name</th>
             <th scope="col">VAT</th>
-            <th scope="col">address</th>
+            <th scope="col">#Projects</th>
+            <th scope="col">Address</th>
         </tr>
     </thead>
     <tbody>
@@ -14,7 +15,8 @@
             <tr>
                 <th scope="row">{{ $client->id }}</th>
                 <td><a href="{{ route('admin.clients.show', $client->id) }}" >{{ $client->name }} </a></td>
-                <td>{{ $client->VAT }}...</td>
+                <td>{{ $client->VAT }}</td>
+                <td>{{ $client->numberOfProjects }}</td>
                 <td>{{ $client->address }}</td>
                 <td>
                     <div style="display: flex;">

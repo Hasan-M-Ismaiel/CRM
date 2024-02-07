@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AssignUserStoreRequest;
 use App\Http\Requests\ProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Client;
@@ -43,7 +44,7 @@ class ProjectController extends Controller
      */
     public function store(ProjectRequest $request)
     {
-        $project = Project::create($request->validated());
+        Project::create($request->validated());
         
         return redirect()->route('admin.projects.index')->with('message', 'the project has been created sucessfully');;
     
@@ -81,15 +82,22 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project)
     {
-
         $project->update([
             'title'       => $request->validated('title'),
             'description' => $request->validated('description'),
             'deadline'    => $request->validated('deadline'),
-            'user_id'     => $request->validated('user_id'),
+            // 'user_id'     => $request->validated('user_id'),
             'client_id'   => $request->validated('client_id'),
         ]);
         
+        $assignedUsers = $request->input('assigned_users');
+        if( sizeof($assignedUsers)>0){
+            $project->users()->detach();
+            foreach ($assignedUsers as $assignedUser) {
+                $project->users()->attach($assignedUser);
+            }
+        }
+
         if($request->status == 'true') {
             $project->status = true;  
         } 
@@ -100,7 +108,6 @@ class ProjectController extends Controller
         $project->save();
 
         return redirect()->route('admin.projects.index')->with('message', 'the project has been updated successfully');
-       
     }
 
     /**
@@ -110,6 +117,28 @@ class ProjectController extends Controller
     {
         $project->delete();
         return redirect()->route('admin.projects.index')->with('message','the project has been deleted successfully');
-    
+    }
+
+    public function assignCreate(Project $project)
+    {
+        $users = User::all();
+
+        return view('admin.projects.assignCreate', [
+            'users' => $users,
+            'project' => $project,
+            'page' => 'Assigning users to the project',
+        ]);
+    }
+
+    public function assignStore(AssignUserStoreRequest $request, Project $project)
+    {
+        $assignedUsers = $request->input('assigned_users');
+        if( sizeof($assignedUsers)>0){
+            $project->users()->detach();
+            foreach ($assignedUsers as $assignedUser) {
+                $project->users()->attach($assignedUser);
+            }
+        }
+        return redirect()->route('admin.projects.index')->with('message', 'the project has been updated sucessfully with new users');;
     }
 }

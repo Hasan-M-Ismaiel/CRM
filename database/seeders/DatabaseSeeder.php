@@ -9,6 +9,7 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -94,6 +95,14 @@ class DatabaseSeeder extends Seeder
         Client::factory()->times(10)->create();
         Project::factory()->times(10)->create();
         Task::factory()->times(10)->create();
+
+        //for the pivot table
+        for ($i=0; $i < 10 ; $i++){
+            DB::table('projects_users')->insert([
+                'user_id' => rand(1, 11),
+                'project_id' => rand(1, 10),
+            ]);
+        }
         
     }
 }

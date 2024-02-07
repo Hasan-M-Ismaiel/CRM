@@ -30,7 +30,7 @@ class UpdateProjectRequest extends FormRequest
             'title'         => ['required', 'string', 'max:100'],
             'description'   => ['required', 'string', 'max:255'],
             'deadline'      => ['required', 'date'],   
-            'user_id'       => ['required', Rule::in($users)],
+            // 'user_id'       => ['required', Rule::in($users)],
             'client_id'     => ['required', Rule::in($clients)],
         ];
     }

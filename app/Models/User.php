@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use PhpParser\Node\Expr\BinaryOp\BooleanOr;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasRoles;
@@ -50,7 +51,7 @@ class User extends Authenticatable implements HasMedia
 
     public function projects ()
     {
-        return $this->hasMany(Project::class);
+        return $this->belongsToMany(Project::class);
     }
 
     protected function numberOfAssignedProjects(): Attribute
@@ -63,7 +64,7 @@ class User extends Authenticatable implements HasMedia
 
     protected function numberOfCompletededProjects(): Attribute
     {
-        $numeberOfCompletedProjects = Project::where('user_id', $this->id)
+        $numeberOfCompletedProjects = $this->projects()
                             ->where('status', true)
                             ->count();
 
@@ -72,4 +73,12 @@ class User extends Authenticatable implements HasMedia
         );
     }
     
+    public function checkifAssignedToProject(Project $project)
+    {
+        $numeberOfAssignedProjects = $this->projects()
+                    ->where('projects.id', $project->id)
+                    ->count();
+        var_dump($numeberOfAssignedProjects);
+        return $numeberOfAssignedProjects>0 ? false : true; 
+    }
 }

@@ -16,12 +16,15 @@
                                         <br>
                                         <br>
                                         <span class="text-muted h6 col">working on ... task #1</span>
+                                        <hr>
                                         <p class="card-text my-2">
-                                            <span class="px-2 py-1 bg-secondary rounded">task description:</span> {{ $task->description }}
+                                            <strong>Task description:</strong> {{ $task->description }}
                                             <br>
-                                            <a href="{{ route('admin.users.show',  $task->project->user->id) }}">For user: {{ $task->project->user->name }} </a>
+                                            @foreach($task->project->users as $user)
+                                                <strong>Users:</strong><span class="badge"><a href="{{ route('admin.users.show', $user->id) }}" style="text-decoration: none;" >{{ $user->name }} | </a></span>
+                                            @endforeach
                                             <br>
-                                            <a href="{{ route('admin.projects.show', $task->project->id) }}">For project: {{ $task->project->title }} </a>
+                                            <strong>For project:</strong><span class="badge"><a href="{{ route('admin.projects.show', $task->project->id) }}" style="text-decoration: none;"> {{ $task->project->title }} </a></span>
                                             <br>
                                         <!-- maybe in the future this task could have a status or deleted -->
                                         </p>

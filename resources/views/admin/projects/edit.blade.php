@@ -38,17 +38,6 @@
                         <input id="deadline" type="date" class="form-control @error('deadline') is-invalid @enderror"  placeholder="Project's deadline here" name="deadline" value="{{ $project->deadline }}">
                     </div>
                     <div class="form-group mt-4">
-                        <label for="user_id">User</label>
-                        <select name="user_id" id="user_id" class="form-control">
-                            <option selected value="{{$project->user->id}}">{{ $project->user->name }}</option>
-                            @foreach ( $users as $user )
-                                @if ($user->name != $project->user->name)
-                                    <option value="{{$user->id}}">{{ $user->name }}</option>
-                                @endif
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group mt-4">
                         <label for="client_id">Client</label>
                         <select name="client_id" id="client_id" class="form-control">
                             <option selected value="{{$project->client->id}}">{{ $project->client->name }}</option>
@@ -59,6 +48,22 @@
                             @endforeach
                         </select>
                     </div>
+                    <hr>
+                    <div class="my-3">
+                        <div class="row">
+                            @foreach($users as $user)
+                                <div class="col-md-6">
+                                    <input type="checkbox" id="user-{{$user->id}}" name="assigned_users[]" value="{{$user->id}}" {{ $user->checkifAssignedToProject($project) ? '' : 'checked' }}>
+                                    <label for="user-{{$user->id}}"><a href="{{ route('admin.users.show', $user->id) }}" style="text-decoration: none;" >{{ $user->name }} </a></label>
+                                </div>
+                                @if ($loop->iteration % 2 == 0)
+                                    </div>
+                                    <div class="row">
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                    <hr>
                     <div class="mt-3">
                             <div>Select status:</div>
                             @if($project->status)

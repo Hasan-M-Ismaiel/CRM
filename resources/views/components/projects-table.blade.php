@@ -19,11 +19,20 @@
                 <td><a href="{{ route('admin.projects.show', $project->id) }}" >{{ $project->title }} </a></td>
                 <td>{{ $project->description }}...</td>
                 <td>{{ $project->deadline }}</td>
-                <td>{{ $project->user->name }}</td>
+                <td>
+                    @if($project->users()->count() > 0)
+                        @foreach ($project->users as $user)
+                            <span class="badge bg-dark m-1">{{ $user->name }}</span>
+                        @endforeach
+                    @else
+                        #
+                    @endif
+                </td>
                 <td>{{ $project->client->name }}</td>
                 <td>{{ $project->statusOfProject }}</td>
                 <td>
                     <div style="display: flex;">
+                        <a type="button" class="btn btn-success m-1" href="{{ route('admin.projects.assignCreate', $project->id) }}" role="button">Assign</a>
                         <a type="button" class="btn btn-primary m-1" href="{{ route('admin.projects.show', $project->id) }}" role="button">Show</a>
                         <a type="button" class="btn btn-secondary m-1" href="{{ route('admin.projects.edit', $project->id) }}" role="button">Edit</a>
                         <a class="btn btn-danger m-1" type="button"

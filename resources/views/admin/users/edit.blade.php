@@ -52,15 +52,11 @@
                     <div class="form-group mt-4">
                         <label for="role_id">Role</label>
                         <select name="role_id" id="role_id" class="form-control">
-                            <option value="" selected>Choose Role...</option>
-                            <!-- <option selected value="{{$user->role->id}}">{{ $project->client->name }}</option> -->
-                            <!-- @foreach ( $roles as $role )
-                                @if ($role->name != $user->role->name)
-                                    <option value="{{$category->id}}">{{ $category->name }}</option>
-                                @endif
-                            @endforeach -->
+                            <option selected value="{{$userRoleId}}">{{ $user->getRoleNames()->get('0') }}</option>
                             @foreach ( $roles as $role )
-                                <option value="{{$role->id}}" >{{ $role->name }}</option>
+                                @if ($role->id != $userRoleId)
+                                    <option value="{{$role->id}}">{{ $role->name }}</option>
+                                @endif
                             @endforeach
                         </select>
                     </div>
