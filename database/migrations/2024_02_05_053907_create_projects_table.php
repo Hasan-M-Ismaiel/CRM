@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('deadline');
             $table->foreignId('user_id');
             $table->foreignId('client_id');
-            $table->boolean('status');
+            $table->boolean('status')->default(0);
             $table->timestamps();
         });
     }

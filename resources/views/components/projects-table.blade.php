@@ -18,9 +18,9 @@
                 <th scope="row">{{ $project->id }}</th>
                 <td><a href="{{ route('admin.projects.show', $project->id) }}" >{{ $project->title }} </a></td>
                 <td>{{ $project->description }}...</td>
-                <td>{{ $project->deadline->diffForHumans() }}</td>
-                <td>{{ $project->user()->name }}</td>
-                <td>{{ $project->client()->name }}</td>
+                <td>{{ $project->deadline }}</td>
+                <td>{{ $project->user->name }}</td>
+                <td>{{ $project->client->name }}</td>
                 <td>{{ $project->statusOfProject }}</td>
                 <td>
                     <div style="display: flex;">
