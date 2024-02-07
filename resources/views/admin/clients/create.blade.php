@@ -21,23 +21,21 @@
         <div class="card">
             <div class="card-body">
                 <h2 class="card-title mb-4">{{ $page }}</h2>
-                <form action='{{ route("admin.clients.update", $client) }}' method="POST">
+                <form action='{{ route("admin.clients.store") }}' method="POST">
                     @csrf
-                    @method('PATCH')
-
                     <div class="form-group">
                         <label for="name">Name</label>
-                        <input type="text" name="name" class="form-control" id="name" placeholder="add the name of the client" value="{{ $client->name }}">
+                        <input type="text" name="name" class="form-control" id="name" placeholder="add the name of the project" value="{{ old('name') }}">
                     </div>
                     <div class="form-group mt-4">
-                        <label for="VAT">VAT</label>
-                        <input id="VAT" type="number" class="form-control @error('VAT') is-invalid @enderror"  placeholder="client's VAT here" name="VAT" value="{{ $client->VAT }}">
+                        <label for="address">VAT</label>
+                        <input id="VAT" type="number" class="form-control @error('VAT') is-invalid @enderror"  placeholder="Project's VAT here" name="VAT">
                     </div>
                     <div class="form-group mt-4">
-                        <label for="address">address</label>
-                        <input id="address" type="text" class="form-control @error('address') is-invalid @enderror"  placeholder="client's address here" name="address" value="{{ $client->address }}">
+                        <label for="address">Address</label>
+                        <input id="address" type="number" class="form-control @error('address') is-invalid @enderror"  placeholder="Project's address here" name="address">
                     </div>
-                    <button type="submit" class="btn btn-primary mt-5">Update</button>
+                    <button type="submit" class="btn btn-primary mt-5">Create</button>
                 </form>
             </div>
         </div> 
