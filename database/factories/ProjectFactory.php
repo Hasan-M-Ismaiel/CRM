@@ -22,8 +22,8 @@ class ProjectFactory extends Factory
             'title' => fake()->company(),
             'description' => fake()->paragraph(),
             'deadline' => fake()->date(),
-            'user_id' => User::factory(),
-            'client_id' => Client::factory(),
+            'user_id' => rand(1, 11),
+            'client_id' => rand(1, 10),
             'status' => random_int(0,1),
         ];
     }

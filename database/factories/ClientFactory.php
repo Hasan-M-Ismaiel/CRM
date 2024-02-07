@@ -18,7 +18,6 @@ class ClientFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            // 'VAT' => fake()->unique()->numberBetween($min = 1, $max = 50),
             'VAT' => fake()->unique()->numberBetween(00000, 99999),
             'address' => fake()->address(),
         ];

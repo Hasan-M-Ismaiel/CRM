@@ -44,7 +44,6 @@ class DatabaseSeeder extends Seeder
             'task_delete',
             'task_access',
         ];
-
         foreach ($adminPermissions as $adminPermission)   {
             Permission::create([
                 'name' => $adminPermission
@@ -92,9 +91,9 @@ class DatabaseSeeder extends Seeder
             $user->assignRole($userRole);
         }
 
+        Client::factory()->times(10)->create();
         Project::factory()->times(10)->create();
         Task::factory()->times(10)->create();
-        Client::factory()->times(10)->create();
         
     }
 }

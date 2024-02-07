@@ -53,6 +53,12 @@
                         <label for="role_id">Role</label>
                         <select name="role_id" id="role_id" class="form-control">
                             <option value="" selected>Choose Role...</option>
+                            <!-- <option selected value="{{$user->role->id}}">{{ $project->client->name }}</option> -->
+                            <!-- @foreach ( $roles as $role )
+                                @if ($role->name != $user->role->name)
+                                    <option value="{{$category->id}}">{{ $category->name }}</option>
+                                @endif
+                            @endforeach -->
                             @foreach ( $roles as $role )
                                 <option value="{{$role->id}}" >{{ $role->name }}</option>
                             @endforeach
