@@ -24,11 +24,11 @@ class DatabaseSeeder extends Seeder
         // admin area
         // generate admin permissions
          $adminPermissions = [
-            'user_create',
-            'user_edit',
-            'user_show',
-            'user_delete',
-            'user_access',
+            'user_create',  //create page
+            'user_edit',    // edit page
+            'user_show',    // show
+            'user_delete',  // destroy method
+            'user_access',  // index page - method
             'project_create',
             'project_edit',
             'project_show',
@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
             'task_show',
             'task_delete',
             'task_access',
+            'assign_project_to_user',
         ];
         foreach ($adminPermissions as $adminPermission)   {
             Permission::create([
@@ -73,10 +74,11 @@ class DatabaseSeeder extends Seeder
         //generate user permissions
         $userPermissions = [
             'project_show',
-            'task_create',
-            'task_edit',
+            'project_access',
+            // 'task_create',
+            // 'task_edit',
             'task_show',
-            'task_delete',
+            // 'task_delete',
             'task_access',
         ];
         
@@ -98,7 +100,7 @@ class DatabaseSeeder extends Seeder
 
         //for the pivot table
         for ($i=0; $i < 10 ; $i++){
-            DB::table('projects_users')->insert([
+            DB::table('project_user')->insert([
                 'user_id' => rand(1, 11),
                 'project_id' => rand(1, 10),
             ]);

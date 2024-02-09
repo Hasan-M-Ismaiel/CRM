@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
- 
+
 <div class="container mb-3">
     <div class="row justify-content-center">
         <!-- Validation Errors -->
@@ -34,16 +34,89 @@
                     <div class="form-group mt-4">
                         <label for="project_id">Project</label>
                         <select name="project_id" id="project_id" class="form-control">
+                            @if(request()->input('addTaskToProject'))
+                            <option id="add_task_to_project" value="{{ request()->addTaskToProject}}" selected>{{ request()->projectTitle }}</option>
+
+                            @else
                             <option value="" selected>Choose Project ...</option>
+                            @endif
                             @foreach ( $projects as $project )
-                                <option value="{{$project->id}}" >{{ $project->title }}</option>
+                                @if(request()->addTaskToProject != $project->id)
+                                    <option value="{{$project->id}}" >{{ $project->title }}</option>
+                                @endif
                             @endforeach
                         </select>
                     </div>
+                    <hr>
+
+                    <!--here is the generated content will be-->
+                    <div class="form-group mt-4" id="users">
+                    </div>
+
                     <button type="submit" class="btn btn-primary mt-5">Create</button>
                 </form>
             </div>
-        </div> 
+        </div>
     </div>
 </div>
+<script>
+    $('#project_id').on('change', function(){
+        // to clear the list if the user change the selected option again
+        $('#users').empty();
+        $.ajax({
+            url: "{{ route('admin.getUsers') }}",
+            method: 'post',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                id: $(this).val(),
+            },
+            success: function(result){
+	            $('#users').append(result);
+            }
+        });
+    });
+@if(request()->input('addTaskToProject'))
+    var projectId = {!! request()->addTaskToProject !!};
+    function send() {
+        $.ajax({
+            url: "{{ route('admin.getUsers') }}",
+            method: 'post',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                id: projectId,
+            },
+            success: function(result){
+                $('#users').append(result);
+                alert(projectId);
+            }
+        });
+    }
+
+    send();
+@endif
+</script>
 @endsection
+
+<script>
+    var projectId = {!! request()->addTaskToProject !!};
+    function send() {
+        $.ajax({
+            url: "{{ route('admin.getUsers') }}",
+            method: 'post',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                id: projectId,
+            },
+            success: function(result){
+                $('#users').append(result);
+                alert(projectId);
+            }
+        });
+    }
+
+    send();
+    // alert(projectId);
+
+</script>
+
+

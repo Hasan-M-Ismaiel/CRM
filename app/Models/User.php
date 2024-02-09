@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -54,6 +55,16 @@ class User extends Authenticatable implements HasMedia
         return $this->belongsToMany(Project::class);
     }
 
+    public function tasks ()
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    // public function tasks(): HasManyThrough
+    // {
+    //     return $this->hasManyThrough(Task::class, Project::class);
+    // }
+
     protected function numberOfAssignedProjects(): Attribute
     {
         $numeberOfAssignedProjects = $this->projects()->count();
@@ -78,7 +89,16 @@ class User extends Authenticatable implements HasMedia
         $numeberOfAssignedProjects = $this->projects()
                     ->where('projects.id', $project->id)
                     ->count();
-        var_dump($numeberOfAssignedProjects);
         return $numeberOfAssignedProjects>0 ? false : true; 
+    }
+
+    public function numberOfAssignedTasks():Attribute
+    {
+        $numeberOfAssignedTasks = $this->tasks()
+                    ->count();
+
+        return Attribute::make(
+            get: fn () => $numeberOfAssignedTasks
+        );
     }
 }

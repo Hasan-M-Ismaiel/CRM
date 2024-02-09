@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\Admin\ClientController;
+use App\Http\Controllers\Admin\GetUsersController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\TaskController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\ProjectController as UserProjectController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,16 +28,16 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::middleware(['auth'])->group(function () {
-    Route::group([
-            // 'middleware' => ['is_admin'],
-            'prefix' => 'admin',
-            'as' => 'admin.'] ,function () {
+    Route::group(['prefix' => 'admin', 'as' => 'admin.'] ,function () {
+        Route::group(['middleware' => 'admin_access'] ,function () {
+            Route::resource('clients', ClientController::class);
+            Route::get('projects/{project}/assign/create', [ProjectController::class, 'assignCreate'])->name('projects.assignCreate');
+            Route::patch('projects/{project}/assign', [ProjectController::class, 'assignStore'])->name('projects.assignStore');
+            Route::post('getUsers', GetUsersController::class)->name('getUsers');
+        });
+        
         Route::resource('users', UserController::class);
-        Route::resource('clients', ClientController::class);
-        Route::get('projects/{project}/assign/create', [ProjectController::class, 'assignCreate'])->name('projects.assignCreate');
-        Route::patch('projects/{project}/assign', [ProjectController::class, 'assignStore'])->name('projects.assignStore');
         Route::resource('projects', ProjectController::class);
         Route::resource('tasks', TaskController::class);
     });
-    // Route::resource('tasks', ::class)->only('index', 'show');
 });

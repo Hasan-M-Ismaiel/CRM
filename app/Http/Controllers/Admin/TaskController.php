@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
@@ -16,7 +17,12 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::with('project')->get();
+        if(auth()->user()->hasRole('admin')){
+            $tasks = Task::with('project', 'user')->get();
+        } else {
+            $tasks = Task::where('user_id', Auth::user()->id)->get();
+        }
+
         return view('admin.tasks.index', [
             'tasks' => $tasks,
             'page' => 'tasks List'
@@ -28,6 +34,8 @@ class TaskController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Task::class);
+
         $projects = Project::all();
         return view('admin.tasks.create', [
             'projects' => $projects,
@@ -40,6 +48,8 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
+        //the authorization is in the form request class 
+
         $task = Task::create($request->validated());
         
         return redirect()->route('admin.tasks.index')->with('message', 'the task has been created sucessfully');;
@@ -51,6 +61,8 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
+        $this->authorize('view', $task);
+
         $task->with('project');
         return view('admin.tasks.show', [
             'task' => $task,
@@ -63,10 +75,16 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
+        $this->authorize('update', $task);
+
         $projects = Project::all();
+        $project = $task->project()->get();
+        //because we get a collection 
+        // dd($project[0]->title);
         return view('admin.tasks.edit', [
             'projects' => $projects,
-            'task' => $task,
+            'task' => $task,    // ->with('user')
+            'taskproject' => $project[0], //because we get a collection 
             'page' => 'Editing Task',
         ]);
     }
@@ -76,6 +94,8 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
+        $this->authorize('update', $task);   
+
         $task->update($request->validated());
         
         return redirect()->route('admin.tasks.index')->with('message', 'the task has been updated successfully');
@@ -87,6 +107,8 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
+        $this->authorize('delete', $task);
+
         $task->delete();
         return redirect()->route('admin.tasks.index')->with('message','the task has been deleted successfully');
     

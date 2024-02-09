@@ -17,6 +17,7 @@ class UserController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', User::class);
         //make it paginated
         // $users = User::with('category','tags')->get();
         $users = User::all();
@@ -32,6 +33,8 @@ class UserController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', User::class);
+
         $roles = DB::select('select name, id from roles');
         // foreach ($roles as $role){
         //     var_dump($role->name);
@@ -48,6 +51,8 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
+        //the authorization is in the form request 
+
         // store the new user in the database
         $user = User::create([
             'name' => $request->validated('name'),
@@ -72,6 +77,8 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        $this->authorize('view', $user);
+
         $user->with('projects');
         return view('admin.users.show', [
             'page' => 'Showing User',
@@ -84,6 +91,8 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        $this->authorize('update', $user);
+        
         // get the roles to iterate throught them in the view
         $roles = DB::select('select name, id from roles');
 
@@ -108,6 +117,8 @@ class UserController extends Controller
      */
     public function update(UserUpdateRequest $request, User $user)
     {
+        // the authorization is in the form request 
+
         //check if the password match the old password - this should be like other way 
         if(!Hash::check($request->old_password, $user->password)){
             return back()->with("message", "old Password Doesn't match!");
@@ -139,6 +150,8 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        $this->authorize('delete');
+
         $user->delete();
         return redirect()->route('admin.users.index')->with('message','the user has been deleted successfully');
     }

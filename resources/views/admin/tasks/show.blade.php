@@ -20,18 +20,16 @@
                                         <p class="card-text my-2">
                                             <strong>Task description:</strong> {{ $task->description }}
                                             <br>
-                                            @foreach($task->project->users as $user)
-                                                <strong>Users:</strong><span class="badge"><a href="{{ route('admin.users.show', $user->id) }}" style="text-decoration: none;" >{{ $user->name }} | </a></span>
-                                            @endforeach
+                                            <strong>for user:</strong><span class="badge"><a href="{{ route('admin.users.show', $task->user->id) }}" style="text-decoration: none;" >{{ $task->user->name }}</a></span>
                                             <br>
-                                            <strong>For project:</strong><span class="badge"><a href="{{ route('admin.projects.show', $task->project->id) }}" style="text-decoration: none;"> {{ $task->project->title }} </a></span>
+                                            <strong>in project:</strong><span class="badge"><a href="{{ route('admin.projects.show', $task->project->id) }}" style="text-decoration: none;"> {{ $task->project->title }} </a></span>
                                             <br>
                                         <!-- maybe in the future this task could have a status or deleted -->
                                         </p>
                                     </div>
                                     <div class="m-4">
-                                        <a class="btn btn-primary" href="{{ route('admin.tasks.edit', $task) }}" role="button">Edit</a>
-                                        <a class="btn btn-danger m-1" type="button"
+                                        @can('task_edit')<a class="btn btn-primary" href="{{ route('admin.tasks.edit', $task) }}" role="button">Edit</a>@endcan
+                                        @can('task_delete')<a class="btn btn-danger m-1" type="button"
                                                 onclick="if (confirm('Are you sure?') == true) {
                                                             document.getElementById('delete-item-{{$task->id}}').submit();
                                                             event.preventDefault();
@@ -40,7 +38,7 @@
                                                         }
                                                         ">
                                             {{ __('Delete') }}
-                                        </a>
+                                        </a>@endcan
                                         <!-- for the delete  -->
                                         <form id="delete-item-{{$task->id}}" action="{{ route('admin.tasks.destroy', $task->id) }}" class="d-none" method="POST">
                                             @csrf

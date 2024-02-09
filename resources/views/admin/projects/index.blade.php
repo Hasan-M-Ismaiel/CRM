@@ -5,8 +5,15 @@
   <div class="row justify-content-center">
       <div class="card">
         <h2 class="card-title mt-4 mb-4">{{ $page }}</h2>
-        <a type="button" class="btn btn-success m-1" href="{{ route('admin.projects.create') }}" role="button">Create Project</a>
-        <x-projects-table :projects="$projects"  />
+        @can('project_create')
+          <a type="button" class="btn btn-success m-1" href="{{ route('admin.projects.create') }}" role="button">Create Project</a>
+        @endcan
+        @if($projects->count()>0)
+          <x-projects-table :projects="$projects"  />
+        @else 
+          <strong> There is no projects assigned to you </strong>
+          <hr>
+        @endif
       </div>
   </div>
 </div>

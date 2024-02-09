@@ -10,19 +10,26 @@ use App\Models\Client;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    // this method does not need protection - because we assume that we have just ( admin - user ) roles and we handle this using if-else
     public function index()
     {
-        $projects = Project::all();
+        if(auth()->user()->hasRole('admin')){
+            $projects = Project::all();
+        } else {
+            $user = Auth::user();
+            $projects = $user->Projects()->get();
+        }
         return view('admin.projects.index', [
             'projects' => $projects,
             'page' => 'projects List'
-        ]);   
+        ]);
     }
 
     /**
@@ -30,6 +37,8 @@ class ProjectController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Project::class);
+
         $users = User::all();
         $clients = Client::all();
         return view('admin.projects.create', [
@@ -44,10 +53,21 @@ class ProjectController extends Controller
      */
     public function store(ProjectRequest $request)
     {
-        Project::create($request->validated());
+        // $this->authorize('restore');
+
+        $assignedUsers = $request->input('assigned_users');
+        if( sizeof($assignedUsers)>0){
+            $project = Project::create($request->validated());
+
+            foreach ($assignedUsers as $assignedUser) {
+                $project->users()->attach($assignedUser);
+            }
+            
+        } else {
+            return redirect()->back()->with('message', 'please do not leave the project without users');
+        }
         
         return redirect()->route('admin.projects.index')->with('message', 'the project has been created sucessfully');;
-    
     }
 
     /**
@@ -55,6 +75,8 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
+        $this->authorize('view', $project);
+
         $project->with('user', 'client');
         return view('admin.projects.show', [
             'project' => $project,
@@ -67,6 +89,8 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
+        $this->authorize('update', $project);
+
         $users = User::all();
         $clients = Client::all();
         return view('admin.projects.edit', [
@@ -82,6 +106,8 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project)
     {
+        $this->authorize('update', $project);   
+        
         $project->update([
             'title'       => $request->validated('title'),
             'description' => $request->validated('description'),
@@ -115,10 +141,13 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
+        $this->authorize('delete', $project);
+
         $project->delete();
         return redirect()->route('admin.projects.index')->with('message','the project has been deleted successfully');
     }
 
+    // protect this method using meddleware
     public function assignCreate(Project $project)
     {
         $users = User::all();
@@ -130,6 +159,7 @@ class ProjectController extends Controller
         ]);
     }
 
+    // protect this method using meddleware
     public function assignStore(AssignUserStoreRequest $request, Project $project)
     {
         $assignedUsers = $request->input('assigned_users');
