@@ -9,8 +9,16 @@ use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Client;
 use App\Models\Project;
 use App\Models\User;
+use App\Notifications\ProjectAssigned;
+use App\Notifications\ProjectUnAssigned;
+use App\Notifications\TaskAssigned;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Validation\Rules\NotIn;
+use Symfony\Component\VarDumper\VarDumper;
+use App\Services\NotificationService;
 
 class ProjectController extends Controller
 {
@@ -116,6 +124,7 @@ class ProjectController extends Controller
             'client_id'   => $request->validated('client_id'),
         ]);
         
+
         $assignedUsers = $request->input('assigned_users');
         if( sizeof($assignedUsers)>0){
             $project->users()->detach();
@@ -162,13 +171,44 @@ class ProjectController extends Controller
     // protect this method using meddleware
     public function assignStore(AssignUserStoreRequest $request, Project $project)
     {
-        $assignedUsers = $request->input('assigned_users');
-        if( sizeof($assignedUsers)>0){
-            $project->users()->detach();
-            foreach ($assignedUsers as $assignedUser) {
-                $project->users()->attach($assignedUser);
-            }
-        }
-        return redirect()->route('admin.projects.index')->with('message', 'the project has been updated sucessfully with new users');;
+        // the users those are been passed to here form the page  
+        $assignedUsers = $request->input('assigned_users'); //associative array 
+
+        $sendNotification = new NotificationService($project, $assignedUsers);
+        $sendNotification->SendNotificationMessages();
+        // //get the ids of the users those are already in the project 
+        // $projectUsers = $project->users()->pluck('users.id');
+
+        // if($assignedUsers != null && sizeof($assignedUsers)>0){    
+        //     // get all the users 
+        //     $users = User::all();
+        //     $usersIds= $users->pluck('id');
+        //     foreach ($usersIds as $usersId){
+        //         if($projectUsers->contains($usersId) && !in_array($usersId,$assignedUsers)){
+        //             // delete notification
+        //             $user = User::findOrFail($usersId);
+        //             $user->notify(new ProjectUnAssigned($project));
+        //         } else if (!$projectUsers->contains($usersId) && in_array($usersId,$assignedUsers)){
+        //             // assing notification
+        //             $user = User::findOrFail($usersId);
+        //             $user->notify(new ProjectAssigned($project));
+        //         } else {
+        //             // nothing
+        //         }
+        //     }
+
+        //     $project->users()->detach();
+        //     foreach ($assignedUsers as $assignedUser) {
+        //         $project->users()->attach($assignedUser);
+        //     }
+        // } else {
+        //     //special case when there is just one user in the project and you remove it - then the assignedUsers will be null
+        //     $users = $project->users()->get();
+        //     Notification::send($users, new ProjectUnAssigned($project));
+        //     // if the admin uncheck all users 
+        //     $project->users()->detach();
+        // }
+
+        return redirect()->route('admin.projects.index')->with('message', 'the project has been updated sucessfully');
     }
 }

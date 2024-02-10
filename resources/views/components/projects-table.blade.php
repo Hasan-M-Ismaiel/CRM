@@ -17,13 +17,21 @@
         @foreach ($projects as $project)
             <tr>
                 @if(auth()->user()->hasRole('admin'))
-                <th scope="row">{{ $project->id }}</th>
+                <th scope="row" class="align-middle">{{ $project->id }}</th>
                 @else 
-                <th scope="row">{{ $loop->iteration }}</th>
-                @endcan
-                <td class="align-middle"><a href="{{ route('admin.projects.show', $project->id) }}" style="text-decoration: none;" >{{ $project->title }} </a></td>
-                <td class="align-middle">{{ substr($project->description, 0, 40) }}...</td>
-                <td class="align-middle">{{ $project->deadline }}</td>
+                <th scope="row" class="align-middle">{{ $loop->iteration }}</th>
+                @endif
+                <td class="align-middle">
+                    <a href="{{ route('admin.projects.show', $project->id) }}" 
+                        style="text-decoration: none;" >{{ $project->title }} 
+                    </a>
+                </td>
+                <td class="align-middle">
+                    {{ substr($project->description, 0, 40) }}...
+                </td>
+                <td class="align-middle">
+                    {{ $project->deadline }}
+                </td>
                 <td class="align-middle">
                     @if($project->users()->count() > 0)
                         @foreach ($project->users as $user)
@@ -33,7 +41,9 @@
                         #
                     @endif
                 </td>
-                <td class="align-middle">{{ $project->client->name }}</td>
+                <td class="align-middle">
+                    {{ $project->client->name }}
+                </td>
                 <td class="align-middle">
                     <x-project-status :status="$project->status" />
                 </td>

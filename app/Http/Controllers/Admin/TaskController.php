@@ -7,6 +7,8 @@ use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\User;
+use App\Notifications\TaskAssigned;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -49,9 +51,12 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request)
     {
         //the authorization is in the form request class 
+        $AssignedUser = User::findOrFail($request->user_id);
 
         $task = Task::create($request->validated());
         
+        $AssignedUser->notify(new TaskAssigned($task));
+
         return redirect()->route('admin.tasks.index')->with('message', 'the task has been created sucessfully');;
     
     }
@@ -95,11 +100,17 @@ class TaskController extends Controller
     public function update(UpdateTaskRequest $request, Task $task)
     {
         $this->authorize('update', $task);   
+        $AssignedUser = User::findOrFail($request->user_id);    
 
+        $oldTaskUserId = $task->user_id;
         $task->update($request->validated());
+
+        // check if the user is not changed 
+        if($oldTaskUserId != $AssignedUser->id){
+            $AssignedUser->notify(new TaskAssigned($task));
+        }
         
         return redirect()->route('admin.tasks.index')->with('message', 'the task has been updated successfully');
-       
     }
 
     /**
