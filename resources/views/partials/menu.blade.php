@@ -15,11 +15,12 @@
         <li class="nav-item">
             <a class="nav-link" href="#">
                 <svg class="nav-icon">
-                <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-speedometer') }}"></use>
+                    <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-speedometer') }}"></use>
                 </svg> 
                 Dashboard
             </a>
         </li>
+        @if(Auth::user()->hasRole('admin'))
         <li class="nav-item">
             <a class="nav-link" href="{{ route('admin.users.index') }}">
                 <svg class="nav-icon">
@@ -36,6 +37,7 @@
                 Clients
             </a>
         </li>
+        @endif
         <li class="nav-item">
             <a class="nav-link" href="{{ route('admin.projects.index') }}">
                 <svg class="nav-icon">

@@ -44,10 +44,58 @@
                             @endforeach
                         </select>
                     </div>
+                    
+                    <hr>
+                    <!--here is the generated content will be-->
+                    <div class="form-group mt-4" id="users">
+                        <div class="mt-3">
+                            <div>Select user:</div>
+                            @if ($taskproject->users()->count()>0)
+                                <div class="row">
+                                    @foreach ($taskproject->users as $user)
+                                        <div class="col-md-6">
+                                            @if($user->id == $task->user->id)
+                                            <input type="radio" id="{{$user->id}}" name="user_id" value="{{$user->id}}" checked>
+                                            <label for="user">{{ $user->name }}</label><br>
+                                            @else 
+                                            <input type="radio" id="{{$user->id}}" name="user_id" value="{{$user->id}}" >
+                                            <label for="user">{{ $user->name }}</label><br>
+                                            @endif
+                                        </div>
+                                        @if ($loop->iteration % 2 == 0)
+                                            </div>
+                                            <div class="row">
+                                        @endif
+                                    @endforeach 
+                                </div>
+                            @else 
+                                <a href="{{ route('admin.projects.assignCreate', $task->project->id) }}">assign</a> users to the project first
+                            @endif
+                        </div>
+                    </div>
+
+
                     <button type="submit" class="btn btn-primary mt-5">Update</button>
                 </form>
             </div>
         </div> 
     </div>
 </div>
+<script>
+    $('#project_id').on('change', function(){  
+        // to clear the list if the user change the selected option again 
+        $('#users').empty();     
+        $.ajax({
+            url: "{{ route('admin.getUsers') }}",
+            method: 'post',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                id: $(this).val(),
+            },
+            success: function(result){
+	            $('#users').append(result);  
+            }
+        });
+    });
+</script>
 @endsection

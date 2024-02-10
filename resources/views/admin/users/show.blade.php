@@ -21,15 +21,17 @@
                                         <br>
                                         <br>
                                         <span class="text-muted h6 col">Created at <time>{{ $user->created_at->diffForHumans() }}</time></span>
+                                        <hr>
                                         <p class="card-text mt-2">
-                                            number of assigned projects: {{ $user->numberOfAssignedProjects }}
-                                            <br />number of completed projects: {{ $user->numberOfCompletededProjects }}
-                                            <br />stars: 0 
+                                            <strong># of assigned projects:</strong> {{ $user->numberOfAssignedProjects }}
+                                            <br /><strong># of assigned tasks:</strong> {{ $user->numberOfAssignedTasks }}
+                                            <br /><strong># of completed projects:</strong> {{ $user->numberOfCompletededProjects }}
+                                            <br /><strong>stars:</strong> 0 
                                         </p>
                                     </div>
                                     <div class="m-4">
-                                        <a class="btn btn-primary" href="{{ route('admin.users.edit', $user) }}" role="button">Edit</a>
-                                        <a class="btn btn-danger m-1" type="button"
+                                        @can('user_edit')<a class="btn btn-primary" href="{{ route('admin.users.edit', $user) }}" role="button">Edit</a>@endcan
+                                        @can('user_edit')<a class="btn btn-danger m-1" type="button"
                                                 onclick="if (confirm('Are you sure?') == true) {
                                                             document.getElementById('delete-item').submit();
                                                             event.preventDefault();
@@ -38,7 +40,7 @@
                                                         }
                                                         ">
                                             {{ __('Delete') }}
-                                        </a>
+                                        </a>@endcan
                                         <!-- for the delete  -->
                                         <form id="delete-item" action="{{ route('admin.users.destroy', $user->id) }}" class="d-none" method="POST">
                                             @csrf

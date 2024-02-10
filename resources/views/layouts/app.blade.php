@@ -7,7 +7,7 @@
         <meta name="description" content="CoreUI - Open Source Bootstrap Admin Template">
         <meta name="author" content="Łukasz Holeczek">
         <meta name="keyword" content="Bootstrap,Admin,Template,Open,Source,jQuery,CSS,HTML,RWD,Dashboard">
-        <title>CoreUI Free Bootstrap Admin Template</title>
+        <title>{{ config('app.name') }}</title>
         <link rel="apple-touch-icon" sizes="57x57" href="{{ asset('assets/favicon/apple-icon-57x57.png') }}">
         <link rel="apple-touch-icon" sizes="60x60" href="{{ asset('assets/favicon/apple-icon-60x60.png') }}">
         <link rel="apple-touch-icon" sizes="72x72" href="{{ asset('assets/favicon/apple-icon-72x72.png') }}">
@@ -34,14 +34,17 @@
 
         <!--alpine js library for the flash message-->
         <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
-        
+
+        <!--ajax-->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
 
         <!-- Vendors styles-->
         <link rel="stylesheet" href='{{ asset("css/vendors/simplebar.css") }}'>
         <link rel="stylesheet" href='{{ asset("vendors/simplebar/css/simplebar.css") }}'>
         <link href='{{ asset("css/style.css") }}' rel="stylesheet">
-        
         <title>Hello, world!</title>
+        @stack('scripts')
     </head>
     <body style>
         @include('partials.menu')
