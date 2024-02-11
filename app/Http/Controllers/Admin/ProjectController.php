@@ -64,9 +64,11 @@ class ProjectController extends Controller
         // $this->authorize('restore');
 
         $assignedUsers = $request->input('assigned_users');
+        
+
         if( sizeof($assignedUsers)>0){
             $project = Project::create($request->validated());
-
+            
             foreach ($assignedUsers as $assignedUser) {
                 $project->users()->attach($assignedUser);
             }
@@ -75,6 +77,7 @@ class ProjectController extends Controller
             return redirect()->back()->with('message', 'please do not leave the project without users');
         }
         
+        Notification::send($project->users, new ProjectAssigned($project));
         return redirect()->route('admin.projects.index')->with('message', 'the project has been created sucessfully');;
     }
 
@@ -120,18 +123,13 @@ class ProjectController extends Controller
             'title'       => $request->validated('title'),
             'description' => $request->validated('description'),
             'deadline'    => $request->validated('deadline'),
-            // 'user_id'     => $request->validated('user_id'),
             'client_id'   => $request->validated('client_id'),
         ]);
         
 
         $assignedUsers = $request->input('assigned_users');
-        if( sizeof($assignedUsers)>0){
-            $project->users()->detach();
-            foreach ($assignedUsers as $assignedUser) {
-                $project->users()->attach($assignedUser);
-            }
-        }
+        $sendNotification = new NotificationService($project, $assignedUsers);
+        $sendNotification->SendNotificationMessages();
 
         if($request->status == 'true') {
             $project->status = true;  
@@ -176,38 +174,6 @@ class ProjectController extends Controller
 
         $sendNotification = new NotificationService($project, $assignedUsers);
         $sendNotification->SendNotificationMessages();
-        // //get the ids of the users those are already in the project 
-        // $projectUsers = $project->users()->pluck('users.id');
-
-        // if($assignedUsers != null && sizeof($assignedUsers)>0){    
-        //     // get all the users 
-        //     $users = User::all();
-        //     $usersIds= $users->pluck('id');
-        //     foreach ($usersIds as $usersId){
-        //         if($projectUsers->contains($usersId) && !in_array($usersId,$assignedUsers)){
-        //             // delete notification
-        //             $user = User::findOrFail($usersId);
-        //             $user->notify(new ProjectUnAssigned($project));
-        //         } else if (!$projectUsers->contains($usersId) && in_array($usersId,$assignedUsers)){
-        //             // assing notification
-        //             $user = User::findOrFail($usersId);
-        //             $user->notify(new ProjectAssigned($project));
-        //         } else {
-        //             // nothing
-        //         }
-        //     }
-
-        //     $project->users()->detach();
-        //     foreach ($assignedUsers as $assignedUser) {
-        //         $project->users()->attach($assignedUser);
-        //     }
-        // } else {
-        //     //special case when there is just one user in the project and you remove it - then the assignedUsers will be null
-        //     $users = $project->users()->get();
-        //     Notification::send($users, new ProjectUnAssigned($project));
-        //     // if the admin uncheck all users 
-        //     $project->users()->detach();
-        // }
 
         return redirect()->route('admin.projects.index')->with('message', 'the project has been updated sucessfully');
     }

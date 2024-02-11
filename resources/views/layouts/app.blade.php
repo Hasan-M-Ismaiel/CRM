@@ -37,14 +37,17 @@
 
         <!--ajax-->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
+        
+        <!--bootstrap icons-->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
         <!-- Vendors styles-->
         <link rel="stylesheet" href='{{ asset("css/vendors/simplebar.css") }}'>
         <link rel="stylesheet" href='{{ asset("vendors/simplebar/css/simplebar.css") }}'>
         <link href='{{ asset("css/style.css") }}' rel="stylesheet">
         <title>Hello, world!</title>
-        @stack('scripts')
+        @vite(['resources/js/app.js', 'resources/css/app.css'])
+
     </head>
     <body style>
         @include('partials.menu')
@@ -55,11 +58,20 @@
                     @yield('content')
                 </div>
             </div>
+            
+            <x-toast-notification />
+
             <footer class="footer">
                 <div><a href="https://coreui.io">CoreUI </a><a href="https://coreui.io">Bootstrap Admin Template</a> © 2023 creativeLabs.</div>
                 <div class="ms-auto">Powered by&nbsp;<a href="https://coreui.io/docs/">CoreUI UI Components</a></div>
             </footer>
         </div>
+        
          <x-flash />
+         
+         <script>
+            window.userID = {{ auth()->id() }};
+            window.NumberOfNotifications = {!! auth()->user()->unreadNotifications->count() !!};
+        </script>
     </body>
 </html>

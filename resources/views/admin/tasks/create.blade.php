@@ -59,6 +59,7 @@
         </div>
     </div>
 </div>
+
 <script>
     $('#project_id').on('change', function(){
         // to clear the list if the user change the selected option again
@@ -75,28 +76,30 @@
             }
         });
     });
-@if(request()->input('addTaskToProject'))
-    var projectId = {!! request()->addTaskToProject !!};
-    function send() {
-        $.ajax({
-            url: "{{ route('admin.getUsers') }}",
-            method: 'post',
-            data: {
-                "_token": "{{ csrf_token() }}",
-                id: projectId,
-            },
-            success: function(result){
-                $('#users').append(result);
-                alert(projectId);
-            }
-        });
-    }
 
-    send();
-@endif
+    @if(request()->input('addTaskToProject'))
+        var projectId = {!! request()->addTaskToProject !!};
+        function send() {
+            $.ajax({
+                url: "{{ route('admin.getUsers') }}",
+                method: 'post',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    id: projectId,
+                },
+                success: function(result){
+                    $('#users').append(result);
+                    alert(projectId);
+                }
+            });
+        }
+
+        send();
+    @endif
 </script>
 @endsection
 
+<!-- this is rubbish try to remove it--> 
 <script>
     var projectId = {!! request()->addTaskToProject !!};
     function send() {
@@ -115,8 +118,6 @@
     }
 
     send();
-    // alert(projectId);
-
 </script>
 
 
