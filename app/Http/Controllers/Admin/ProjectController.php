@@ -88,6 +88,14 @@ class ProjectController extends Controller
     {
         $this->authorize('view', $project);
 
+        if(request('notificationId')){
+            auth()->user()->unreadNotifications
+            ->when(request('notificationId'), function ($query) {
+                return $query->where('id', request('notificationId'));
+            })
+            ->markAsRead();
+        }
+        
         $project->with('user', 'client');
         return view('admin.projects.show', [
             'project' => $project,

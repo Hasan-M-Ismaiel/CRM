@@ -19,7 +19,6 @@ class NotificationController extends Controller
 
     public function markNotification()
     {
-        return "true";
         auth()->user()
             ->unreadNotifications
             ->when(request('notificationId'), function ($query) {

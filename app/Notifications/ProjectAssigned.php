@@ -4,11 +4,14 @@ namespace App\Notifications;
 
 use App\Models\Project;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Auth;
 
-class ProjectAssigned extends Notification
+class ProjectAssigned extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
@@ -28,7 +31,7 @@ class ProjectAssigned extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -40,6 +43,27 @@ class ProjectAssigned extends Notification
             'project_id' => $this->project->id,
             'project_title' => $this->project->title,
         ];
+    }
+
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        //get the image for the user that notify this notifiable
+        if(Auth::user()->getFirstMediaUrl("users")){
+            $image =  Auth::user()->getFirstMediaUrl("users");
+        } else {
+            $image = asset('images/avatar.png');
+        } 
+
+        $linkeToProject = route('admin.projects.show', $this->project->id);
+        return new BroadcastMessage([
+            'notification_type' => 'ProjectAssigned',
+            'notification_id' => $notifiable->unreadNotifications()->latest()->first()->id,
+            'project_id' => $this->project->id,
+            'project_title' => $this->project->title,
+            'project_manager_name' => Auth::user()->name,
+            'project_manager_image' => $image,
+            'link_to_project' => $linkeToProject,
+        ]);
     }
 
     /**

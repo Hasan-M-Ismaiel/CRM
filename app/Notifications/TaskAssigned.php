@@ -45,23 +45,27 @@ class TaskAssigned extends Notification implements ShouldBroadcast
         return [
             'task_id' => $this->task->id,
             'task_title' => $this->task->title,
+            'project_id' => $this->task->project->id,
             'project_name' => $this->task->project->title,
         ];
     }
 
     public function toBroadcast(object $notifiable): BroadcastMessage
     {
+        //get the image for the user that notify this notifiable
         if(Auth::user()->getFirstMediaUrl("users")){
             $image =  Auth::user()->getFirstMediaUrl("users");
         } else {
             $image = asset('images/avatar.png');
         } 
+        // dd($this::class);
         $linkeToTask = route('admin.tasks.show', $this->task->id);
         return new BroadcastMessage([
+            'notification_type' => 'TaskAssigned',
             'notification_id' => $notifiable->unreadNotifications()->latest()->first()->id,
             'task_id' => $this->task->id,
             'task_title' => $this->task->title,
-            'project_name' => $this->task->project->title,
+            'project_title' => $this->task->project->title,
             'project_manager_name' => Auth::user()->name,
             'project_manager_image' => $image,
             'link_to_task' => $linkeToTask,
