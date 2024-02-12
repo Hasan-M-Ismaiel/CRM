@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Project;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,7 +12,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 
-class ProjectUnAssigned extends Notification implements ShouldBroadcast
+class ProjectUnAssigned extends Notification implements ShouldBroadcast, ShouldQueue
 {
     use Queueable;
 
@@ -24,6 +25,15 @@ class ProjectUnAssigned extends Notification implements ShouldBroadcast
         $this->project = $project;
     }
 
+    public function viaConnections(): array
+    {
+        return [
+            'mail' => 'database',
+            'database' => 'database',
+            'broadcast' => 'sync',
+        ];
+    }
+
     /**
      * Get the notification's delivery channels.
      *
@@ -31,7 +41,7 @@ class ProjectUnAssigned extends Notification implements ShouldBroadcast
      */
     public function via(object $notifiable): array
     {
-        return ['database', 'broadcast'];
+        return ['database', 'broadcast', 'mail'];
     }
 
     /**
@@ -62,16 +72,14 @@ class ProjectUnAssigned extends Notification implements ShouldBroadcast
             'project_manager_image' => $image,
         ]);
     }
-
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(object $notifiable): array
+    public function toMail(object $notifiable): MailMessage
     {
-        return [
-            //
-        ];
+        $projectTitle = $this->project->title;
+        $unassignTime = Carbon::now();
+        return (new MailMessage)
+                    ->greeting('Hello!')
+                    ->line("Now you are out of this project's team: {$projectTitle}.")
+                    ->line("at:{$unassignTime->toDateTimeString()}")
+                    ->line('Wait for another projects to be in!');
     }
 }

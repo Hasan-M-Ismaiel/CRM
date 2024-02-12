@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\Task;
 use Illuminate\Broadcasting\Channel;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -12,17 +13,30 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 
-class TaskAssigned extends Notification implements ShouldBroadcast
+class TaskAssigned extends Notification implements ShouldBroadcast, ShouldQueue
 {
     use Queueable;
 
     protected $task;
+    // protected $notifiable;    // you have to update the database column for user_id to not be nullable
     /**
      * Create a new notification instance.
      */
     public function __construct(Task $task)
     {
         $this->task = $task;
+
+        // $userId = $task->user_id;
+        // $this->user = \App\User::find($userId);
+    }
+
+    public function viaConnections(): array
+    {
+        return [
+            'mail' => 'database',
+            'database' => 'database',
+            'broadcast' => 'sync',
+        ];
     }
 
     /**
@@ -32,9 +46,10 @@ class TaskAssigned extends Notification implements ShouldBroadcast
      */
     public function via(object $notifiable): array
     {
+        // $this->notifiable = $notifiable;
         //note you can reach to the user properties here using the $notifiable variable
         // return ['mail', 'database'];
-        return ['database', 'broadcast'];
+        return ['database', 'broadcast', 'mail'];
     }
 
     /**
@@ -57,8 +72,8 @@ class TaskAssigned extends Notification implements ShouldBroadcast
             $image =  Auth::user()->getFirstMediaUrl("users");
         } else {
             $image = asset('images/avatar.png');
-        } 
-        // dd($this::class);
+        }
+
         $linkeToTask = route('admin.tasks.show', $this->task->id);
         return new BroadcastMessage([
             'notification_type' => 'TaskAssigned',
@@ -72,30 +87,24 @@ class TaskAssigned extends Notification implements ShouldBroadcast
         ]);
     }
 
-    // public function broadcastOn()
+    // public function broadcastOn(): Channel
     // {
-    //     return new Channel('notification');
-    // }
-    /**
-     * Get the mail representation of the notification.
-     */
-    // public function toMail(object $notifiable): MailMessage
-    // {
-    //     return (new MailMessage)
-    //                 ->line('The introduction to the notification.')
-    //                 ->action('Notification Action', url('/'))
-    //                 ->line('Thank you for using our application!');
+    //     dd('hit broadcastOn');
+    //     return new PrivateChannel('App.Models.User.'. $this->notifiable->id);
     // }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
-    // public function toArray(object $notifiable): array
-    // {
-    //     return [
-    //         //
-    //     ];
-    // }
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        $url = url('/admin/tasks/'.$this->task->id);
+
+        return (new MailMessage)
+                    ->greeting('Hello!')
+                    ->line('New task is waiting to complete!')
+                    ->line($this->task->title)
+                    ->lineIf($this->task->title, "starts at: {$this->task->created_at}")
+                    ->line("deadline at: {$this->task->created_at}")
+                    ->action('View Task', $url)
+                    ->line('The Time is running !');
+    }
 }

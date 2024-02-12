@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\TaskController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\NotificationController;
+use App\Models\Task;
+use App\Notifications\TaskAssigned;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -49,3 +51,10 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
+//for testing the notificaitons 
+Route::get('/notification', function () {
+    $task = Task::find(1);
+ 
+    return (new TaskAssigned($task))
+                ->toMail($task->user);
+});

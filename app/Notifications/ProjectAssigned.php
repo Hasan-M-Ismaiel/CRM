@@ -11,7 +11,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 
-class ProjectAssigned extends Notification implements ShouldBroadcast
+class ProjectAssigned extends Notification implements ShouldBroadcast, ShouldQueue
 {
     use Queueable;
 
@@ -24,6 +24,15 @@ class ProjectAssigned extends Notification implements ShouldBroadcast
         $this->project = $project;
     }
 
+    public function viaConnections(): array
+    {
+        return [
+            'mail' => 'database',
+            'database' => 'database',
+            'broadcast' => 'sync',
+        ];
+    }
+    
     /**
      * Get the notification's delivery channels.
      *
@@ -31,7 +40,7 @@ class ProjectAssigned extends Notification implements ShouldBroadcast
      */
     public function via(object $notifiable): array
     {
-        return ['database', 'broadcast'];
+        return ['database', 'broadcast', 'mail'];
     }
 
     /**
@@ -66,15 +75,15 @@ class ProjectAssigned extends Notification implements ShouldBroadcast
         ]);
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(object $notifiable): array
+    public function toMail(object $notifiable): MailMessage
     {
-        return [
-            //
-        ];
+        $projectTitle = $this->project->title;
+        $url = url('/admin/projects/'.$this->project->id);
+        return (new MailMessage)
+                    ->greeting('Hello!')
+                    ->line("You are now one of the team member of this project : {$projectTitle}")
+                    ->line("at:{$this->project->created_at}")
+                    ->action('View Project', $url)
+                    ->line('Wait for tasks in this project soon!');
     }
 }

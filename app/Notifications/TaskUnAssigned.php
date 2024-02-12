@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Task;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,7 +12,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 
-class TaskUnAssigned extends Notification implements ShouldBroadcast
+class TaskUnAssigned extends Notification implements ShouldBroadcast, ShouldQueue
 {
     use Queueable;
 
@@ -24,6 +25,14 @@ class TaskUnAssigned extends Notification implements ShouldBroadcast
         $this->task = $task;
     }
 
+    public function viaConnections(): array
+    {
+        return [
+            'mail' => 'database',
+            'database' => 'database',
+            'broadcast' => 'sync',
+        ];
+    }
     /**
      * Get the notification's delivery channels.
      *
@@ -31,7 +40,7 @@ class TaskUnAssigned extends Notification implements ShouldBroadcast
      */
     public function via(object $notifiable): array
     {
-        return ['database','broadcast'];
+        return ['database','broadcast', 'mail'];
     }
 
     /**
@@ -69,18 +78,18 @@ class TaskUnAssigned extends Notification implements ShouldBroadcast
             'link_to_task' => $linkeToProject,
         ]);
     }
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
-    // public function toArray(object $notifiable): array
-    // {
-    //     return [
-    //         //
-    //     ];
-    // }
-
     
-
+    public function toMail(object $notifiable): MailMessage
+    {
+        $taskTitle = $this->task->title;
+        $projectTitle = $this->task->project->title;
+        $url = url('/admin/projects/'.$this->task->project->id);
+        $unassignTime = Carbon::now();
+        return (new MailMessage)
+                    ->greeting('Hello!')
+                    ->line("The task: {$taskTitle} was removed from your  duties.")
+                    ->line("in the project: {$projectTitle} at:{$unassignTime->toDateTimeString()}")
+                    ->action('View Project', $url)
+                    ->line('Wait for another task in this project soon!');
+    }
 }
