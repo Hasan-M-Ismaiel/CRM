@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\Client;
 use App\Models\Profile;
 use App\Models\Project;
+use App\Models\Skill;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -107,6 +108,11 @@ class DatabaseSeeder extends Seeder
                 'project_id' => rand(1, 10),
             ]);
         }
+
+        //if you done want to use factory
+        // Skill::create([
+        //     'name' => 'java',
+        // ]);
         
     }
 }

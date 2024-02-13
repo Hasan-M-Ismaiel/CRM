@@ -21,6 +21,7 @@ class TaskFactory extends Factory
             'title' => fake()->sentence(),
             'description' => fake()->paragraph(),
             'project_id' => rand(1, 10),
+            'user_id' => rand(1, 11),
         ];
     }
 }

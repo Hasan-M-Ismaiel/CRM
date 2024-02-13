@@ -5,8 +5,8 @@
   <div class="row justify-content-center">
       <div class="card">
         <h2 class="card-title mt-4 mb-4">{{ $page }}</h2>
-        <a type="button" class="btn btn-success m-1" href="{{ route('admin.clients.create') }}" role="button">Create client</a>
-        <x-clients-table :clients="$clients"  />
+        <a type="button" class="btn btn-success m-1" href="{{ route('admin.skills.create') }}" role="button">Create skill</a>
+        <x-skills-table :skills="$skills"  />
       </div>
   </div>
 </div>

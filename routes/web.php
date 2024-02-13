@@ -5,10 +5,9 @@ use App\Http\Controllers\Admin\GetUsersController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\TaskController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Admin\ProfileController;
-use App\Models\Task;
-use App\Notifications\TaskAssigned;
+use App\Http\Controllers\Admin\SkillController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('projects/{project}/assign/create', [ProjectController::class, 'assignCreate'])->name('projects.assignCreate');
             Route::patch('projects/{project}/assign', [ProjectController::class, 'assignStore'])->name('projects.assignStore');
             Route::post('getUsers', GetUsersController::class)->name('getUsers');
+            Route::resource('skills', SkillController::class); 
         });
         
         Route::resource('users', UserController::class);
@@ -54,9 +54,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 //for testing the notificaitons 
-Route::get('/notification', function () {
-    $task = Task::find(1);
+// Route::get('/notification', function () {
+//     $task = Task::find(1);
  
-    return (new TaskAssigned($task))
-                ->toMail($task->user);
-});
+//     return (new TaskAssigned($task))
+//                 ->toMail($task->user);
+// });

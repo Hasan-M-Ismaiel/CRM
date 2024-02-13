@@ -1,7 +1,30 @@
+/* to make the number of notification on the top of the bell svg  */
 .iconClass{
     position: relative;
   }
 .iconClass em{
+position: absolute;
+top: 0px;
+right: 0px;
+display: block;
+}
+
+/* to make the red/green light of user on the top of the image  */
+.imageParentClass{
+  position: relative;
+}
+.imageParentClass span{
+position: absolute;
+left: 0px;
+bottom: 0px;
+display: block;
+}
+
+/* to make the red/green light of user on the top of the image  */
+.chatParentClass{
+  position: relative;
+}
+.chatParentClass em{
 position: absolute;
 top: 0px;
 right: 0px;
@@ -112,4 +135,18 @@ display: block;
 /* for the X sign in the notifications.index blade file */
 #xbutton:hover {
   cursor: pointer;
+}
+
+
+/* for adding the skills in the create skills page*/
+.bodyflex {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1%;
+  justify-content: center;
+  align-items: center;
+}
+
+#rowAdder {
+  margin-left: 17px;
 }

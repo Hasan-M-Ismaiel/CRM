@@ -13,6 +13,7 @@
             @can('user_access')<li class="nav-item"><a class="nav-link" href="{{ route('admin.clients.index') }}">Clients</a></li>@endcan
             @can('user_access')<li class="nav-item"><a class="nav-link" href="{{ route('admin.projects.index') }}">Projects</a></li>@endcan
             @can('user_access')<li class="nav-item"><a class="nav-link" href="{{ route('admin.tasks.index') }}">Tasks</a></li>@endcan
+            @can('user_access')<li class="nav-item"><a class="nav-link" href="{{ route('admin.skills.index') }}">Skills</a></li>@endcan
         </ul>
         <ul class="header-nav ms-auto">
             <li class="nav-item">
@@ -36,20 +37,41 @@
                 <svg class="icon icon-lg">
                     <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-list-rich') }}"></use>
                 </svg></a></li>
-            <li class="nav-item"><a class="nav-link" href="#">
-                <svg class="icon icon-lg">
-                    <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-envelope-open') }}"></use>
-                </svg></a></li>
+            <li class="nav-item">
+                <a class="nav-link chatParentClass" href="#">
+                    <svg width="25" height="25">
+                        <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-chat-bubble') }}"></use>
+                    </svg>
+                    <em id = "num_of_messages" class="badge bg-danger text-white px-2 rounded-4">1</em>
+                </a>
+            </li>
         </ul>
         <ul class="header-nav ms-3">
             <li class="nav-item dropdown">
-                <a class="nav-link py-0" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                <a class="nav-link py-0 imageParentClass" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     @if(Auth::user()->profile && Auth::user()->profile->getFirstMediaUrl("profiles"))
-                        <div class="avatar avatar-md"><img class="avatar-img" src='{{ Auth::user()->profile->getFirstMediaUrl("profiles") }}' alt="user@email.com" /></div>
+                        <div class="avatar avatar-md">
+                            <img class="avatar-img" src='{{ Auth::user()->profile->getFirstMediaUrl("profiles") }}' alt="user@email.com" />
+                        </div>
+                        <span class="ms-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                                <circle cx="8" cy="8" r="8"/>
+                            </svg>
+                        </span>
                     @elseif(Auth::user()->getFirstMediaUrl("users"))
                         <div class="avatar avatar-md"><img class="avatar-img" src='{{ Auth::user()->getMedia("users")[0]->getUrl("thumb") }}' alt="user@email.com" /></div>
+                        <span class="ms-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                                <circle cx="8" cy="8" r="8"/>
+                            </svg>
+                        </span>
                     @else 
-                    <div class="avatar avatar-md"><img class="avatar-img" src="{{ asset('images/avatar.png') }}" alt="user@email.com"></div>
+                        <div class="avatar avatar-md"><img class="avatar-img" src="{{ asset('images/avatar.png') }}" alt="user@email.com"></div>
+                        <span class="ms-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                                <circle cx="8" cy="8" r="8"/>
+                            </svg>
+                        </span>
                     @endif
                 </a>
                 <div class="dropdown-menu dropdown-menu-end pt-0">
