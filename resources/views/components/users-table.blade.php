@@ -14,12 +14,12 @@
     <tbody>
         @foreach ($users as $user)
             <tr>
-                <th scope="row">{{ $user->id }}</th>
-                <td><a href="{{ route('admin.users.show', $user->id) }}" >{{ $user->name }} </a></td>
-                <td>{{ $user->email  }}...</td>
-                <td>{{ $user->getRoleNames()->get('0') }}</td>
-                <td>{{ $user->created_at->diffForHumans() }}</td>
-                <td>
+                <th scope="row" class="align-middle">{{ $user->id }}</th>
+                <td class="align-middle"><a href="{{ route('admin.users.show', $user->id) }}" >{{ $user->name }} </a></td>
+                <td class="align-middle">{{ $user->email  }}...</td>
+                <td class="align-middle">{{ $user->getRoleNames()->get('0') }}</td>
+                <td class="align-middle">{{ $user->created_at->diffForHumans() }}</td>
+                <td class="align-middle">
                     <div style="display: flex;">
                         <a type="button" class="btn btn-primary m-1" href="{{ route('admin.users.show', $user->id) }}" role="button">Show</a>
                         <a type="button" class="btn btn-secondary m-1" href="{{ route('admin.users.edit', $user->id) }}" role="button">Edit</a>

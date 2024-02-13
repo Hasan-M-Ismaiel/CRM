@@ -55,6 +55,14 @@
             </a>
         </li>
         <li class="nav-item">
+            <a class="nav-link" href="{{ route('admin.skills.index') }}">
+                <svg class="nav-icon">
+                <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-settings') }}"></use>
+                </svg> 
+                Skills
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="#submenu2" data-bs-toggle="collapse" class="nav-link dropdown-toggle">
                 <svg class="nav-icon">
                 <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-chat-bubble') }}"></use>

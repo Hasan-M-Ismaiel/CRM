@@ -31,7 +31,7 @@
                                     </div>
                                     <div class="m-4">
                                         @can('user_edit')<a class="btn btn-primary" href="{{ route('admin.users.edit', $user) }}" role="button">Edit</a>@endcan
-                                        @can('user_edit')<a class="btn btn-danger m-1" type="button"
+                                        @can('user_delete')<a class="btn btn-danger m-1" type="button"
                                                 onclick="if (confirm('Are you sure?') == true) {
                                                             document.getElementById('delete-item').submit();
                                                             event.preventDefault();

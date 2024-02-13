@@ -115,9 +115,22 @@
                         </div>
                         <!-- select avatar -->
                         <div class="col-md-6">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
-                                Select Avatar
-                            </button>
+                            <div class="row">
+                                <div class="col-6">
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+                                        Select Avatar
+                                    </button>
+                                </div>
+                                <div class="col-6 text-right">
+                                    @if(Auth::user()->profile && Auth::user()->profile->getFirstMediaUrl("profiles"))
+                                        <div  class="avatar avatar-md" data-bs-toggle="modal" data-bs-target="#myModal"><img class="avatar-img" id="image_thumb" src='{{ Auth::user()->profile->getFirstMediaUrl("profiles") }}' alt="user@email.com" /></div>
+                                    @elseif(Auth::user()->getFirstMediaUrl("users"))
+                                        <div  class="avatar avatar-md" data-bs-toggle="modal" data-bs-target="#myModal"><img class="avatar-img" id="image_thumb" src='{{ Auth::user()->getMedia("users")[0]->getUrl("thumb") }}' alt="user@email.com" /></div>
+                                    @else 
+                                        <div  class="avatar avatar-md" data-bs-toggle="modal" data-bs-target="#myModal"><img class="avatar-img" id="image_thumb" src="{{ asset('images/avatar.png') }}" alt="user@email.com"></div>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
                         <!-- The Modal -->
                         <div class="modal fade" id="myModal">
@@ -132,48 +145,48 @@
                                     <div class="modal-body row g-3 ">
                                         <div class="row">
                                             <div class="col-6 text-center">
-                                                <div type="button" data-bs-dismiss="modal" onclick='document.getElementById("avatar_image").value="1"; alert("the avatar has been selected");'>
+                                                <div type="button" data-bs-dismiss="modal" onclick='document.getElementById("avatar_image").value="1"; document.getElementById("image_thumb").src="{{ asset('assets/avatars_basic/1.jpg') }}";'>
                                                     <img src="{{ asset('assets/avatars_basic/1.jpg') }}" alt="here is here" width="125" height="125">
                                                 </div>
                                             </div>
                                             <div class="col-6 text-center">
-                                                <div type="button" data-bs-dismiss="modal" onclick='document.getElementById("avatar_image").value="2"; alert("the avatar has been selected")'>
+                                                <div type="button" data-bs-dismiss="modal" onclick='document.getElementById("avatar_image").value="2"; document.getElementById("image_thumb").src="{{ asset('assets/avatars_basic/2.jpg') }}";'>
                                                     <img src="{{ asset('assets/avatars_basic/2.jpg') }}" alt="here is here" width="125" height="125">
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-6 text-center">
-                                                <div type="button" data-bs-dismiss="modal" onclick='document.getElementById("avatar_image").value="3"; alert("the avatar has been selected")'>
+                                                <div type="button" data-bs-dismiss="modal" onclick='document.getElementById("avatar_image").value="3"; document.getElementById("image_thumb").src="{{ asset('assets/avatars_basic/3.jpg') }}";'>
                                                     <img src="{{ asset('assets/avatars_basic/3.jpg') }}" alt="here is here" width="125" height="125">
                                                 </div>
                                             </div>
                                             <div class="col-6 text-center">
-                                                <div type="button" data-bs-dismiss="modal" onclick='document.getElementById("avatar_image").value="4"; alert("the avatar has been selected")'>
+                                                <div type="button" data-bs-dismiss="modal" onclick='document.getElementById("avatar_image").value="4"; document.getElementById("image_thumb").src="{{ asset('assets/avatars_basic/4.jpg') }}";'>
                                                     <img src="{{ asset('assets/avatars_basic/4.jpg') }}" alt="here is here" width="125" height="125">
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-6 text-center">
-                                                <div type="button" data-bs-dismiss="modal" onclick='document.getElementById("avatar_image").value="5"; alert("the avatar has been selected")'>
+                                                <div type="button" data-bs-dismiss="modal" onclick='document.getElementById("avatar_image").value="5"; document.getElementById("image_thumb").src="{{ asset('assets/avatars_basic/5.jpg') }}";'>
                                                     <img src="{{ asset('assets/avatars_basic/5.jpg') }}" alt="here is here" width="125" height="125">
                                                 </div>
                                             </div>
                                             <div class="col-6 text-center">
-                                                <div type="button" data-bs-dismiss="modal" onclick='document.getElementById("avatar_image").value="6"; alert("the avatar has been selected")'>
+                                                <div type="button" data-bs-dismiss="modal" onclick='document.getElementById("avatar_image").value="6"; document.getElementById("image_thumb").src="{{ asset('assets/avatars_basic/6.jpg') }}";'>
                                                     <img src="{{ asset('assets/avatars_basic/6.jpg') }}" alt="here is here" width="125" height="125">
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-6 text-center">
-                                                <div type="button" data-bs-dismiss="modal" onclick='document.getElementById("avatar_image").value="7"; alert("the avatar has been selected")'>
+                                                <div type="button" data-bs-dismiss="modal" onclick='document.getElementById("avatar_image").value="7"; document.getElementById("image_thumb").src="{{ asset('assets/avatars_basic/7.jpg') }}";'>
                                                     <img src="{{ asset('assets/avatars_basic/7.jpg') }}" alt="here is here" width="125" height="125">
                                                 </div>
                                             </div>
                                             <div class="col-6 text-center">
-                                                <div type="button" data-bs-dismiss="modal" onclick='document.getElementById("avatar_image").value="8"; alert("the avatar has been selected")'>
+                                                <div type="button" data-bs-dismiss="modal" onclick='document.getElementById("avatar_image").value="8"; document.getElementById("image_thumb").src="{{ asset('assets/avatars_basic/8.jpg') }}";'>
                                                     <img src="{{ asset('assets/avatars_basic/8.jpg') }}" alt="here is here" width="125" height="125">
                                                 </div>
                                             </div>

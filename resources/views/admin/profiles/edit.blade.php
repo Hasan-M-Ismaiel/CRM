@@ -97,11 +97,11 @@
                             <textarea id="description" name="description" class="form-control" aria-label="With textarea">{{$profile->description}}</textarea>
                         </div>
                         <!--image-->
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <input id="image" name="image" class="form-control" type="file">  
                         </div>
                         <!-- select avatar -->
-                        <div class="col-md-7">
+                        <div class="col-md-6">
                             <div class="row">
                                 <div class="col-6">
                                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">

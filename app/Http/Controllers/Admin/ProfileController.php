@@ -34,12 +34,13 @@ class ProfileController extends Controller
     public function create()
     {
         // $this->authorize('create', User::class);
-        if(!auth()->user()->has('profile')){
+
+        if(auth()->user()->profile == null){
             return view('admin.profiles.create', [
                 'page' => 'Creating profile',
             ]);
         } else {
-            return redirect()->route('admin.profiles.show', auth()->user->profile->id)->with('message', 'you are already have profile you can edite it');;
+            return redirect()->route('admin.profiles.show', auth()->user())->with('message', 'you are already have profile you can edite it');;
         }
     }
 
@@ -64,7 +65,7 @@ class ProfileController extends Controller
             $profile->addMedia($pathToFile)->toMediaCollection('profiles');
         }
 
-        return redirect()->route('admin.profiles.show', $profile)->with('message', 'the profile has been created sucessfully');;
+        return redirect()->route('admin.profiles.show', $profile->user)->with('message', 'the profile has been created sucessfully');;
     }
 
     /**
@@ -74,7 +75,7 @@ class ProfileController extends Controller
     {
         // $this->authorize('view', $user);
         $user = User::findOrFail($id);
-        if($user->has('profile')){
+        if($user->profile != null){
             $profile = $user->profile()->get()->first();
 
             return view('admin.profiles.show', [
@@ -121,7 +122,7 @@ class ProfileController extends Controller
             $profile->addMedia($pathToFile)->toMediaCollection('profiles');
         }
 
-        return redirect()->route('admin.profiles.show', $profile)->with('message', 'the profile has been updated sucessfully');;
+        return redirect()->route('admin.profiles.show', $profile->user)->with('message', 'the profile has been updated sucessfully');;
     }
 
     /**
@@ -132,6 +133,6 @@ class ProfileController extends Controller
         // $this->authorize('delete');
 
         $profile->delete();
-        return redirect()->route('admin.profiles.index')->with('message','the profile has been deleted successfully');
+        return redirect()->route('admin.profiles.create')->with('message','the profile has been deleted successfully');
     }
 }
