@@ -42,12 +42,15 @@
                 </svg></a></li>
         </ul>
         <ul class="header-nav ms-3">
-            <li class="nav-item dropdown"><a class="nav-link py-0" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                @if(Auth::user()->getFirstMediaUrl("users"))
-                    <div class="avatar avatar-md"><img class="avatar-img" src='{{ Auth::user()->getFirstMediaUrl("users") }}' alt="user@email.com" /></div>
-                @else
+            <li class="nav-item dropdown">
+                <a class="nav-link py-0" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                    @if(Auth::user()->profile && Auth::user()->profile->getFirstMediaUrl("profiles"))
+                        <div class="avatar avatar-md"><img class="avatar-img" src='{{ Auth::user()->profile->getFirstMediaUrl("profiles") }}' alt="user@email.com" /></div>
+                    @elseif(Auth::user()->getFirstMediaUrl("users"))
+                        <div class="avatar avatar-md"><img class="avatar-img" src='{{ Auth::user()->getMedia("users")[0]->getUrl("thumb") }}' alt="user@email.com" /></div>
+                    @else 
                     <div class="avatar avatar-md"><img class="avatar-img" src="{{ asset('images/avatar.png') }}" alt="user@email.com"></div>
-                @endif
+                    @endif
                 </a>
                 <div class="dropdown-menu dropdown-menu-end pt-0">
                     <div class="dropdown-header bg-light py-2">
@@ -81,6 +84,10 @@
                         <svg class="icon me-2">
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-user') }}"></use>
                         </svg> Profile</a>
+                    <a class="dropdown-item" href="{{ route('admin.profiles.show', Auth::user()) }}">
+                        <svg class="icon me-2">
+                            <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-user') }}"></use>
+                        </svg> Account</a>
                     <a class="dropdown-item text-muted" style="pointer-events: none; cursor: default;" href="#">
                         <svg class="icon me-2">
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-settings') }}"></use>

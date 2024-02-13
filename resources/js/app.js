@@ -61,5 +61,3 @@ Echo.private(`App.Models.User.`+userID)
 });
 
 
-$(document).ready(function() {
-});

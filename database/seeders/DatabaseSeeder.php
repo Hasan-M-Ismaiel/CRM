@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Client;
+use App\Models\Profile;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
@@ -97,6 +98,7 @@ class DatabaseSeeder extends Seeder
         Client::factory()->times(10)->create();
         Project::factory()->times(10)->create();
         Task::factory()->times(10)->create();
+        Profile::factory()->times(11)->create();
 
         //for the pivot table
         for ($i=0; $i < 10 ; $i++){

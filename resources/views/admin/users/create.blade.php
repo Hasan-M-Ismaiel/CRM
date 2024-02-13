@@ -42,6 +42,7 @@
                     <div class="form-group mt-4">
                         <label class="form-label" for="image">Upload image</label>
                         <input type="file" name="image" class="form-control" id="image" />
+                        
                     </div>
                     <div class="form-group mt-4">
                         <label for="role_id">Role</label>

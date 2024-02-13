@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\TaskController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Models\Task;
 use App\Notifications\TaskAssigned;
 use Illuminate\Support\Facades\Route;
@@ -39,6 +40,7 @@ Route::middleware(['auth'])->group(function () {
         });
         
         Route::resource('users', UserController::class);
+        Route::resource('profiles', ProfileController::class);
         Route::resource('projects', ProjectController::class);
         Route::resource('tasks', TaskController::class);
         

@@ -134,12 +134,13 @@ class UserController extends Controller
         // remove all the roles form the user
         $user->roles()->detach();
         // assign the new role to the user
-        $user->assignRole($$request->role_id);
+        $role = Role::findById($request->role_id, 'web');
+        $user->assignRole($role);
 
         //check if the user update the image - if true - then delete the old one from the strorage
         if ($request->hasFile('image')) {
-                $user->clearMediaCollection('articles');
-                $user->addMediaFromRequest('image')->toMediaCollection('articles');
+                $user->clearMediaCollection('users');
+                $user->addMediaFromRequest('image')->toMediaCollection('users');
         }
 
         return redirect()->route('admin.users.index')->with('message', 'the user has been updated successfully');
