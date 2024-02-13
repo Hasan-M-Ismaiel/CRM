@@ -9,7 +9,7 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
 use App\Notifications\TaskAssigned;
-use Illuminate\Http\Request;
+use App\Notifications\TaskUnAssigned;
 use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
@@ -51,11 +51,11 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request)
     {
         //the authorization is in the form request class 
-        $AssignedUser = User::findOrFail($request->user_id);
+        $assignedUser = User::findOrFail($request->user_id);
 
         $task = Task::create($request->validated());
         
-        $AssignedUser->notify(new TaskAssigned($task));
+        $assignedUser->notify(new TaskAssigned($task));
 
         return redirect()->route('admin.tasks.index')->with('message', 'the task has been created sucessfully');;
     
@@ -67,6 +67,14 @@ class TaskController extends Controller
     public function show(Task $task)
     {
         $this->authorize('view', $task);
+
+        if(request('notificationId')){
+            auth()->user()->unreadNotifications
+            ->when(request('notificationId'), function ($query) {
+                return $query->where('id', request('notificationId'));
+            })
+            ->markAsRead();
+        }
 
         $task->with('project');
         return view('admin.tasks.show', [
@@ -88,8 +96,8 @@ class TaskController extends Controller
         // dd($project[0]->title);
         return view('admin.tasks.edit', [
             'projects' => $projects,
-            'task' => $task,    // ->with('user')
-            'taskproject' => $project[0], //because we get a collection 
+            'task' => $task,                // ->with('user')
+            'taskproject' => $project[0],  //because we get a collection 
             'page' => 'Editing Task',
         ]);
     }
@@ -99,15 +107,18 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        $this->authorize('update', $task);   
-        $AssignedUser = User::findOrFail($request->user_id);    
+        $this->authorize('update', $task);  
 
+        $assignedUser = User::findOrFail($request->user_id);    
         $oldTaskUserId = $task->user_id;
+        $oldUser = User::findOrFail($oldTaskUserId);
+
         $task->update($request->validated());
 
         // check if the user is not changed 
-        if($oldTaskUserId != $AssignedUser->id){
-            $AssignedUser->notify(new TaskAssigned($task));
+        if ($assignedUser->id != $oldTaskUserId){
+            $oldUser->notify(new TaskUnAssigned($task));
+            $assignedUser->notify(new TaskAssigned($task)); 
         }
         
         return redirect()->route('admin.tasks.index')->with('message', 'the task has been updated successfully');

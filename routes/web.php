@@ -5,7 +5,10 @@ use App\Http\Controllers\Admin\GetUsersController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\TaskController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\ProjectController as UserProjectController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Admin\ProfileController;
+use App\Models\Task;
+use App\Notifications\TaskAssigned;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,7 +40,23 @@ Route::middleware(['auth'])->group(function () {
         });
         
         Route::resource('users', UserController::class);
+        Route::resource('profiles', ProfileController::class);
         Route::resource('projects', ProjectController::class);
         Route::resource('tasks', TaskController::class);
+        
+        //notification
+        Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::post('notifications/mark_as_read', [NotificationController::class, 'markNotification'])->name('notifications.markNotification');
+        
+        
+        
     });
+});
+
+//for testing the notificaitons 
+Route::get('/notification', function () {
+    $task = Task::find(1);
+ 
+    return (new TaskAssigned($task))
+                ->toMail($task->user);
 });

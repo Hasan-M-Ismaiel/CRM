@@ -55,6 +55,37 @@
             </a>
         </li>
         <li class="nav-item">
+            <a href="#submenu2" data-bs-toggle="collapse" class="nav-link dropdown-toggle">
+                <svg class="nav-icon">
+                <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-chat-bubble') }}"></use>
+                </svg> 
+                Chats
+                <span class="ms-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                        <circle cx="8" cy="8" r="8"/>
+                    </svg>
+                </span>
+            </a>
+            <ul class="collapse nav flex-column ms-3 " id="submenu2" data-bs-parent="#menu">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.tasks.index') }}">
+                        <svg class="nav-icon">
+                        <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-chat-bubble') }}"></use>
+                        </svg> 
+                        Chats
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.tasks.index') }}">
+                        <svg class="nav-icon">
+                        <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-chat-bubble') }}"></use>
+                        </svg> 
+                        Chats
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item">
             <a class="nav-link" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">

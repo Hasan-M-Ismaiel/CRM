@@ -2,7 +2,8 @@
 
 namespace App\Notifications;
 
-use App\Models\Project;
+use App\Models\Task;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,17 +12,17 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 
-class ProjectAssigned extends Notification implements ShouldBroadcast, ShouldQueue
+class TaskUnAssigned extends Notification implements ShouldBroadcast, ShouldQueue
 {
     use Queueable;
 
-    protected $project;
+    protected $task;
     /**
      * Create a new notification instance.
      */
-    public function __construct(Project $project)
+    public function __construct(Task $task)
     {
-        $this->project = $project;
+        $this->task = $task;
     }
 
     public function viaConnections(): array
@@ -32,7 +33,6 @@ class ProjectAssigned extends Notification implements ShouldBroadcast, ShouldQue
             'broadcast' => 'sync',
         ];
     }
-    
     /**
      * Get the notification's delivery channels.
      *
@@ -40,7 +40,7 @@ class ProjectAssigned extends Notification implements ShouldBroadcast, ShouldQue
      */
     public function via(object $notifiable): array
     {
-        return ['database', 'broadcast', 'mail'];
+        return ['database','broadcast', 'mail'];
     }
 
     /**
@@ -48,9 +48,11 @@ class ProjectAssigned extends Notification implements ShouldBroadcast, ShouldQue
      */
     public function toDatabase(object $notifiable)
     {
-        return [
-            'project_id' => $this->project->id,
-            'project_title' => $this->project->title,
+        return [    
+            'task_id' => $this->task->id,
+            'task_title' => $this->task->title,
+            'project_id' => $this->task->project->id,
+            'project_name' => $this->task->project->title,
         ];
     }
 
@@ -63,27 +65,31 @@ class ProjectAssigned extends Notification implements ShouldBroadcast, ShouldQue
             $image = asset('images/avatar.png');
         } 
 
-        $linkeToProject = route('admin.projects.show', $this->project->id);
+        // project
+        $linkeToProject = route('admin.notifications.index', $this->task->project->id);
         return new BroadcastMessage([
-            'notification_type' => 'ProjectAssigned',
-            'notification_id' => $notifiable->unreadNotifications()->latest()->first()->id,
-            'project_id' => $this->project->id,
-            'project_title' => $this->project->title,
+            'notification_type' => 'TaskUnAssigned',
+            'notification_id' => $notifiable->unreadNotifications()->latest()->first()->id, //id for the last notification
+            // 'task_id' => $this->task->id,
+            'task_title' => $this->task->title,
+            'project_name' => $this->task->project->title,
             'project_manager_name' => Auth::user()->name,
             'project_manager_image' => $image,
-            'link_to_project' => $linkeToProject,
+            'link_to_task' => $linkeToProject,
         ]);
     }
-
+    
     public function toMail(object $notifiable): MailMessage
     {
-        $projectTitle = $this->project->title;
-        $url = url('/admin/projects/'.$this->project->id);
+        $taskTitle = $this->task->title;
+        $projectTitle = $this->task->project->title;
+        $url = url('/admin/projects/'.$this->task->project->id);
+        $unassignTime = Carbon::now();
         return (new MailMessage)
                     ->greeting('Hello!')
-                    ->line("You are now one of the team member of this project : {$projectTitle}")
-                    ->line("at:{$this->project->created_at}")
+                    ->line("The task: {$taskTitle} was removed from your  duties.")
+                    ->line("in the project: {$projectTitle} at:{$unassignTime->toDateTimeString()}")
                     ->action('View Project', $url)
-                    ->line('Wait for tasks in this project soon!');
+                    ->line('Wait for another task in this project soon!');
     }
 }

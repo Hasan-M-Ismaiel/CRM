@@ -17,6 +17,8 @@ return new class extends Migration
             $table->text('description');
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->nullable();   // it not should be nullable if the add it as required in the form request
+            // $table->date('deadline'); // this should be in the task 
+            // $table->string('status'); // this should be one of status: open - close - pending 
             $table->timestamps();
         });
     }

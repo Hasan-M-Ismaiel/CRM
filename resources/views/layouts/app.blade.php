@@ -37,14 +37,25 @@
 
         <!--ajax-->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        
+        <!--bootstrap icons-->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
+        <!--for the profile template-->
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
+        
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Vendors styles-->
         <link rel="stylesheet" href='{{ asset("css/vendors/simplebar.css") }}'>
         <link rel="stylesheet" href='{{ asset("vendors/simplebar/css/simplebar.css") }}'>
         <link href='{{ asset("css/style.css") }}' rel="stylesheet">
         <title>Hello, world!</title>
-        @stack('scripts')
+        @vite(['resources/js/app.js', 'resources/css/app.css', 'resources/css/profile.css'])
+
     </head>
     <body style>
         @include('partials.menu')
@@ -55,11 +66,20 @@
                     @yield('content')
                 </div>
             </div>
+            
+            <x-toast-notification />
+
             <footer class="footer">
                 <div><a href="https://coreui.io">CoreUI </a><a href="https://coreui.io">Bootstrap Admin Template</a> © 2023 creativeLabs.</div>
                 <div class="ms-auto">Powered by&nbsp;<a href="https://coreui.io/docs/">CoreUI UI Components</a></div>
             </footer>
         </div>
+        
          <x-flash />
+         
+         <script>
+            window.userID = {{ auth()->id() }};
+            window.NumberOfNotifications = {!! auth()->user()->unreadNotifications->count() !!};
+        </script>
     </body>
 </html>

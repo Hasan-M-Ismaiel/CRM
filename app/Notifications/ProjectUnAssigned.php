@@ -3,12 +3,16 @@
 namespace App\Notifications;
 
 use App\Models\Project;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Auth;
 
-class ProjectUnAssigned extends Notification
+class ProjectUnAssigned extends Notification implements ShouldBroadcast, ShouldQueue
 {
     use Queueable;
 
@@ -21,6 +25,15 @@ class ProjectUnAssigned extends Notification
         $this->project = $project;
     }
 
+    public function viaConnections(): array
+    {
+        return [
+            'mail' => 'database',
+            'database' => 'database',
+            'broadcast' => 'sync',
+        ];
+    }
+
     /**
      * Get the notification's delivery channels.
      *
@@ -28,7 +41,7 @@ class ProjectUnAssigned extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'broadcast', 'mail'];
     }
 
     /**
@@ -37,20 +50,36 @@ class ProjectUnAssigned extends Notification
     public function toDatabase(object $notifiable)
     {
         return [
-            'project_id_' => $this->project->id,
-            'project_title_' => $this->project->title,
+            'project_id' => $this->project->id,
+            'project_title' => $this->project->title,
         ];
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(object $notifiable): array
+    public function toBroadcast(object $notifiable): BroadcastMessage
     {
-        return [
-            //
-        ];
+        //get the image for the user that notify this notifiable
+        if(Auth::user()->getFirstMediaUrl("users")){
+            $image =  Auth::user()->getFirstMediaUrl("users");
+        } else {
+            $image = asset('images/avatar.png');
+        } 
+
+        return new BroadcastMessage([
+            'notification_type' => 'ProjectUnAssigned',
+            'notification_id' => $notifiable->unreadNotifications()->latest()->first()->id,
+            'project_title' => $this->project->title,
+            'project_manager_name' => Auth::user()->name,
+            'project_manager_image' => $image,
+        ]);
+    }
+    public function toMail(object $notifiable): MailMessage
+    {
+        $projectTitle = $this->project->title;
+        $unassignTime = Carbon::now();
+        return (new MailMessage)
+                    ->greeting('Hello!')
+                    ->line("Now you are out of this project's team: {$projectTitle}.")
+                    ->line("at:{$unassignTime->toDateTimeString()}")
+                    ->line('Wait for another projects to be in!');
     }
 }
