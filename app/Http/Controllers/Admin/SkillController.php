@@ -38,7 +38,7 @@ class SkillController extends Controller
     public function store(SkillStoreRequest $request)
     {
         foreach ($request->get('names') as $name) {
-            $skill = Skill::create([
+            Skill::create([
                 'name' => $name
             ]);
         }

@@ -7,6 +7,7 @@
             <th scope="col">Name</th>
             <th scope="col">Email</th>
             <th scope="col">Role</th>
+            <th scope="col">Profile</th>
             <th scope="col">Date</th>
             <th scope="col">Action</th>
         </tr>
@@ -18,6 +19,11 @@
                 <td class="align-middle"><a href="{{ route('admin.users.show', $user->id) }}" >{{ $user->name }} </a></td>
                 <td class="align-middle">{{ $user->email  }}...</td>
                 <td class="align-middle">{{ $user->getRoleNames()->get('0') }}</td>
+                @if($user->profile != null)
+                <td class="align-middle"><a href="{{ route('admin.profiles.show', $user->id) }}" >{{ $user->profile->nickname }} </a></td>
+                @else
+                <td class="align-middle"> # </td>
+                @endif
                 <td class="align-middle">{{ $user->created_at->diffForHumans() }}</td>
                 <td class="align-middle">
                     <div style="display: flex;">

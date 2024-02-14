@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Project extends Model
 {
@@ -25,6 +26,11 @@ class Project extends Model
     public function client ()
     {
         return $this->belongsTo(Client::class);
+    }
+
+    public function skills(): MorphToMany
+    {
+        return $this->morphToMany(Skill::class, 'skillable');
     }
 
     protected function statusOfProject(): Attribute

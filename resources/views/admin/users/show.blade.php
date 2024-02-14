@@ -28,6 +28,16 @@
                                             <br /><strong># of completed projects:</strong> {{ $user->numberOfCompletededProjects }}
                                             <br /><strong>stars:</strong> 0 
                                         </p>
+                                        @if($user->skills()->count() > 0)
+                                        <div>
+                                        <strong>skills:</strong>
+                                            @foreach ($user->skills as $skill)
+                                                <span class="badge bg-dark m-1">{{ $skill->name }}</span>
+                                            @endforeach
+                                        </div>
+                                        @else
+                                            #
+                                        @endif
                                     </div>
                                     <div class="m-4">
                                         @can('user_edit')<a class="btn btn-primary" href="{{ route('admin.users.edit', $user) }}" role="button">Edit</a>@endcan

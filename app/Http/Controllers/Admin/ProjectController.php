@@ -63,16 +63,13 @@ class ProjectController extends Controller
     {
         // $this->authorize('restore');
 
-        $assignedUsers = $request->input('assigned_users');
-        
-
+        $assignedUsers = $request->input('assigned_users'); // the ids of the added users 
         if( sizeof($assignedUsers)>0){
             $project = Project::create($request->validated());
             
             foreach ($assignedUsers as $assignedUser) {
                 $project->users()->attach($assignedUser);
             }
-            
         } else {
             return redirect()->back()->with('message', 'please do not leave the project without users');
         }
