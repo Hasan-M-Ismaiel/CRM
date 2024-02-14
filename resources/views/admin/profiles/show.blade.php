@@ -69,12 +69,16 @@
                             <a href="{{ url($profile->twitter_account) }}">twitter</a><br/>
                             <a href="{{ url($profile->github_account) }}">github</a><br/>
                             <p>SKILLS</p>
-                            <a href="">English level: A1</a><br/>
-                            <!--add the technees here / skills $profile->user->techniques-->
-                            <a href="">Web Developer</a><br/>
-                            <a href="">WordPress</a><br/>
-                            <a href="">WooCommerce</a><br/>
-                            <a href="">PHP, .Net</a><br/>
+                            @if($profile->user->skills()->count() > 0)
+                            <div>
+                            <strong>skills:</strong>
+                                @foreach ($profile->user->skills as $skill)
+                                    <span class="badge bg-dark m-1">{{ $skill->name }}</span>
+                                @endforeach
+                            </div>
+                            @else
+                                #
+                            @endif
                         </div>
                     </div>
                     <div class="col-md-8">

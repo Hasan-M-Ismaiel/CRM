@@ -49,11 +49,11 @@
                         <strong> choose users to work in this project:</strong>
                         <div class="row">
                             @foreach($users as $user)
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <input type="checkbox" id="user-{{$user->id}}" name="assigned_users[]" value="{{$user->id}}">
                                     <label for="user-{{$user->id}}"><a href="{{ route('admin.users.show', $user->id) }}" style="text-decoration: none;" >{{ $user->name }} </a></label>
                                 </div>
-                                @if ($loop->iteration % 2 == 0)
+                                @if ($loop->iteration % 3 == 0)
                                     </div>
                                     <div class="row">
                                 @endif

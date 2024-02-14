@@ -39,6 +39,8 @@ class UserUpdateRequest extends FormRequest
             // 'old_password'  => ['required', 'current_password'],   
             'password'      => ['required', 'confirmed', 'min:8',Password::defaults()],   
             'role_id'       => ['required', Rule::in($collection)],
+            "new_skills"    => "array",                  //not required but you should add something like - sometimes - if presented check about that 
+            "new_skills.*"  => "string|distinct|min:2", //least 2 characters
         ];
     }
 }

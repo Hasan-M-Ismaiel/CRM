@@ -53,10 +53,74 @@
                             @endforeach
                         </select>
                     </div>
+                    <hr>
+                    <div class="form-group mt-4">
+                        <strong> choose skills for this new user:</strong><span class="profile-edit-btn">optional</span>
+                        <div class="row mt-2">
+                            @foreach($skills as $skill)
+                                <div class="col-md-4">
+                                    <input type="checkbox" id="skill-{{$skill->id}}" name="assigned_skills[]" value="{{$skill->id}}">
+                                    <label for="skill-{{$skill->id}}"><a href="{{ route('admin.skills.show', $skill->id) }}" style="text-decoration: none;" >{{ $skill->name }} </a></label>
+                                </div>
+                                @if ($loop->iteration % 3 == 0)
+                                    </div>
+                                    <div class="row">
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                    <div class="form-group mt-4">
+                        <strong> add more:</strong>
+                        <div class="bodyflex">
+                            <div style="width:50%;">
+                                <div class="profile-edit-btn row">
+                                    <p class="text-center">do not leave any input field empty</p>
+                                </div>
+                                <div class="">
+                                    <div class="col-lg-12">
+                                        <div id="row">
+                                            <div class="input-group m-3">
+                                                <div class="input-group-prepend">
+                                                    <button class="btn btn-danger"
+                                                            id="DeleteRow"
+                                                            type="button">
+                                                        <i class="bi bi-trash"></i>
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                                <input name="new_skills[]" type="text" class="form-control m-input"> <!--the first one-->
+                                            </div>
+                                        </div>
+
+                                        <div id="newinput"></div>   <!--the added one-->
+                                        <button id="rowAdder" type="button" class="btn btn-dark">
+                                            <span class="bi bi-plus-square-dotted">
+                                            </span> ADD
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <button type="submit" class="btn btn-primary mt-5">Create</button>
                 </form>
             </div>
         </div> 
     </div>
 </div>
+<script type="text/javascript">
+    $("#rowAdder").click(function () {
+        newRowAdd =
+            '<div id="row"> <div class="input-group m-3">' +
+            '<div class="input-group-prepend">' +
+            '<button class="btn btn-danger" id="DeleteRow" type="button">' +
+            '<i class="bi bi-trash"></i> Delete</button> </div>' +
+            '<input name="new_skills[]" type="text" class="form-control m-input"> </div> </div>';
+
+        $('#newinput').append(newRowAdd);
+    });
+    $(".bodyflex").on("click", "#DeleteRow", function () {
+        $(this).parents("#row").remove();
+    })
+</script>
 @endsection

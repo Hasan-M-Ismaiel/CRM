@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserUpdateRequest;
+use App\Models\Skill;
 use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -40,9 +42,11 @@ class UserController extends Controller
         //     var_dump($role->name);
         //     dd($role->id);
         // }
+        $skills = Skill::all();
         return view('admin.users.create', [
             'page' => 'Creating user',
             'roles' => $roles,
+            'skills' => $skills,
         ]);
     }
 
@@ -69,6 +73,23 @@ class UserController extends Controller
         $role = Role::findById($request->role_id, 'web');
         $user->assignRole($role);
         
+        $assignedSkills = $request->input('assigned_skills'); // the ids of the added skills 
+        if( sizeof($assignedSkills)>0 ){
+            foreach ($assignedSkills as $assignedSkill) {
+                $user->skills()->attach($assignedSkill);
+            }
+        } 
+
+        $new_skills = $request->input('new_skills');
+        if( sizeof($new_skills)>0 ){
+            //creating the new skill and attach it to the new user
+            foreach ($request->get('new_skills') as $name) {
+                $skill = Skill::create([
+                    'name' => $name
+                ]);
+                $user->skills()->attach($skill);
+            }
+        }
         return redirect()->route('admin.users.index')->with('message', 'the user has been created sucessfully');;
     }
 
@@ -79,7 +100,7 @@ class UserController extends Controller
     {
         $this->authorize('view', $user);
 
-        $user->with('projects');
+        $user->with('projects', 'skills');
         return view('admin.users.show', [
             'page' => 'Showing User',
             'user' => $user,
@@ -103,12 +124,15 @@ class UserController extends Controller
         // here is the role id for user 
         $userRoleId = $rolesForUser->first()->id;
         
+        $skills = Skill::all();
+
         // return the edit view with the needed variables
         return view('admin.users.edit', [
             'page'       => 'Editing user',
             'roles'      => $roles,
             'userRoleId' => $userRoleId,
             'user'       => $user,
+            'skills'       => $skills,
         ]);
     }
 
@@ -141,6 +165,27 @@ class UserController extends Controller
         if ($request->hasFile('image')) {
                 $user->clearMediaCollection('users');
                 $user->addMediaFromRequest('image')->toMediaCollection('users');
+        }
+
+        $assignedSkills = $request->input('assigned_skills');
+        if(sizeof($assignedSkills)>0){
+            $user->skills()->detach();
+                foreach ($assignedSkills as $assignedSkill) {
+                    $user->skills()->attach($assignedSkill);
+                }
+        } else {
+            $user->skills()->detach();
+        }
+
+        $new_skills = $request->input('new_skills');
+        if( sizeof($new_skills)>0 ){
+            //creating the new skill and attach it to the new user
+            foreach ($request->get('new_skills') as $name) {
+                $skill = Skill::create([
+                    'name' => $name
+                ]);
+                $user->skills()->attach($skill);
+            }
         }
 
         return redirect()->route('admin.users.index')->with('message', 'the user has been updated successfully');

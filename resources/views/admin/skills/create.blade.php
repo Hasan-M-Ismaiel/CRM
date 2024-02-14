@@ -58,8 +58,6 @@
                             </div>
                         </div>
                     </div>
-
-
                     <!-- <div class="col-md-6">
                         <label for="name">Skill name</label>
                         <input type="text" name="name" class="form-control" id="name" placeholder="add the name of the skill" value="{{ old('nickname') }}">

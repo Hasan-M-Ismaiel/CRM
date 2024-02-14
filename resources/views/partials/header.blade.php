@@ -105,11 +105,11 @@
                     <a class="dropdown-item" href="{{ route('admin.users.show', Auth::user()) }}">
                         <svg class="icon me-2">
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-user') }}"></use>
-                        </svg> Profile</a>
+                        </svg> Account</a>
                     <a class="dropdown-item" href="{{ route('admin.profiles.show', Auth::user()) }}">
                         <svg class="icon me-2">
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-user') }}"></use>
-                        </svg> Account</a>
+                        </svg> Profile</a>
                     <a class="dropdown-item text-muted" style="pointer-events: none; cursor: default;" href="#">
                         <svg class="icon me-2">
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-settings') }}"></use>
