@@ -53,7 +53,45 @@
                     <div class="form-group mt-4" id="users">
                     </div>
 
+                    <div class="mt-3">
+                        <div class="row">
+                            <div class="col-4 text-center">
+                                <input type="radio" id="opened" name="status" value="0" checked>    <!--open-->
+                            </div>
+                            <div class="col-4 text-center">
+                                <input type="radio" id="pending" name="status" value="1">           <!--pending-->
+                            </div>
+                            <div class="col-4 text-center">
+                                <input type="radio" id="closed" name="status" value="2">            <!--close-->
+                            </div>
+                        </div>
+                        <div class="row mt-1">
+                            <div class="col-4 text-center">
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                                        <circle cx="8" cy="8" r="8"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="col-4 text-center">
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#f7dc08" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                                        <circle cx="8" cy="8" r="8"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="col-4 text-center">
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fb043c" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                                        <circle cx="8" cy="8" r="8"/>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
                     <button type="submit" class="btn btn-primary mt-5">Create</button>
+                    <a id="add-tasks" class="btn btn-primary mt-5" style="display: none;" >add multiple tasks</a>
                 </form>
             </div>
         </div>
@@ -63,6 +101,10 @@
 <script>
     $('#project_id').on('change', function(){
         // to clear the list if the user change the selected option again
+        project_id =$(this).val();
+        project_id.toString();
+        href="{{route('admin.taskGroups.create')}}";
+        addTaskHref = href.concat('?projectId='+project_id);
         $('#users').empty();
         $.ajax({
             url: "{{ route('admin.getUsers') }}",
@@ -73,6 +115,9 @@
             },
             success: function(result){
 	            $('#users').append(result);
+                
+                $('#add-tasks').show();
+                $('#add-tasks').prop('href', addTaskHref);
             }
         });
     });

@@ -74,6 +74,42 @@
                         </div>
                     </div>
 
+                    <div class="mt-3">
+                        <div class="row">
+                            <div class="col-4 text-center">
+                                <input type="radio" id="opened" name="status" value="opened" @if($task->status=="opened") checked @endif>    <!--open-->
+                            </div>
+                            <div class="col-4 text-center">
+                                <input type="radio" id="pending" name="status" value="pending" @if($task->status=="pending") checked @endif>           <!--pending-->
+                            </div>
+                            <div class="col-4 text-center">
+                                <input type="radio" id="closed" name="status" value="closed"@if($task->status=="closed") checked @endif>            <!--close-->
+                            </div>
+                        </div>
+                        <div class="row mt-1">
+                            <div class="col-4 text-center">
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                                        <circle cx="8" cy="8" r="8"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="col-4 text-center">
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#f7dc08" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                                        <circle cx="8" cy="8" r="8"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="col-4 text-center">
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fb043c" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                                        <circle cx="8" cy="8" r="8"/>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
 
                     <button type="submit" class="btn btn-primary mt-5">Update</button>
                 </form>

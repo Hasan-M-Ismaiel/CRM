@@ -110,11 +110,42 @@ class User extends Authenticatable implements HasMedia
 
     public function numberOfAssignedTasks():Attribute
     {
-        $numeberOfAssignedTasks = $this->tasks()
+        $numberOfAssignedTasks = $this->tasks()
                     ->count();
 
         return Attribute::make(
-            get: fn () => $numeberOfAssignedTasks
+            get: fn () => $numberOfAssignedTasks
+        );
+    }
+
+    public function numberOfPendingTasks():Attribute
+    {
+        $numberOfPendingTasks = $this->tasks()
+                    ->where('status', 'pending')
+                    ->count();
+
+        return Attribute::make(
+            get: fn () => $numberOfPendingTasks
+        );
+    }
+    public function numberOfOpenedTasks():Attribute
+    {
+        $numberOfOpenedTasks = $this->tasks()
+                    ->where('status', 'opened')
+                    ->count();
+
+        return Attribute::make(
+            get: fn () => $numberOfOpenedTasks
+        );
+    }
+    public function numberOfClosedTasks():Attribute
+    {
+        $numberOfClosedTasks = $this->tasks()
+                    ->where('status', 'closed')
+                    ->count();
+
+        return Attribute::make(
+            get: fn () => $numberOfClosedTasks
         );
     }
 }

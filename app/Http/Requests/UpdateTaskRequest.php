@@ -33,6 +33,7 @@ class UpdateTaskRequest extends FormRequest
             'description' => ['required', 'string', 'max:255'],
             'project_id' => ['required', Rule::in($projects)], 
             'user_id' => ['required', Rule::in($projectUsers)],
+            'status' => ['required', 'string'],
         ];
     }
 }

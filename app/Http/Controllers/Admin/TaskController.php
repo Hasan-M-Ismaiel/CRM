@@ -28,7 +28,7 @@ class TaskController extends Controller
         return view('admin.tasks.index', [
             'tasks' => $tasks,
             'page' => 'tasks List'
-        ]); 
+        ]);
     }
 
     /**
@@ -50,15 +50,15 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        //the authorization is in the form request class 
+        //the authorization is in the form request class
         $assignedUser = User::findOrFail($request->user_id);
 
         $task = Task::create($request->validated());
-        
+
         $assignedUser->notify(new TaskAssigned($task));
 
         return redirect()->route('admin.tasks.index')->with('message', 'the task has been created sucessfully');;
-    
+
     }
 
     /**
@@ -92,12 +92,12 @@ class TaskController extends Controller
 
         $projects = Project::all();
         $project = $task->project()->get();
-        //because we get a collection 
+        //because we get a collection
         // dd($project[0]->title);
         return view('admin.tasks.edit', [
             'projects' => $projects,
             'task' => $task,                // ->with('user')
-            'taskproject' => $project[0],  //because we get a collection 
+            'taskproject' => $project[0],  //because we get a collection
             'page' => 'Editing Task',
         ]);
     }
@@ -107,21 +107,23 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        $this->authorize('update', $task);  
+        $this->authorize('update', $task);
 
-        $assignedUser = User::findOrFail($request->user_id);    
+        $assignedUser = User::findOrFail($request->user_id);
         $oldTaskUserId = $task->user_id;
         $oldUser = User::findOrFail($oldTaskUserId);
 
         $task->update($request->validated());
+        
 
-        // check if the user is not changed 
+        // check if the user is not changed
         if ($assignedUser->id != $oldTaskUserId){
             $oldUser->notify(new TaskUnAssigned($task));
-            $assignedUser->notify(new TaskAssigned($task)); 
+            $assignedUser->notify(new TaskAssigned($task));
         }
-        
-        return redirect()->route('admin.tasks.index')->with('message', 'the task has been updated successfully');
+
+        // return redirect()->route('admin.tasks.index')->with('message', 'the task has been updated successfully');
+        return back()->with('message', 'the task has been updated successfully');
     }
 
     /**
@@ -133,6 +135,25 @@ class TaskController extends Controller
 
         $task->delete();
         return redirect()->route('admin.tasks.index')->with('message','the task has been deleted successfully');
-    
+
+    }
+
+    public function remove()
+    {
+        // $this->destroy( request()->task_id);
+        $task = Task::find(request()->task_id);
+        $task->delete();
+        return true;
+    }
+
+    public function accept()
+    {
+        $task = Task::find(request()->task_id);
+
+        $task->update([
+            'status' => "closed",
+        ]);
+
+        return back()->with('message', 'the task status has been updated');
     }
 }

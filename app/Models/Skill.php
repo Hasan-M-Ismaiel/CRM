@@ -36,4 +36,12 @@ class Skill extends Model
                     ->count();
         return $numeberOfAssignedusers>0 ? true : false; 
     }
+
+    public function checkifAssignedToProject(Project $project)
+    {
+        $numeberOfAssignedProjects = $this->projects()
+                    ->where('projects.id', $project->id)
+                    ->count();
+        return $numeberOfAssignedProjects>0 ? true : false; 
+    }
 }

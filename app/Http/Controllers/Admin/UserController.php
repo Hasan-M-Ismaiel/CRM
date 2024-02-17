@@ -74,14 +74,14 @@ class UserController extends Controller
         $user->assignRole($role);
         
         $assignedSkills = $request->input('assigned_skills'); // the ids of the added skills 
-        if( sizeof($assignedSkills)>0 ){
+        if($assignedSkills != null && sizeof($assignedSkills)>0 ){
             foreach ($assignedSkills as $assignedSkill) {
                 $user->skills()->attach($assignedSkill);
             }
         } 
 
         $new_skills = $request->input('new_skills');
-        if( sizeof($new_skills)>0 ){
+        if($new_skills != null && sizeof($new_skills)>0 ){
             //creating the new skill and attach it to the new user
             foreach ($request->get('new_skills') as $name) {
                 $skill = Skill::create([
@@ -90,7 +90,7 @@ class UserController extends Controller
                 $user->skills()->attach($skill);
             }
         }
-        return redirect()->route('admin.users.index')->with('message', 'the user has been created sucessfully');;
+        return redirect()->route('admin.users.index')->with('message', 'the user has been created sucessfully');
     }
 
     /**
@@ -168,7 +168,7 @@ class UserController extends Controller
         }
 
         $assignedSkills = $request->input('assigned_skills');
-        if(sizeof($assignedSkills)>0){
+        if($assignedSkills!= null && sizeof($assignedSkills)>0){
             $user->skills()->detach();
                 foreach ($assignedSkills as $assignedSkill) {
                     $user->skills()->attach($assignedSkill);
@@ -178,7 +178,7 @@ class UserController extends Controller
         }
 
         $new_skills = $request->input('new_skills');
-        if( sizeof($new_skills)>0 ){
+        if( $new_skills!= null && sizeof($new_skills)>0 ){
             //creating the new skill and attach it to the new user
             foreach ($request->get('new_skills') as $name) {
                 $skill = Skill::create([

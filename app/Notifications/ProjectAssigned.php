@@ -56,6 +56,8 @@ class ProjectAssigned extends Notification implements ShouldBroadcast, ShouldQue
 
     public function toBroadcast(object $notifiable): BroadcastMessage
     {
+        sleep(10);
+
         //get the image for the user that notify this notifiable
         if(Auth::user()->getFirstMediaUrl("users")){
             $image =  Auth::user()->getFirstMediaUrl("users");
@@ -65,7 +67,7 @@ class ProjectAssigned extends Notification implements ShouldBroadcast, ShouldQue
 
         $linkeToProject = route('admin.projects.show', $this->project->id);
         return new BroadcastMessage([
-            'notification_type' => 'ProjectAssigned',
+            'notification_type' => 'ProjectAssigned',   // the type of the notificaiton - this is for the frontend to distiguish the broadcast messages types
             'notification_id' => $notifiable->unreadNotifications()->latest()->first()->id,
             'project_id' => $this->project->id,
             'project_title' => $this->project->title,

@@ -91,7 +91,6 @@
                                                 <input name="new_skills[]" type="text" class="form-control m-input"> <!--the first one-->
                                             </div>
                                         </div>
-
                                         <div id="newinput"></div>   <!--the added one-->
                                         <button id="rowAdder" type="button" class="btn btn-dark">
                                             <span class="bi bi-plus-square-dotted">

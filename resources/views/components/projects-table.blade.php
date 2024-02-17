@@ -3,14 +3,16 @@
 <table class="table table-striped mt-2" style="height: 100px;">
     <thead>
         <tr>
-            <th scope="col">#</th>
-            <th scope="col">Title</th>
-            <th scope="col">Description</th>
-            <th scope="col">Deadline</th>
-            <th scope="col">Assined User</th>
-            <th scope="col">Owner</th>
-            <th scope="col">Status</th>
-            <th scope="col">Action</th>
+            <th scope="col" class="align-middle">#</th>
+            <th scope="col" class="align-middle">Title</th>
+            <th scope="col" class="align-middle">Description</th>
+            <th scope="col" class="align-middle">Deadline</th>
+            <th scope="col" class="align-middle">Required <br> techniques</th>
+            <th scope="col" class="align-middle">Assined<br> User</th>
+            <th scope="col" class="align-middle">Owner</th>
+            <th scope="col" class="align-middle">Tasks</th>
+            <th scope="col" class="align-middle">Status</th>
+            <th scope="col" class="align-middle">Action</th>
         </tr>
     </thead>
     <tbody>
@@ -33,9 +35,18 @@
                     {{ $project->deadline }}
                 </td>
                 <td class="align-middle">
+                    @if($project->skills()->count() > 0)
+                        @foreach ($project->skills as $skill)
+                            <span class="badge m-1" style="background: #673AB7;">{{ $skill->name }}</span>
+                        @endforeach
+                    @else
+                        #
+                    @endif
+                </td>
+                <td class="align-middle">
                     @if($project->users()->count() > 0)
                         @foreach ($project->users as $user)
-                            <span class="badge bg-dark m-1">{{ $user->name }}</span>
+                            <span class="badge m-1" style="background: #673AB7;">{{ $user->name }}</span>
                         @endforeach
                     @else
                         #
@@ -43,6 +54,9 @@
                 </td>
                 <td class="align-middle">
                     {{ $project->client->name }}
+                </td>
+                <td class="align-middle">
+                    {{ $project->tasks->count() }}
                 </td>
                 <td class="align-middle">
                     <x-project-status :status="$project->status" />
