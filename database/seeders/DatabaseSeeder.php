@@ -110,9 +110,26 @@ class DatabaseSeeder extends Seeder
         }
 
         //if you done want to use factory
-        // Skill::create([
-        //     'name' => 'java',
-        // ]);
+        Skill::create([
+            'name' => 'java',
+        ]);
+
+        Skill::create([
+            'name' => 'c++',
+        ]);
+        Skill::create([
+            'name' => 'laravel',
+        ]);
+        Skill::create([
+            'name' => 'php',
+        ]);
+        Skill::create([
+            'name' => 'python',
+        ]);
+        Skill::create([
+            'name' => 'english',
+        ]);
+
         
     }
 }

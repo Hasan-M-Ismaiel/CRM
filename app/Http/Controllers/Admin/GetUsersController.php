@@ -23,7 +23,7 @@ class GetUsersController extends Controller
             $var .= '<div class="row">';
             foreach ($project->users as $user){
                 $var .= '<div class="col-md-6">';
-                $var .= '<input type="radio"class="m-1" id="' . $user->id .'" name="user_id" value="' . $user->id . '">';
+                $var .= '<input type="radio" class="m-1" id="' . $user->id .'" name="user_id" value="' . $user->id . '">';
                 $var .= '<label for="user">' . $user->name . '</label><br>';
                 $var .= '</div>';
                 if ( $iterator % 2 == 0){

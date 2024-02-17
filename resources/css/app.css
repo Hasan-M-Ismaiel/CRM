@@ -31,6 +31,39 @@ right: 0px;
 display: block;
 }
 
+/* to make the X sign in the top right of the card in the show project  */
+.cardParentClass{
+  position: relative;
+}
+.cardParentClass .x-task-card{
+position: absolute;
+top: 0px;
+left: 270;
+display: block;
+}
+
+/* to make the edit option on the top right of the project card in the show project  */
+.cardParentEditClass{
+  position: relative;
+}
+.cardParentEditClass .x-project-card{
+position: absolute;
+top: 10px;
+left: 550;
+display: block;
+}
+
+/* to make the edit and delete options on the top right of the task card in the show task  */
+.cardTaskParentEditClass{
+  position: relative;
+}
+.cardTaskParentEditClass .x-task-card{
+position: absolute;
+top: 20px;
+left: 550px;
+display: block;
+}
+
 /* rining bell  in the notifications.index blade file */
 #ringing_bell{
   display:block;
@@ -150,3 +183,28 @@ display: block;
 #rowAdder {
   margin-left: 17px;
 }
+
+/* create buttons  - edit */
+.action-create-button {
+  width: 100px;
+  background: #673AB7;
+  font-weight: bold;
+  color: white;
+  border: 0 none;
+  border-radius: 0px;
+  cursor: pointer;
+  padding: 10px 5px;
+  margin: 10px 0px 10px 5px;
+  float: right;
+  font-family: FontAwesome;
+}
+
+.action-main-create-button {
+  background: #673AB7;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  overflow: none;
+  font-family: FontAwesome;
+}
+

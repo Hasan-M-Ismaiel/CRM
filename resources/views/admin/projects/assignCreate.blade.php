@@ -42,7 +42,15 @@
                                     <td><a href="{{ route('admin.users.show', $user->id) }}" >{{ $user->name }} </a></td>
                                     <td>{{ $user->email  }}...</td>
                                     <td>{{ $user->getRoleNames()->get('0') }}</td>
-                                    <td><span class="badge bg-info text-dark mx-1">java</span><span class="badge bg-info text-dark mx-1">c++</span><span class="badge bg-info text-dark mx-1">ajax</span></td>
+                                    <td>
+                                        @if($user->skills->count()>0)
+                                            @foreach ($user->skills as $skill)
+                                            <span class="badge bg-info text-dark mx-1">{{ $skill->name }}</span>
+                                            @endforeach
+                                        @else
+                                            #
+                                        @endif
+                                    </td>
                                     <td>
                                         <input type="checkbox" id="user-{{$user->id}}" name="assigned_users[]" value="{{$user->id}}" {{ $user->checkifAssignedToProject($project) ? '' : 'checked' }}>
                                     </td>

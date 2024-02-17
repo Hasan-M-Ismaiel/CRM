@@ -108,7 +108,7 @@
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary mt-5">Update</button>
+                    <button type="submit" class="action-create-button">Update</button>
                 </form>
             </div>
         </div> 

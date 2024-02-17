@@ -9,6 +9,7 @@
             <th scope="col">Project</th>
             <th scope="col">To User</th>
             <th scope="col">Start date</th>
+            <th scope="col">status</th>
             <th scope="col">Action</th>
         </tr>
     </thead>
@@ -40,6 +41,9 @@
                 <td class="align-middle">
                     {{ $task->created_at->diffForHumans() }}
                 </td>
+                <td class="align-middle">
+                    <x-task-status :status="$task->status" />
+                </td>   
                 <td class="align-middle">
                     <div style="display: flex;">
                         <a type="button" 

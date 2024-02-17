@@ -67,7 +67,7 @@
                 <svg class="nav-icon">
                 <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-chat-bubble') }}"></use>
                 </svg> 
-                Chats
+                Teams
                 <span class="ms-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">
                         <circle cx="8" cy="8" r="8"/>

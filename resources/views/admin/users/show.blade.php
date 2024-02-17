@@ -32,7 +32,7 @@
                                         <div>
                                         <strong>skills:</strong>
                                             @foreach ($user->skills as $skill)
-                                                <span class="badge bg-dark m-1">{{ $skill->name }}</span>
+                                                <span class="badge m-1" style="background: #673AB7;">{{ $skill->name }}</span>
                                             @endforeach
                                         </div>
                                         @else

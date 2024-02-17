@@ -72,7 +72,7 @@
           if(window.NumberOfNotifications - 1 == 0){
             $("#num_of_notification").remove();
           } else {
-            $("#num_of_notification").html(window.NumberOfNotifications - 1);
+            $("#num_of_notification").html(window.NumberOfNotifications - 1); //  is in the app.blade layout file
             window.NumberOfNotifications = window.NumberOfNotifications - 1;
           }
       })

@@ -17,11 +17,14 @@ class TaskFactory extends Factory
      */
     public function definition(): array
     {
+        $statuses = Array("opened","closed","pending");
+        $status = $statuses[array_rand($statuses)];
         return [
             'title' => fake()->sentence(),
             'description' => fake()->paragraph(),
             'project_id' => rand(1, 10),
             'user_id' => rand(1, 11),
+            'status' => $status,
         ];
     }
 }

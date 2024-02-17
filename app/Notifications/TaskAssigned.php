@@ -67,6 +67,8 @@ class TaskAssigned extends Notification implements ShouldBroadcast, ShouldQueue
 
     public function toBroadcast(object $notifiable): BroadcastMessage
     {
+        sleep(10);
+
         //get the image for the user that notify this notifiable
         if(Auth::user()->getFirstMediaUrl("users")){
             $image =  Auth::user()->getFirstMediaUrl("users");

@@ -8,16 +8,12 @@ use App\Http\Requests\ProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Client;
 use App\Models\Project;
+use App\Models\Skill;
 use App\Models\User;
 use App\Notifications\ProjectAssigned;
-use App\Notifications\ProjectUnAssigned;
-use App\Notifications\TaskAssigned;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
+use App\Services\MatcherUserProjectSkillsService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Validation\Rules\NotIn;
-use Symfony\Component\VarDumper\VarDumper;
 use App\Services\NotificationService;
 
 class ProjectController extends Controller
@@ -49,9 +45,11 @@ class ProjectController extends Controller
 
         $users = User::all();
         $clients = Client::all();
+        $skills = Skill::all();
         return view('admin.projects.create', [
             'users' => $users,
             'clients' => $clients,
+            'skills' => $skills,
             'page' => 'Creating project',
         ]);
     }
@@ -62,20 +60,44 @@ class ProjectController extends Controller
     public function store(ProjectRequest $request)
     {
         // $this->authorize('restore');
-
+        
         $assignedUsers = $request->input('assigned_users'); // the ids of the added users 
-        if( sizeof($assignedUsers)>0){
+        // if( $assignedUsers !=null && sizeof($assignedUsers)>0){
             $project = Project::create($request->validated());
             
-            foreach ($assignedUsers as $assignedUser) {
-                $project->users()->attach($assignedUser);
+            if($assignedUsers !=null && sizeof($assignedUsers)>0){
+                foreach ($assignedUsers as $assignedUser) {
+                    $project->users()->attach($assignedUser);
+                }
             }
-        } else {
-            return redirect()->back()->with('message', 'please do not leave the project without users');
-        }
         
-        Notification::send($project->users, new ProjectAssigned($project));
-        return redirect()->route('admin.projects.index')->with('message', 'the project has been created sucessfully');;
+            $assignedSkills = $request->input('assigned_skills'); // the ids of the added skills 
+            if( $assignedSkills !=null && sizeof($assignedSkills)>0 ){
+                foreach ($assignedSkills as $assignedSkill) {
+                    $project->skills()->attach($assignedSkill);
+                }
+            } 
+
+            $new_skills = $request->input('new_skills');
+            if( $new_skills !=null && sizeof($new_skills)>0 ){
+                //creating the new skill and attach it to the new user
+                foreach ($request->get('new_skills') as $name) {
+                    $skill = Skill::create([                            // ! note -  it should be find or create && and the name should be unique in the table
+                        'name' => $name
+                    ]);
+                    $project->skills()->attach($skill);
+                }
+            }
+            
+            Notification::send($project->users, new ProjectAssigned($project));
+
+            // return redirect()->route('admin.projects.index')->with('message', 'the project has been created sucessfully');;
+            return  redirect()->route('admin.success_create_project.status', ['project'=>$project]);
+        // }
+        // back those to the uncomment - this is just for testing 
+        // } else {
+        //     return redirect()->back()->with('message', 'please do not leave the project without users');
+        // }
     }
 
     /**
@@ -106,13 +128,25 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         $this->authorize('update', $project);
+        
+        $requiredSkills = array();
+        // the skills for the project should not be null
+        foreach($project->skills as $skill){
+            array_push($requiredSkills, $skill->name);
+        }
 
-        $users = User::all();
+        $MatcherUserProjectSkills = new MatcherUserProjectSkillsService($requiredSkills);
+        $matchedUsers =  $MatcherUserProjectSkills->getMatchedUsersToProject();
+        $users = User::find($matchedUsers);
+
+        // $users = User::all();
         $clients = Client::all();
+        $skills = Skill::all();
         return view('admin.projects.edit', [
             'users' => $users,
             'clients' => $clients,
             'project' => $project,
+            'skills' => $skills,
             'page' => 'Editing Project',
         ]);
     }
@@ -131,7 +165,25 @@ class ProjectController extends Controller
             'client_id'   => $request->validated('client_id'),
         ]);
         
+        $assignedSkills = $request->input('assigned_skills'); // the ids of the added skills 
+        if( $assignedSkills !=null && sizeof($assignedSkills)>0 ){
+            foreach ($assignedSkills as $assignedSkill) {
+                $project->skills()->attach($assignedSkill);
+            }
+        } 
 
+        $new_skills = $request->input('new_skills');
+        if( $new_skills !=null && sizeof($new_skills)>0 ){
+            //creating the new skill and attach it to the new user
+            foreach ($request->get('new_skills') as $name) {
+                $skill = Skill::create([                            // ! note -  it should be find or create && and the name should be unique in the table
+                    'name' => $name
+                ]);
+                $project->skills()->attach($skill);
+            }
+        }
+
+        
         $assignedUsers = $request->input('assigned_users');
         $sendNotification = new NotificationService($project, $assignedUsers);
         $sendNotification->SendNotificationMessages();
