@@ -33,6 +33,11 @@ class Project extends Model
         return $this->morphToMany(Skill::class, 'skillable');
     }
 
+    public function team()
+    {
+        return $this->hasOne(Team::class);
+    }
+
     protected function statusOfProject(): Attribute
     {
         return Attribute::make(

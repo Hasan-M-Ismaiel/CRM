@@ -156,4 +156,95 @@ class TaskController extends Controller
 
         return back()->with('message', 'the task status has been updated');
     }
+
+    public function showTasks()
+    {
+        if(auth()->user()->hasRole('admin')){
+            $tasks = Task::all();
+        } else {
+            $user = Auth::user();
+            
+            // get all the tasks related to the  registered user 
+            $tasks = collect();
+            $projects = $user->projects()->get();
+            $projects->map(function (Project $project) use($tasks, $user) {
+                foreach($project->tasks as $task){
+                    if($task->user_id == $user->id){
+                        $tasks->add($task);
+                    }
+                }
+            });
+        }
+
+        // here is the rendering section 
+        $taskItems="";
+        
+        if($tasks != null && $tasks->count()>0){
+            $taskItems .= '<li class="nav-item has-submenu">
+                                <a class="nav-link" > 
+                                    <svg class="nav-icon">
+                                        <use xlink:href="'. asset('vendors/@coreui/icons/svg/free.svg#cil-chat-bubble').'"></use>
+                                    </svg>
+                                    Teams  
+                                    <span class="ms-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                                            <circle cx="8" cy="8" r="8"/>
+                                        </svg>
+                                    </span>
+                                </a>';
+            $taskItems .= '<ul class="submenu collapse">';
+            foreach($tasks as $task){
+                $taskItems .= '<li>';
+                
+                $taskItems .= '<a class="nav-link" href="'. route('admin.tasks.show', $task->id).'">';
+                $taskItems .= '<img alt="DP" class="rounded-circle img-fluid mr-3" width="25" height="25" src="' . asset('images/taskChat.png') .'" />'. $task->title;
+                $taskItems .= '<span class="ms-2">';
+                $taskItems .= '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">';
+                $taskItems .=   '<circle cx="8" cy="8" r="8"/>';
+                $taskItems .= '</svg>';
+                $taskItems .= '</span>';
+                $taskItems .= '</a>';
+                $taskItems .= '</li>';
+
+                $taskItems .= '<hr>';
+
+            }
+            $taskItems .= '</ul>';
+            $taskItems .= '</li>';
+        }else{
+            "";
+        }
+        
+        return json_encode(array($taskItems));
+    }
+
+    public function showTaskChat(Task $task)
+    {
+        $users = User::all();
+        return view('admin.tasks.showTaskChat', [
+            'task' => $task,
+            'users' => $users,
+        ]);
+    }
+
+    public function sendMessage ()
+    {
+
+        $message = request()->input('message');
+        $fromUser = request()->input('user_id');
+        $teamChat = request()->input('project_id');
+
+        $user = User::find($fromUser);
+        $team = Team::find($teamChat);
+
+        Message::create([
+            'team_id' => $team->id,
+            'user_id' => $user->id,
+            'message' => $message,
+        ]);
+        
+        MessageSent::dispatch($team,$user,$message);
+
+    }
+
 }

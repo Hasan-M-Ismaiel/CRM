@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('github_account');
             $table->string('twitter_account');
             $table->string('instagram_account');
-            $table->string('description');
+            $table->text('description');
             $table->timestamps();
         });
     }

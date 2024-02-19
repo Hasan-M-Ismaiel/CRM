@@ -81,6 +81,12 @@ class User extends Authenticatable implements HasMedia
         return $this->morphToMany(Skill::class, 'skillable');
     }
 
+    public function messages()
+    {
+        return $this->hasMay(Message::class);
+    }
+
+
     protected function numberOfAssignedProjects(): Attribute
     {
         $numeberOfAssignedProjects = $this->projects()->count();

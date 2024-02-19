@@ -5,10 +5,12 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Client;
+use App\Models\Message;
 use App\Models\Profile;
 use App\Models\Project;
 use App\Models\Skill;
 use App\Models\Task;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -100,6 +102,9 @@ class DatabaseSeeder extends Seeder
         Project::factory()->times(10)->create();
         Task::factory()->times(10)->create();
         Profile::factory()->times(11)->create();
+        Team::factory()->times(10)->create();   // note that the team id should be the same with the project id for each team 
+        Message::factory()->times(10)->create();
+
 
         //for the pivot table
         for ($i=0; $i < 10 ; $i++){
