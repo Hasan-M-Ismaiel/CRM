@@ -11,6 +11,7 @@ export default defineConfig({
                 'resources/css/createProject.css',
                 'resources/css/editProject.css',
                 'resources/css/radioButton.styl',
+                'resources/css/chat.css',
             ],
             refresh: true,
         }),

@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Client;
 use App\Models\Project;
 use App\Models\Skill;
+use App\Models\Team;
 use App\Models\User;
 use App\Notifications\ProjectAssigned;
 use App\Services\MatcherUserProjectSkillsService;
@@ -64,6 +65,16 @@ class ProjectController extends Controller
         $assignedUsers = $request->input('assigned_users'); // the ids of the added users 
         // if( $assignedUsers !=null && sizeof($assignedUsers)>0){
             $project = Project::create($request->validated());
+
+            //create the team Group that belongs to this project 
+            $team = Team::create([
+                'project_id' => $project->id,
+                'name' => 'team-'.$project->id,   // this is by default
+            ]);
+
+            // if ($request->hasFile('image')) {
+            //     $team->addMediaFromRequest('image')->toMediaCollection('teams');
+            // } 
             
             if($assignedUsers !=null && sizeof($assignedUsers)>0){
                 foreach ($assignedUsers as $assignedUser) {

@@ -8,10 +8,14 @@ use App\Http\Controllers\Admin\TaskController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\SkillController;
+use App\Http\Controllers\Admin\StatusMessagesController;
 use App\Http\Controllers\Admin\TaskGroupController;
+use App\Http\Controllers\Admin\TeamController;
+use App\Http\Controllers\Admin\TeamManagerController;
 use App\Http\Controllers\CreatingProjectStatusesController;
 use App\Http\Controllers\CreatingTasksStatusesController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\TestBroadcastController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -44,7 +48,7 @@ Route::middleware(['auth'])->group(function () {
             
             Route::post('getUsers', GetUsersController::class)->name('getUsers');
 
-            //skillsx
+            //skills
             Route::post('skills/getProjectsWithSkills', [SkillController::class, 'getProjectsWithSkills'])->name('skills.getProjectsWithSkills'); 
             Route::post('skills/getUsersWithSkills', [SkillController::class, 'getUsersWithSkills'])->name('skills.getUsersWithSkills'); 
             Route::resource('skills', SkillController::class); 
@@ -59,15 +63,32 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('users', UserController::class);
         Route::resource('profiles', ProfileController::class);
         Route::resource('projects', ProjectController::class);
+
+        // managing the tasks 
+        Route::post('tasks/sendMessage',[TaskController::class, 'sendMessage'])->name('tasks.sendMessage');
+        Route::get('tasks/showTaskChat/{task}',[TaskController::class, 'showTaskChat'])->name('tasks.showTaskChat');
+        Route::get('tasks/showTasks',[TaskController::class, 'showTasks'])->name('tasks.showTasks');
         Route::post('tasks/remove',[TaskController::class, 'remove'])->name('tasks.remove');
         Route::get('tasks/accept',[TaskController::class, 'accept'])->name('tasks.accept');
         Route::resource('tasks', TaskController::class);
+
+        //team manager controller 
+        Route::post('teams/sendMessage',[TeamController::class, 'sendMessage'])->name('teams.sendMessage');
+        Route::resource('teams', TeamController::class)->only('index','show')->name('teams.index', 'teams.show');
         
+        //Task messages manager controller 
+        // Route::post('teams/sendMessage',[TeamController::class, 'sendMessage'])->name('teams.sendMessage');
+        // Route::resource('teams', TeamController::class)->only('index','show')->name('teams.index', 'teams.show');
+
         //notification
         Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::post('notifications/mark_as_read', [NotificationController::class, 'markNotification'])->name('notifications.markNotification');
         
+        // this route is responsible for retrive the status message like - not found - success - error ----
+        Route::get('statuses', [StatusMessagesController::class,'notFound'])->name('statuses.notFound');
+
         
+        Route::get('test', [TestBroadcastController::class,'sendbroadcast']);
     });
 });
 
