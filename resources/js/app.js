@@ -1,5 +1,6 @@
 import './bootstrap';
 
+//for the notifications 
 Echo.private(`App.Models.User.`+userID)
     .notification((notification) => {
         if(notification['notification_type'] == 'TaskAssigned'){
@@ -56,19 +57,22 @@ Echo.private(`App.Models.User.`+userID)
             //update the number of notification on the screen 
             $("#num_of_notification").html(window.NumberOfNotifications + 1);
             window.NumberOfNotifications = window.NumberOfNotifications +1 ;
+        }else if (notification['notification_type'] == 'TaskWaitingNotification'){
+            $("#toast_link_to_notification_target").attr("href",notification['link_to_task']+'?notificationId='+notification['notification_id']);
+            $("#toast_image").attr("src",notification['project_manager_image']);
+            $("#toast_project_manager_name").html(notification['project_manager_name']);
+            $("#toast_title").html(" there is a task pending and waiting to be closed");
+            $("#toast_body").html(" there is a task pending and waiting to be closed from project"+notification['project_title']);
+            alert()
+            $(".toast").toast('show');
+            //update the number of notification on the screen 
+            $("#num_of_notification").html(window.NumberOfNotifications + 1);
+            window.NumberOfNotifications = window.NumberOfNotifications +1 ;
         }
-        
 });
 
 
-//${this.user.id} i think this is how you can get the user id - this is real and worked in my opinoin
-
-// Echo.private(`teams.${this.user.id}`)
-//     .listen('.PostUpdated', (e) => {
-//         console.log(e.model);
-//     });
-
-
+//for the team channel messages
 window.projectIds.forEach(element => {
     Echo.private(`teams.`+element)
     .listen('MessageSent', (e) => {
@@ -95,6 +99,34 @@ window.projectIds.forEach(element => {
     });
 
 });
+
+//for the task channel messages
+window.taskIds.forEach(element => {
+    Echo.private(`tasks.`+element)
+    .listen('TaskMessageSent', (e) => {
+        alert();
+        var userimage = e.user_image_url;
+        var message = e.message;
+        var username = e.user_name;
+        var taskId = e.task_id;
+        var userprofile = e.user_profile_url;
+            
+        //current time for the message received
+        time1= new Date();
+        currentTime = time1.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
+
+        if(e.user_id == window.userID){ // is the auth // for user experince you can comment this first line and add the message from the sender side that is faster to render the sender message
+            var newMessageFromHere = $('<div class="chat-message-right pb-4"> <div> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime+'</div> </div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div> '+ message+ '</div></div>');
+        }else{
+            var newMessageFromHere = $('<div class="chat-message-left pb-4"> <div> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime+'</div> </div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div> '+ message+ '</div></div>');
+        }
+
+        //append the message to UI
+        $('#parenttaskmessages').append(newMessageFromHere);
+    });
+
+});
+
 
 
     

@@ -58,12 +58,14 @@ class ProjectAssigned extends Notification implements ShouldBroadcast, ShouldQue
     {
         sleep(10);
 
-        //get the image for the user that notify this notifiable
-        if(Auth::user()->getFirstMediaUrl("users")){
-            $image =  Auth::user()->getFirstMediaUrl("users");
-        } else {
-            $image = asset('images/avatar.png');
-        } 
+        // the auth here is the admin because he is the only one who is able to fire the notification.
+        if(Auth::user()->profile && Auth::user()->profile->getFirstMediaUrl("profiles")){
+            $image =  Auth::user()->profile->getFirstMediaUrl("profiles");
+        }elseif(Auth::user()->getFirstMediaUrl("users")){
+            $image =  Auth::user()->getMedia("users")[0]->getUrl("thumb");
+        }else{
+            $image =  asset('images/avatar.png');
+        }
 
         $linkeToProject = route('admin.projects.show', $this->project->id);
         return new BroadcastMessage([

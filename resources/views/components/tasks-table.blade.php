@@ -8,7 +8,7 @@
             <th scope="col">Description</th>
             <th scope="col">Project</th>
             <th scope="col">To User</th>
-            <th scope="col">Start date</th>
+            <th scope="col">Start</th>
             <th scope="col">status</th>
             <th scope="col">Action</th>
         </tr>
@@ -26,18 +26,36 @@
                        style="text-decoration: none;">{{ $task->title }}</a>
                 </td>
                 <td class="align-middle">
-                    {{ substr($task->description, 0, 50) }}...
+                    {{ substr($task->description, 0, 15) }}...
                 </td>
                 <td class="align-middle">
                     <a href="{{ route('admin.projects.show', $task->project->id) }}" 
                        style="text-decoration: none;">{{ $task->project->title }}</a>
                 </td>
+                
                 <td class="align-middle">
-                    <span class="badge">
-                        <a href="{{ route('admin.users.show', $task->user->id) }}" 
-                           style="text-decoration: none;" >{{ $task->user->name }}</a>
-                    </span>
+                    @if($task->user->profile)
+                        <a href="{{ route('admin.profiles.show', $task->user->id) }}" style="text-decoration: none;">
+                    @else
+                        <a href="{{ route('admin.statuses.notFound') }}" style="text-decoration: none;">
+                    @endif
+                    @if($task->user->profile && $task->user->profile->getFirstMediaUrl("profiles"))
+                        <img
+                        src='{{ $task->user->profile->getFirstMediaUrl("profiles") }}'
+                        alt="DP"  class="  rounded-circle img-fluid  border border-success shadow mb-1" width="35" height="35">
+                    @elseif($task->user->getFirstMediaUrl("users"))
+                    <img
+                        src='{{ $task->user->getMedia("users")[0]->getUrl("thumb") }}'
+                        alt="DP"  class="  rounded-circle img-fluid border border-success shadow mb-1" width="35" height="35">
+                    @else
+                    <img
+                        src='{{ asset("images/avatar.png") }}'
+                        alt="DP"  class="  rounded-circle img-fluid border border-success shadow mb-1" width="35" height="35">
+                    @endif
+                    <span class="badge m-1" style="background: #673AB7;">{{ $task->user->name }}</span>
+                    </a>
                 </td>
+
                 <td class="align-middle">
                     {{ $task->created_at->diffForHumans() }}
                 </td>

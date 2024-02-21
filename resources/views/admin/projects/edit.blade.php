@@ -23,13 +23,14 @@
                 <div class="row justify-content-center">
                     <div class="card-create-project pt-4 my-3 mx-5 px-5">
                         <h2 id="heading">{{ $page }}</h2>
-                        <p id="pcreateProject">Fill all form field to go to next step</p>
+                        <p id="pcreateProject">Fill all form field to update the project correctly</p>
                         <form id="msformEdit" action='{{ route("admin.projects.update", $project) }}' method="POST">
                             @csrf
                             @method('PATCH')
-                            <fieldset>
-                                <div class="form-card">
-                                    <div class="row">
+                            <!--project information-->
+                            <fieldset class="mt-5">
+                                <div class="form-card border px-2 pb-2">
+                                    <div class="row border px-3 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
                                         <div class="col-7">
                                             <h2 class="fs-title">Project Information:</h2>
                                         </div>
@@ -37,7 +38,7 @@
                                             <h2 class="steps">Step 1 - 4</h2>
                                         </div>
                                     </div>
-                                    <label class="fieldlabels" for="title">Title:</label>
+                                    <label class="fieldlabels mt-2" for="title">Title:</label>
                                     <input id="title" type="text" name="title" placeholder="add the title of the project" value="{{ $project->title }}"/>
                                     
                                     <label class="fieldlabels" for="description">Description:</label>
@@ -57,9 +58,10 @@
                                     </select>
                                 </div>
                             </fieldset>
-                            <fieldset>
-                                <div class="form-card">
-                                    <div class="row">
+                            <!--skills-->
+                            <fieldset class="mt-5">
+                                <div class="form-card border px-2 pb-2">
+                                    <div class="row border px-3 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
                                         <div class="col-7">
                                             <h2 class="fs-title">Alter required Skills:</h2>
                                         </div>
@@ -67,7 +69,7 @@
                                             <h2 class="steps">Step 2 - 4</h2>
                                         </div>
                                     </div>
-                                    <div class="row">
+                                    <div class="row mt-4">
                                         @foreach($skills as $skill)
                                             <div class="col-md-4 text-center" >
                                                 <div class="row">
@@ -88,27 +90,40 @@
                                     <div class="form-group mt-4">
                                         <div class="bodyflex">
                                             <div style="width:100%;">
-                                                <div class="border pe-5">
-                                                    <p id="pcreateProject" class="mt-4 ms-5 ">add more skills to the database, <span id="alarm" class="me-2"></span>please add value to all added inputes</p>
-                                                    <div class="col-lg-12 p-4">
-                                                        <div id="row">
-                                                            <div class="input-group m-3 ">
-                                                                <div class="input-group-prepend">
-                                                                    <button class="btn btn-danger"
-                                                                            id="DeleteRow"
-                                                                            type="button">
-                                                                        <i class="bi bi-trash"></i>
-                                                                        Delete
+                                                <div class="form-group mt-4">
+                                                    <div class="bodyflex">
+                                                        <div style="width:100%;">
+                                                            <div class="border pe-5">
+                                                                <p id="pcreateProject" class="mt-4 ms-5 ">add more skills to the database, 
+                                                                    <span>
+                                                                        <svg width="25" height="25">
+                                                                            <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-warning') }}"></use>
+                                                                        </svg>
+                                                                    </span>please add value to all added inputes</p>
+                                                                <div class="col-lg-12 p-4">
+                                                                    <!-- <div id="row" class="row">
+                                                                        <div class="col-md-2">
+                                                                            <div class="input-group-prepend pt-1">
+                                                                                <button class="btn btn-danger"
+                                                                                        id="DeleteRow"
+                                                                                        type="button">
+                                                                                    <i class="bi bi-trash"></i>
+                                                                                    Delete
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-10">
+                                                                            <input name="new_skills[]" type="text" class="form-control m-input new_skills"> 
+                                                                        </div>
+                                                                    </div> -->
+                                                                    <div id="newinput"></div>   <!--the added one-->
+                                                                    <button id="rowAdder" type="button" class="btn btn-dark">
+                                                                        <span class="bi bi-plus-square-dotted">
+                                                                        </span> ADD
                                                                     </button>
                                                                 </div>
-                                                                <input name="new_skills[]" type="text" class="form-control m-input new_skills"> <!--the first one-->
                                                             </div>
                                                         </div>
-                                                        <div id="newinput"></div>   <!--the added one-->
-                                                        <button id="rowAdder" type="button" class="btn btn-dark">
-                                                            <span class="bi bi-plus-square-dotted">
-                                                            </span> ADD
-                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -117,9 +132,9 @@
                                 </div>
                             </fieldset>
                             <button type="button" id="getUsers" class="btn btn-primary">Press To get Users</button>
-                            <fieldset>
-                                <div class="form-card">
-                                    <div class="row">
+                            <fieldset class="mt-5">
+                                <div class="form-card border px-2 pb-2">
+                                    <div class="row border px-3 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
                                         <div class="col-7">
                                             <h2 class="fs-title">Alter Users:</h2>
                                         </div>
@@ -127,7 +142,7 @@
                                             <h2 class="steps">Step 3 - 5</h2>
                                         </div>
                                     </div>
-                                    <div id="usersTable">
+                                    <div id="usersTable" class="mt-4">
                                         <table class="table table-striped mt-2">
                                             <thead>
                                                 <tr>
@@ -172,9 +187,9 @@
                                     <!-- <x-users-matched-table :users="$users" :project="$project"  /> -->
                                 </div>
                             </fieldset>
-                            <fieldset>
-                                <div class="form-card">
-                                    <div class="row">
+                            <fieldset class="mt-5">
+                                <div class="form-card border px-2 pb-5">
+                                    <div class="row border px-3 pb-5 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);" >
                                         <div class="col-7">
                                             <h2 class="fs-title">Alter project status:</h2>
                                         </div>
@@ -182,7 +197,7 @@
                                             <h2 class="steps">Step 5 - 5</h2>
                                         </div>
                                     </div>
-                                    <div class="mt-3">
+                                    <div class="mt-5  mb-5">
                                     @if($project->status)
                                         <input type="radio" name="status" id="close" value="true" checked />
                                         <input type="radio" name="status" id="open" value="false"/>
@@ -202,7 +217,7 @@
                                     @endif
                                     </div>
                                 </div>
-                                <input type="submit" type="button" class="next action-button" />
+                                <input type="submit" type="button" class="next action-button mt-5" />
                             </fieldset>
                         </form>
                     </div>
@@ -211,6 +226,7 @@
         </div>
     </div>
 </div>
+
 <!--Modal: modalPush-->
 <div class="modal fade" id="modalPush" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" style="display: none;">
   <div class="modal-dialog modal-notify modal-info" role="document">
@@ -234,14 +250,7 @@
         <p id="affectedUsers"></p>
 
       </div>
-
-      <!--Footer-->
-      <!-- <div class="modal-footer flex-center">
-        <a href="https://mdbootstrap.com/docs/standard/pro/" class="btn btn-info">Yes</a>
-        <a type="button" class="btn btn-outline-info waves-effect" data-dismiss="modal">No</a>
-      </div> -->
     </div>
-    <!--/.Content-->
   </div>
 </div>
 <!--Modal: modalPush-->
@@ -249,11 +258,11 @@
 <script type="text/javascript">
     $("#rowAdder").click(function () {
         newRowAdd =
-            '<div id="row"> <div class="input-group m-3">' +
-            '<div class="input-group-prepend">' +
+            '<div id="row" class="row"> <div class="col-md-2">' +
+            '<div class="input-group-prepend pt-1">' +
             '<button class="btn btn-danger" id="DeleteRow" type="button">' +
-            '<i class="bi bi-trash"></i> Delete</button> </div>' +
-            '<input name="new_skills[]" type="text" class="form-control m-input"> </div> </div>';
+            '<i class="bi bi-trash"></i> Delete</button> </div></div>' +
+            '<div class="col-md-10"><input name="new_skills[]" type="text" class="form-control m-input new_skills"> </div> </div>';
 
         $('#newinput').append(newRowAdd);
     });
@@ -298,12 +307,12 @@
             success: function(output){
                 var result = $.parseJSON(output);
                 if(result[0] =='affected'){
-                    $('#usersTable').append(result);  
+                    $('#usersTable').append(result[2]);  
                     $('#affectedUsers').append(result[1]);
                     $('#modalPush').modal('show'); 
                     // alert(result[0]);
                 }else if(result[0] == 'notAffected'){
-                    $('#usersTable').append(result);  
+                    $('#usersTable').append(result[2]);  
                 }
                 //  alert(result);
             }

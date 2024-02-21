@@ -20,7 +20,7 @@
                         <div class="row justify-content-center">
                             <div class="col-7 text-center">
                                 <h5 class="purple-text text-center">tasks has been created successfully</h5>
-                                <h5 class="purple-text text-center">Add Tasks another tasks to this project click <a href="{{route('admin.taskGroups.create', ['projectId' => $project])}}" >here</a>, or go <a href="{{route('admin.projects.index')}}" >home</a></h5>
+                                <h5 class="purple-text text-center">Add another tasks to this project click <a href="{{route('admin.taskGroups.create', ['projectId' => $project])}}" >here</a>, or go <a href="{{route('admin.projects.index')}}" >home</a></h5>
                             </div>
                         </div>
                     </div>

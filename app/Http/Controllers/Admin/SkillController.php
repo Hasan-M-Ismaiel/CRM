@@ -9,6 +9,7 @@ use App\Models\Project;
 use App\Services\MatcherUserProjectSkillsService;
 use App\Models\Skill;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class SkillController extends Controller
 {
@@ -107,8 +108,7 @@ class SkillController extends Controller
         // get the users for the project before editing 
         $project_id = request()->project_id;
         $project = Project::find($project_id);
-        $projectUsers = $project->users()->get();
-
+        
         // return $projectUsers;
 
         if($assigned_skills !=null){
@@ -120,14 +120,30 @@ class SkillController extends Controller
                 $requiredSkills = array_merge($requiredSkills, $new_skills);
             }
         } else {
-            return "";
+            return '';
         }
 
+        
         $MatcherUserProjectSkills = new MatcherUserProjectSkillsService($requiredSkills);
         $matchedUsers =  $MatcherUserProjectSkills->getMatchedUsersToProject();
 
+        
+
+
         // the users after editing skills in the edit project view  +  those are users that have the required skills (generally in the edit or create)
         $users = User::find($matchedUsers);
+        // Log::info($matchedUsers);
+        
+        Log::info($project);
+        //if we create a project but we dont add any skills
+        if($project == null && $users == null){
+            return '<h4 class="text-center mb-5" style="color: #673AB7;">no users have those skills hire some one &#128513; </h4> ';
+        }
+    
+        // if($project != null){
+        
+        // }
+        $projectUsers = $project->users()->get();
         
         if($users->count() > $projectUsers->count()){
             $diffUsers = $users->diff($projectUsers);
@@ -142,11 +158,11 @@ class SkillController extends Controller
         $status="notAffected";
         //$affectedUsers = $projectUsers->diff($diffUsers);
         if($affectedUsers !=null){
-            info($affectedUsers); //hasan2 + hasan3 
+            // info($affectedUsers); //hasan2 + hasan3 
             $status="affected";
         }
         
-
+        
         // rendering the table
         if($from == 'create'){
             $var = '<table class="table table-striped mt-2">

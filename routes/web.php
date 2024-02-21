@@ -70,6 +70,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('tasks/showTasks',[TaskController::class, 'showTasks'])->name('tasks.showTasks');
         Route::post('tasks/remove',[TaskController::class, 'remove'])->name('tasks.remove');
         Route::get('tasks/accept',[TaskController::class, 'accept'])->name('tasks.accept');
+        Route::get('tasks/markascompleted',[TaskController::class, 'markascompleted'])->name('tasks.markascompleted');
         Route::resource('tasks', TaskController::class);
 
         //team manager controller 

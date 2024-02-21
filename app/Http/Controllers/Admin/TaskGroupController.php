@@ -35,17 +35,16 @@ class TaskGroupController extends Controller
         $user_ids = $request->input('user_ids');
         $titles = $request->input('titles'); 
         $descriptions = $request->input('descriptions');
-        $status = $request->input('status'); 
         $statuses =array(); 
          
-        $counter = 1;
-        foreach ($user_ids as $user_id) {
-            $stingCounter = (string)$counter;
-            array_push($statuses, $stingCounter);
-            $counter=$counter+1; 
-        }
+        if( $user_ids !=null && sizeof($user_ids)>0 && $titles !=null && sizeof($titles)>0 && $descriptions !=null && sizeof($descriptions)>0 ){
+            $counter = 1;
+            foreach ($user_ids as $user_id) {
+                $stingCounter = (string)$counter;
+                array_push($statuses, $stingCounter);
+                $counter=$counter+1; 
+            }
 
-        if( $user_ids !=null && sizeof($user_ids)>0 && $titles !=null && sizeof($titles)>0 && $descriptions !=null && sizeof($descriptions)>0 && $statuses !=null && sizeof($statuses)>0){
             $counter = 0;
             foreach ($user_ids as $user_id) {
                 $task = Task::create([
