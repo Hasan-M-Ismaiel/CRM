@@ -22,4 +22,10 @@ class Task extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function taskMessages()
+    {
+        return $this->hasMany(TaskMessage::class);
+    }
+
 }

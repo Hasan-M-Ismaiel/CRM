@@ -10,11 +10,11 @@
                         <div class="row">
                             <div class="col">
                                 @if($task->status=="opened")
-                                <div class="card border-success cardTaskParentEditClass">
+                                <div  id="{{$task->id}}" class="card border-success cardTaskParentEditClass">
                                 @elseif($task->status=="pending")
-                                <div class="card border-warning cardTaskParentEditClass">
+                                <div  id="{{$task->id}}" class="card border-warning cardTaskParentEditClass">
                                 @elseif($task->status=="closed")
-                                <div class="card border-danger cardTaskParentEditClass">
+                                <div  id="{{$task->id}}" class="card border-danger cardTaskParentEditClass">
                                 @endif
                                     <div class="x-task-card">
                                         <div>@can('task_edit')<a class="text-secondary btn" style="text-decoration: none;" href="{{ route('admin.tasks.edit', $task) }}">Edit</a>@endcan</div>
@@ -54,6 +54,9 @@
                                             <br>
                                             <strong>for user:</strong><span class="badge"><a href="{{ route('admin.users.show', $task->user->id) }}" style="text-decoration: none;" >{{ $task->user->name }}</a></span>
                                             <br>
+                                            <div class="text-right" id="disable">
+                                                <a onclick="markascompleted({{$task->id}})">Mark as completed</a>
+                                            </div>
                                         <!-- maybe in the future this task could have a status or deleted -->
                                         </p>
                                     </div>
@@ -67,4 +70,28 @@
         </div>
     </div>
 </div>
+
+<script>
+    function markascompleted(taskId){
+
+        if (confirm('Are you sure?') == true) {
+            $.ajax({
+                url: "{{ route('admin.tasks.markascompleted') }}",
+                method: 'get',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    task_id: taskId,
+                },
+                success: function(result){
+                    document.getElementById(taskId).classList.replace("border-success", "border-warning");
+
+                    var pendingSpotLight = '<span id="spot_light"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#FFEA4A" class="bi bi-circle-fill" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8"/></svg></span> '
+                    $("#spot_light").replaceWith(pendingSpotLight); 
+                }
+            });
+        }
+    }
+
+</script>
 @endsection
+

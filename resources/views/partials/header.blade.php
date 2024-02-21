@@ -51,7 +51,7 @@
                 <a class="nav-link py-0 imageParentClass" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     @if(Auth::user()->profile && Auth::user()->profile->getFirstMediaUrl("profiles"))
                         <div class="avatar avatar-md">
-                            <img class="avatar-img" src='{{ Auth::user()->profile->getFirstMediaUrl("profiles") }}' alt="user@email.com" />
+                            <img class="avatar-img border border-success shadow mb-1" src='{{ Auth::user()->profile->getFirstMediaUrl("profiles") }}' alt="user@email.com" />
                         </div>
                         <span class="ms-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">
@@ -59,14 +59,14 @@
                             </svg>
                         </span>
                     @elseif(Auth::user()->getFirstMediaUrl("users"))
-                        <div class="avatar avatar-md"><img class="avatar-img" src='{{ Auth::user()->getMedia("users")[0]->getUrl("thumb") }}' alt="user@email.com" /></div>
+                        <div class="avatar avatar-md"><img class="avatar-img border border-success shadow mb-1" src='{{ Auth::user()->getMedia("users")[0]->getUrl("thumb") }}' alt="user@email.com" /></div>
                         <span class="ms-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">
                                 <circle cx="8" cy="8" r="8"/>
                             </svg>
                         </span>
                     @else 
-                        <div class="avatar avatar-md"><img class="avatar-img" src="{{ asset('images/avatar.png') }}" alt="user@email.com"></div>
+                        <div class="avatar avatar-md"><img class="avatar-img border border-success shadow mb-1" src="{{ asset('images/avatar.png') }}" alt="user@email.com"></div>
                         <span class="ms-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">
                                 <circle cx="8" cy="8" r="8"/>
@@ -144,10 +144,10 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb my-0 ms-2">
                 <li class="breadcrumb-item">
-                    <!-- if breadcrumb is single--><span>Hello</span>
+                    <!-- if breadcrumb is single--><span>Hello, {{auth()->user()->name}}</span>
                 </li>
                 <li class="breadcrumb-item active">
-                    <span> You could add notification flash here</span>
+                    <span> work today for tomorrow</span>
                 </li>
             </ol>
         </nav>

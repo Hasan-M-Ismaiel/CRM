@@ -2,33 +2,32 @@
 
 namespace App\Events;
 
-use App\Models\Team;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class MessageSent implements ShouldBroadcast
+class TaskMessageSent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
 
-    // this team has access to all users through project class - and access to the chat to get the chat token 
-    protected $team;
+    // this task has access to all users through project class - and access to the chat to get the chat token 
+    protected $task;
     protected $user;
     protected $message;
     /**
      * Create a new event instance.
      */
-    public function __construct(Team $team, User $user, String $message)
+    public function __construct(Task $task, User $user, String $message)
     {
         $this->user = $user;        
-        $this->team = $team;
+        $this->task = $task;
         $this->message = $message;
     }
 
@@ -40,7 +39,7 @@ class MessageSent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('teams.'.$this->team->id),
+            new PrivateChannel('tasks.'.$this->task->id),
         ];
     }
 
@@ -65,7 +64,7 @@ class MessageSent implements ShouldBroadcast
         }
 
         return [
-            'team_id'   => $this->team->id,
+            'task_id'   => $this->task->id,
             'user_name' => $this->user->name,
             'user_id' => $this->user->id,
             'user_profile_url' => $userProfileRoute, 

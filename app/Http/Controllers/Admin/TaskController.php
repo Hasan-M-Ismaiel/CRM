@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\TaskMessageSent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\TaskMessage;
 use App\Models\User;
 use App\Notifications\TaskAssigned;
 use App\Notifications\TaskUnAssigned;
+use App\Notifications\TaskWaitingNotification;
 use Illuminate\Support\Facades\Auth;
+
+use function PHPUnit\Framework\throwException;
 
 class TaskController extends Controller
 {
@@ -54,6 +59,8 @@ class TaskController extends Controller
         $assignedUser = User::findOrFail($request->user_id);
 
         $task = Task::create($request->validated());
+        $task->status = 'opened';
+        $task->save();
 
         $assignedUser->notify(new TaskAssigned($task));
 
@@ -176,46 +183,12 @@ class TaskController extends Controller
             });
         }
 
-        // here is the rendering section 
         $taskItems="";
-        
-        if($tasks != null && $tasks->count()>0){
-            $taskItems .= '<li class="nav-item has-submenu">
-                                <a class="nav-link" > 
-                                    <svg class="nav-icon">
-                                        <use xlink:href="'. asset('vendors/@coreui/icons/svg/free.svg#cil-chat-bubble').'"></use>
-                                    </svg>
-                                    Teams  
-                                    <span class="ms-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">
-                                            <circle cx="8" cy="8" r="8"/>
-                                        </svg>
-                                    </span>
-                                </a>';
-            $taskItems .= '<ul class="submenu collapse">';
-            foreach($tasks as $task){
-                $taskItems .= '<li>';
-                
-                $taskItems .= '<a class="nav-link" href="'. route('admin.tasks.show', $task->id).'">';
-                $taskItems .= '<img alt="DP" class="rounded-circle img-fluid mr-3" width="25" height="25" src="' . asset('images/taskChat.png') .'" />'. $task->title;
-                $taskItems .= '<span class="ms-2">';
-                $taskItems .= '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">';
-                $taskItems .=   '<circle cx="8" cy="8" r="8"/>';
-                $taskItems .= '</svg>';
-                $taskItems .= '</span>';
-                $taskItems .= '</a>';
-                $taskItems .= '</li>';
+        $var = $this->render($tasks,  $taskItems);
 
-                $taskItems .= '<hr>';
+        return json_encode(array($var));
 
-            }
-            $taskItems .= '</ul>';
-            $taskItems .= '</li>';
-        }else{
-            "";
-        }
-        
-        return json_encode(array($taskItems));
+
     }
 
     public function showTaskChat(Task $task)
@@ -232,19 +205,63 @@ class TaskController extends Controller
 
         $message = request()->input('message');
         $fromUser = request()->input('user_id');
-        $teamChat = request()->input('project_id');
+        $taskChat = request()->input('task_id');
 
         $user = User::find($fromUser);
-        $team = Team::find($teamChat);
+        $task = Task::find($taskChat);
 
-        Message::create([
-            'team_id' => $team->id,
+        TaskMessage::create([
+            'task_id' => $task->id,
             'user_id' => $user->id,
             'message' => $message,
         ]);
         
-        MessageSent::dispatch($team,$user,$message);
+        TaskMessageSent::dispatch($task,$user,$message);
 
+    }
+
+    public function render ($tasks, $taskItems)
+    {
+        if($tasks != null && $tasks->count()>0){
+            foreach($tasks as $task){
+                $taskItems .= '<a id="task" href="'.route('admin.tasks.showTaskChat', $task).'" style="text-decoration: none;" class="">';
+                $taskItems .= '<div class="row">';
+                $taskItems .= '<div class="col-4 text-right ">';
+                $taskItems .= '<img alt="DP" class="rounded-circle img-fluid" width="45" height="40" src="'. asset('images/taskChat.png') .'">';
+                $taskItems .= '</div>';
+                $taskItems .= '<div class="col-8">';
+                $taskItems .= '<h5 class="text-left text-md pt-2">'. substr($task->title, 0, 15) .'...</h5>';
+                $taskItems .= '</div>';
+                $taskItems .= '</div>';
+                $taskItems .= '</a>';
+            }
+        }else{
+            $taskItems = '<h4 class="text-center mb-5" style="color: #673AB7;">there is no tasks assigned to you so get rest now <span style="font-size:100px;">&#128150;</span> </h4> ';
+        }
+        
+        return $taskItems;
+    }
+
+    // this method is just for the 
+    public function markascompleted()
+    {
+        $task = Task::find(request()->task_id);
+        
+        $task->update([
+            'status' => "pending",
+        ]);
+
+        // here you have to notify the admin tha the task is waiting to be accepted
+        //notify the team leader
+        foreach($task->project->users as $user){    
+            if($user->hasRole('admin')){
+                $user->notify(new TaskWaitingNotification($task));
+            } else {
+                //throwException();  // and catch it // in the case that the admin delete him self - 'admin not exist on this project'
+            }
+        }
+
+        return back()->with('message', 'the task status has been updated');
     }
 
 }

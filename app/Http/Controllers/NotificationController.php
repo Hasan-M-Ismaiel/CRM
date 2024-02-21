@@ -14,6 +14,7 @@ class NotificationController extends Controller
 
         return view('admin.notifications.index', [
             'notifications' => $notifications,
+            'page' => 'Notifications',
         ]);
     }
 

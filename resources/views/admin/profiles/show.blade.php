@@ -8,10 +8,10 @@
                 <div class="row"><!--add icons to this page-->
                     <div class="col-md-4">
                         <div class="profile-img">
-                            @if(Auth::user()->profile && Auth::user()->profile->getFirstMediaUrl("profiles"))
-                            <img src='{{ Auth::user()->profile->getFirstMediaUrl("profiles") }}' />
-                            @elseif(Auth::user()->getFirstMediaUrl("users"))
-                            <img class="avatar-img" src='{{ Auth::user()->getMedia("users")[0]->getUrl("thumb") }}' />
+                            @if($profile && $profile->getFirstMediaUrl("profiles"))
+                            <img src='{{ $profile->getFirstMediaUrl("profiles") }}' />
+                            @elseif($user->getFirstMediaUrl("users"))
+                            <img class="avatar-img" src='{{ $user->getMedia("users")[0]->getUrl("thumb") }}' />
                             @else 
                             <img class="avatar-img" src="{{ asset('images/avatar.png') }}" />
                             @endif
@@ -137,7 +137,7 @@
                                                 <label>Profession</label>
                                             </div>
                                             <div class="col-md-6">
-                                                <p>Web Developer and Designer use here $profile->user->techniques / skills</p>
+                                                <p>Web Developer and Designer / skills</p>
                                             </div>
                                         </div>
                                         <div class="row">

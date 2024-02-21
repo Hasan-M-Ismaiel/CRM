@@ -100,6 +100,8 @@ class ProjectController extends Controller
                 }
             }
             
+            // attach the admin to every project new created
+            $project->users()->attach(auth()->user());
             Notification::send($project->users, new ProjectAssigned($project));
 
             // return redirect()->route('admin.projects.index')->with('message', 'the project has been created sucessfully');;

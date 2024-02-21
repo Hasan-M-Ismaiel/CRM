@@ -86,6 +86,11 @@ class User extends Authenticatable implements HasMedia
         return $this->hasMay(Message::class);
     }
 
+    public function taskmessages()
+    {
+        return $this->hasMay(TaskMessage::class);
+    }
+
 
     protected function numberOfAssignedProjects(): Attribute
     {

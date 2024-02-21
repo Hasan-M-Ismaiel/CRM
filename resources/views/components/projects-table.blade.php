@@ -1,14 +1,13 @@
 @props(['projects'])
 
-<table class="table table-striped mt-2" style="height: 100px;">
+<table class="table table-striped mt-2  border border-1" style="height: 100px;">
     <thead>
         <tr>
             <th scope="col" class="align-middle">#</th>
             <th scope="col" class="align-middle">Title</th>
-            <th scope="col" class="align-middle">Description</th>
             <th scope="col" class="align-middle">Deadline</th>
-            <th scope="col" class="align-middle">Required <br> techniques</th>
-            <th scope="col" class="align-middle">Assined<br> User</th>
+            <th scope="col" class="align-middle">Techniques</th>
+            <th scope="col" class="align-middle">Users</th>
             <th scope="col" class="align-middle">Owner</th>
             <th scope="col" class="align-middle">Tasks</th>
             <th scope="col" class="align-middle">Status</th>
@@ -27,9 +26,6 @@
                     <a href="{{ route('admin.projects.show', $project->id) }}" 
                         style="text-decoration: none;" >{{ $project->title }} 
                     </a>
-                </td>
-                <td class="align-middle">
-                    {{ substr($project->description, 0, 40) }}...
                 </td>
                 <td class="align-middle">
                     {{ $project->deadline }}

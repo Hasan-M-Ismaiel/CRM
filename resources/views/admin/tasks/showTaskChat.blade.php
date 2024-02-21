@@ -10,20 +10,20 @@
                     <!--the header-->
 					<div class="py-2 px-4 border-bottom d-none d-lg-block">
 						<div class="row ">
-                                <div class="col-1 ">
+                                <div class="col-1 border text-center pt-2">
                                     <img src="{{ asset('images/taskChat.png') }}" class="rounded-circle mr-1" alt="Sharon Lessman" width="40" height="40">
                                 </div>
-								<strong class="col-2  text-center p-3">
-                                    {{ $task->title}}
+								<strong class="col-6  text-center p-3" style="color: #673AB7;">
+                                    {{ $task->title}} | {{$task->project->title}}
                                 </strong>
                                 @if($task->user)
-                                <div class="col-9 pt-2  text-right">
+                                <div class="col-4 pt-2  text-right">
                                     <ul class="list-inline">
                                         <li class="list-inline-item"> 
                                             @foreach($users as $user)
                                                 @if($user->hasRole('admin'))
                                                     @if($user->profile)
-                                                        <a href="{{ route('admin.profiles.show', $user->profile->id) }}" style="text-decoration: none;">
+                                                        <a href="{{ route('admin.profiles.show', $user->id) }}" style="text-decoration: none;">
                                                     @else
                                                         <a href="{{ route('admin.statuses.notFound') }}" style="text-decoration: none;">
                                                     @endif
@@ -42,7 +42,7 @@
                                                             alt="DP"  class="rounded-circle img-fluid border border-success " width="35" height="35">
                                                     @endif
                                                         </a>
-                                                @elseif($user == $user->id)
+                                                @elseif($task->user->id == $user->id)
                                                     @if($user->profile)
                                                         <a href="{{ route('admin.profiles.show', $user->profile->id) }}" style="text-decoration: none;">
                                                     @else
@@ -69,7 +69,7 @@
                                     </ul>
                                 </div>
                                 @else
-                                <strong class="col-9 pt-2  text-right">no users assigned yet.</strong>
+                                <strong class="col-4 pt-2  text-right">no users assigned yet.</strong>
                                 @endif
                                 <!-- <div class="text-muted small border">
                                 <em>Typing...</em>
@@ -78,9 +78,9 @@
 					</div>
                     <!--content-->
 					<div class="position-relative">
-						<div class="chat-messages p-4" id="parentmessages">
-                        @if($task->user)
-                            @foreach($task->messages as $message)
+						<div class="chat-messages p-4" id="parenttaskmessages">
+                        @if($task->user && $task->taskmessages != null)
+                            @foreach($task->taskmessages as $message)
                                 @if($message->user->id == auth()->user()->id)
                                 <!--sender-->
                                 <div class="chat-message-right pb-4">
@@ -148,13 +148,13 @@
 
         
         $.ajax({
-            url: "{{ route('admin.teams.sendMessage') }}",
+            url: "{{ route('admin.tasks.sendMessage') }}",
             method: 'post',
             data: {
                 "_token": "{{ csrf_token() }}",
                 message: message,       // the sended message
                 user_id: window.userID, // the sender
-                project_id:'{{$team->project->id}}', // the project id 
+                task_id: '{{$task->id}}', // the task_id
             },
             success: function(output){
                 // var newMessageFromHere = $('<div class="chat-message-right pb-4"> <div> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime+'</div> </div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div> '+ message+ '</div></div>');
@@ -163,8 +163,5 @@
         });
     });
 </script>
-
-
-
 
 @endsection

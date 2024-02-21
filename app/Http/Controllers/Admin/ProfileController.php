@@ -81,11 +81,13 @@ class ProfileController extends Controller
             return view('admin.profiles.show', [
                 'page' => 'Showing Profile',
                 'profile' => $profile,
+                'user' => $user,
             ]);
         } else {
-            return view('admin.profiles.create', [
-                'page' => 'You Dont have profile, Create one',
-            ]);
+            return view('admin.statusesMessages.notFound');
+            // return view('admin.profiles.create', [
+            //     'page' => 'You Dont have profile, Create one',
+            // ]);
         }
     }
 

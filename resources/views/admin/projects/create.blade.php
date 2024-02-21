@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
- 
+
 <div class="container mb-3">
     <div class="row justify-content-center">
         <!-- Validation Errors -->
@@ -50,13 +50,13 @@
                                     </div>
                                     <label class="fieldlabels" for="title">Title: *</label>
                                     <input id="title" type="text" name="title" placeholder="add the title of the project" value="{{ old('title') }}"/>
-                                    
+
                                     <label class="fieldlabels" for="description">Description: *</label>
                                     <input type="textarea" name="description" id="description" placeholder="Project's description here"  value="{{ old('description') }}"/>
-                                    
+
                                     <label class="fieldlabels" for="deadline">Deadline: *</label>
                                     <input id="deadline" type="date" placeholder="Project's deadline here" name="deadline"/>
-                                    
+
                                     <label class="fieldlabels" for="client_id">Client: *</label>
                                     <select name="client_id" id="client_id" class="form-control">
                                         <option value="" selected>Choose Client ...</option>
@@ -82,7 +82,7 @@
                                         @foreach($skills as $skill)
                                             <div class="col-md-4 text-center" >
                                                 <div class="row">
-                                                    <div class="col-3"> 
+                                                    <div class="col-3">
                                                         <input class="d-flex justify-content-end assigned_skills" type="checkbox" id="skill-{{$skill->id}}" name="assigned_skills[]" value="{{$skill->id}}">
                                                     </div>
                                                     <div class="col-9">
@@ -100,11 +100,17 @@
                                         <div class="bodyflex">
                                             <div style="width:100%;">
                                                 <div class="border pe-5">
-                                                    <p id="pcreateProject" class="mt-4 ms-5 ">add more skills to the database, <span id="alarm" class="me-2"></span>please add value to all added inputes</p>
+                                                    <p id="pcreateProject" class="mt-4 ms-5 ">add more skills to the database, 
+                                                        <span>
+                                                            <svg width="25" height="25">
+                                                                <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-warning') }}"></use>
+                                                            </svg>
+                                                        </span>please add value to all added inputes
+                                                    </p>
                                                     <div class="col-lg-12 p-4">
-                                                        <div id="row">
-                                                            <div class="input-group m-3 ">
-                                                                <div class="input-group-prepend">
+                                                        <!-- <div id="row" class="row">
+                                                            <div class="col-md-2">
+                                                                <div class="input-group-prepend pt-1">
                                                                     <button class="btn btn-danger"
                                                                             id="DeleteRow"
                                                                             type="button">
@@ -112,9 +118,11 @@
                                                                         Delete
                                                                     </button>
                                                                 </div>
-                                                                <input name="new_skills[]" type="text" class="form-control m-input new_skills"> <!--the first one-->
                                                             </div>
-                                                        </div>
+                                                            <div class="col-md-10">
+                                                                <input name="new_skills[]" type="text" class="form-control m-input new_skills"> 
+                                                            </div>
+                                                        </div> -->
                                                         <div id="newinput"></div>   <!--the added one-->
                                                         <button id="rowAdder" type="button" class="btn btn-dark">
                                                             <span class="bi bi-plus-square-dotted">
@@ -179,7 +187,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    
+
                                 </div>
                                 <input type="submit" type="button" class="next action-button" />
                                 <!-- <button type="submit" class="btn btn-primary mt-5">Create</button> -->
@@ -189,7 +197,7 @@
                     </div>
                 </div>
             </div>
-        </div> 
+        </div>
     </div>
 </div>
 <script>
@@ -198,85 +206,85 @@
     var opacity;
     var current = 1;
     var steps = $("fieldset").length;
-    
+
     setProgressBar(current);
-    
+
     $(".next").click(function(){
-        
+
         current_fs = $(this).parent();
         next_fs = $(this).parent().next();
-        
+
         //Add Class Active
         $("#progressbar-create-project .li-create-project").eq($("fieldset").index(next_fs)).addClass("active");
-        
+
         //show the next fieldset
-        next_fs.show(); 
+        next_fs.show();
         //hide the current fieldset with style
         current_fs.animate({opacity: 0}, {
             step: function(now) {
                 // for making fielset appear animation
                 opacity = 1 - now;
-    
+
                 current_fs.css({
                     'display': 'none',
                     'position': 'relative'
                 });
                 next_fs.css({'opacity': opacity});
-            }, 
+            },
             duration: 500
         });
         setProgressBar(++current);
     });
-    
+
     $(".previous").click(function(){
-        
+
         current_fs = $(this).parent();
         previous_fs = $(this).parent().prev();
-        
+
         //Remove class active
         $("#progressbar-create-project .li-create-project").eq($("fieldset").index(current_fs)).removeClass("active");
-        
+
         //show the previous fieldset
         previous_fs.show();
-    
+
         //hide the current fieldset with style
         current_fs.animate({opacity: 0}, {
             step: function(now) {
                 // for making fielset appear animation
                 opacity = 1 - now;
-    
+
                 current_fs.css({
                     'display': 'none',
                     'position': 'relative'
                 });
                 previous_fs.css({'opacity': opacity});
-            }, 
+            },
             duration: 500
         });
         setProgressBar(--current);
     });
-    
+
     function setProgressBar(curStep){
         var percent = parseFloat(100 / steps) * curStep;
         percent = percent.toFixed();
         $(".progress-bar-create-project")
-          .css("width",percent+"%")   
+          .css("width",percent+"%")
     }
-    
+
     $(".submit").click(function(){
         return false;
     })
-        
-    });    
+
+    });
 </script>
 <script type="text/javascript">
     $("#rowAdder").click(function () {
         newRowAdd =
-            '<div id="row"> <div class="input-group m-3">' +
-            '<div class="input-group-prepend">' +
+            '<div id="row" class="row"> <div class="col-md-2">' +
+            '<div class="input-group-prepend pt-1">' +
             '<button class="btn btn-danger" id="DeleteRow" type="button">' +
-            '<i class="bi bi-trash"></i> Delete</button> </div>' +
-            '<input name="new_skills[]" type="text" class="form-control m-input new_skills"> </div> </div>';
+            '<i class="bi bi-trash"></i> Delete</button> </div></div>' +
+            '<div class="col-md-10"><input name="new_skills[]" type="text" class="form-control m-input new_skills"> </div> </div>';
 
         $('#newinput').append(newRowAdd);
     });
@@ -285,11 +293,11 @@
     })
 </script>
 <script>
-    $('#getUsers').on('click', function(){  
+    $('#getUsers').on('click', function(){
         var assigned_skills = [];
         var new_skills = [];
-        var inputs1 = document.getElementsByClassName('assigned_skills'); // get all elements within this class 
-        var inputs = document.getElementsByClassName('new_skills'); // get all elements within this class 
+        var inputs1 = document.getElementsByClassName('assigned_skills'); // get all elements within this class
+        var inputs = document.getElementsByClassName('new_skills'); // get all elements within this class
 
         for(var key in inputs1) {
             var value = inputs1[key].value;
@@ -305,8 +313,8 @@
         }
         // alert(new_skills);
 
-        // to clear the list if the user change the selected option again 
-        $('#usersTable').empty();     
+        // to clear the list if the user change the selected option again
+        $('#usersTable').empty();
         $.ajax({
             url: "{{ route('admin.skills.getUsersWithSkills') }}",
             method: 'post',
@@ -318,7 +326,7 @@
             },
             success: function(result){
                 // alert(result);
-                $('#usersTable').append(result);  
+                $('#usersTable').append(result);
             }
         });
     });
