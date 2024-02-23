@@ -14,7 +14,8 @@ class ProjectRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->user()->hasRole('admin');
+        // return true;
     }
 
     /**
@@ -31,8 +32,15 @@ class ProjectRequest extends FormRequest
             'title'   => ['required', 'string', 'max:100'],
             'description' => ['required', 'string', 'max:255'],
             'deadline' => ['required', 'date'],   
-            'user_id' => ['required', Rule::in($users)],
             'client_id' => ['required', Rule::in($clients)],
+
+            //check those
+            // "assigned_users"    => "required|array",
+            // "assigned_users.*"  => "required|string|distinct|min:2", //least 2 characters
+            // "assigned_skills"    => "required|array",
+            // "assigned_skills.*"  => "required|string|distinct|min:2", //least 2 characters
+            "new_skills"    => "array",
+            "new_skills.*"  => "required|string|distinct|min:2|unique:skills,name", //least 2 characters
         ];
     }
 }

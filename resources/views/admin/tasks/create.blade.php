@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
- 
+
 <div class="container mb-3">
     <div class="row justify-content-center">
         <!-- Validation Errors -->
@@ -18,32 +18,147 @@
                 </ul>
             </div>
         @endif
-        <div class="card">
-            <div class="card-body">
-                <h2 class="card-title mb-4">{{ $page }}</h2>
-                <form action='{{ route("admin.tasks.store") }}' method="POST">
-                    @csrf
-                    <div class="form-group">
-                        <label for="title">Title</label>
-                        <input type="text" name="title" class="form-control" id="title" placeholder="add the title of the task" value="{{ old('title') }}">
+        <div class="card p-5">
+            <div class="container-fluid border my-3  ">
+                <div class="row justify-content-center">
+                    <div class="card-create-project pt-4 my-3 mx-5 px-5">
+                        <h2 id="heading">{{ $page }}</h2>
+                        <p id="pcreateProject">please try to add value to all added inputes</p>
+                        <form action='{{ route("admin.tasks.store") }}' method="POST">
+                            @csrf
+                            <!-- creating task card-->
+                            <div class="card p-4 border-success">
+                                <div class="text-right">
+                                    <span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                                            <circle cx="8" cy="8" r="8"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="title"><strong>Title</strong></label>
+                                    <input type="text" name="title" class="form-control" id="title" placeholder="add the title of the task" value="{{ old('title') }}">
+                                </div>
+                                <div class="form-group mt-4">
+                                    <label for="description"><strong>Description</strong></label>
+                                    <input type="textarea" name="description" class="form-control" id="description" placeholder="task's description here"  value="{{ old('description') }}">
+                                </div>
+                                <div class="form-group mt-4">
+                                    <label for="project_id"><strong>Project</strong></label>
+                                    <select name="project_id" id="project_id" class="form-control">
+                                        @if(request()->input('addTaskToProject'))
+                                        <option id="add_task_to_project" value="{{ request()->addTaskToProject}}" selected>{{ request()->projectTitle }}</option>
+
+                                        @else
+                                        <option value="" selected>Choose Project ...</option>
+                                        @endif
+                                        @foreach ( $projects as $project )
+                                            @if(request()->addTaskToProject != $project->id)
+                                                <option value="{{$project->id}}" >{{ $project->title }}</option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!--here is the generated content will be-->
+                                <div class="form-group mt-4" id="users">
+                                </div>
+
+                            </div>
+                            <x-forms.create-button />
+                        </form>
+                        <a id="add-tasks" class="btn btn-primary mt-5" style="display: none;" >add multiple tasks</a>
                     </div>
-                    <div class="form-group mt-4">
-                        <label for="description">description</label>
-                        <input type="textarea" name="description" class="form-control" id="description" placeholder="task's description here"  value="{{ old('description') }}">
-                    </div>
-                    <div class="form-group mt-4">
-                        <label for="project_id">Project</label>
-                        <select name="project_id" id="project_id" class="form-control">
-                            <option value="" selected>Choose Project ...</option>
-                            @foreach ( $projects as $project )
-                                <option value="{{$project->id}}" >{{ $project->title }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary mt-5">Create</button>
-                </form>
+                </div>
             </div>
-        </div> 
+        </div>
     </div>
 </div>
+
+<style>
+    .labelexpanded_ > input {
+        display: none;
+    }
+
+    .labelexpanded_ input:checked + .radio-btns_ {
+        border-style: solid;
+        border-color: #50ef44;
+    }
+
+    .radio-btns_ {
+        cursor: pointer;
+        background-color: #eaeaea;
+    }
+</style>
+
+
+
+<script>
+    $('#project_id').on('change', function(){
+        $('#loading').show();
+        // to clear the list if the user change the selected option again
+        project_id =$(this).val();
+        project_id.toString();
+        href="{{route('admin.taskGroups.create')}}";
+        addTaskHref = href.concat('?projectId='+project_id);
+        $('#users').empty();
+        $.ajax({
+            url: "{{ route('admin.getUsers') }}",
+            method: 'post',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                id: $(this).val(),
+            },
+            success: function(result){
+	            $('#users').append(result);
+                $('#add-tasks').show();
+                $('#add-tasks').prop('href', addTaskHref);
+                $('#loading').hide();
+
+            }
+        });
+    });
+
+    @if(request()->input('addTaskToProject'))
+        var projectId = {!! request()->addTaskToProject !!};
+        function send() {
+            $.ajax({
+                url: "{{ route('admin.getUsers') }}",
+                method: 'post',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    id: projectId,
+                },
+                success: function(result){
+                    $('#users').append(result);
+                    alert(projectId);
+                }
+            });
+        }
+        
+        send();
+    @endif
+</script>
 @endsection
+
+<!-- this is rubbish try to remove it--> 
+<script>
+    var projectId = {!! request()->addTaskToProject !!};
+    function send() {
+        $.ajax({
+            url: "{{ route('admin.getUsers') }}",
+            method: 'post',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                id: projectId,
+            },
+            success: function(result){
+                $('#users').append(result);
+                // alert(projectId);
+            }
+        });
+    }
+    send();
+</script>
+
+

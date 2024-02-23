@@ -7,6 +7,11 @@ export default defineConfig({
             input: [
                 'resources/sass/app.scss',
                 'resources/js/app.js',
+                'resources/css/profile.css',
+                'resources/css/createProject.css',
+                'resources/css/editProject.css',
+                'resources/css/radioButton.styl',
+                'resources/css/chat.css',
             ],
             refresh: true,
         }),

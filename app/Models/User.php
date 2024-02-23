@@ -6,12 +6,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use PhpParser\Node\Expr\BinaryOp\BooleanOr;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements HasMedia
@@ -48,11 +51,46 @@ class User extends Authenticatable implements HasMedia
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+                ->width(128)
+                ->height(128)
+                ->nonQueued();
+    }
+
 
     public function projects ()
     {
         return $this->belongsToMany(Project::class);
     }
+
+    public function tasks ()
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    public function profile ()
+    {
+        return $this->hasOne(Profile::class);
+    }
+
+    public function skills(): MorphToMany
+    {
+        return $this->morphToMany(Skill::class, 'skillable');
+    }
+
+    public function messages()
+    {
+        return $this->hasMay(Message::class);
+    }
+
+    public function taskmessages()
+    {
+        return $this->hasMay(TaskMessage::class);
+    }
+
 
     protected function numberOfAssignedProjects(): Attribute
     {
@@ -78,7 +116,47 @@ class User extends Authenticatable implements HasMedia
         $numeberOfAssignedProjects = $this->projects()
                     ->where('projects.id', $project->id)
                     ->count();
-        var_dump($numeberOfAssignedProjects);
         return $numeberOfAssignedProjects>0 ? false : true; 
+    }
+
+    public function numberOfAssignedTasks():Attribute
+    {
+        $numberOfAssignedTasks = $this->tasks()
+                    ->count();
+
+        return Attribute::make(
+            get: fn () => $numberOfAssignedTasks
+        );
+    }
+
+    public function numberOfPendingTasks():Attribute
+    {
+        $numberOfPendingTasks = $this->tasks()
+                    ->where('status', 'pending')
+                    ->count();
+
+        return Attribute::make(
+            get: fn () => $numberOfPendingTasks
+        );
+    }
+    public function numberOfOpenedTasks():Attribute
+    {
+        $numberOfOpenedTasks = $this->tasks()
+                    ->where('status', 'opened')
+                    ->count();
+
+        return Attribute::make(
+            get: fn () => $numberOfOpenedTasks
+        );
+    }
+    public function numberOfClosedTasks():Attribute
+    {
+        $numberOfClosedTasks = $this->tasks()
+                    ->where('status', 'closed')
+                    ->count();
+
+        return Attribute::make(
+            get: fn () => $numberOfClosedTasks
+        );
     }
 }

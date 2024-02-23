@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserUpdateRequest;
+use App\Models\Skill;
 use App\Models\User;
+use App\Services\NotificationService;
+use App\Services\RenderUsersTableService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -17,6 +20,7 @@ class UserController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', User::class);
         //make it paginated
         // $users = User::with('category','tags')->get();
         $users = User::all();
@@ -32,14 +36,18 @@ class UserController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', User::class);
+
         $roles = DB::select('select name, id from roles');
         // foreach ($roles as $role){
         //     var_dump($role->name);
         //     dd($role->id);
         // }
+        $skills = Skill::all();
         return view('admin.users.create', [
             'page' => 'Creating user',
             'roles' => $roles,
+            'skills' => $skills,
         ]);
     }
 
@@ -48,6 +56,8 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
+        //the authorization is in the form request 
+
         // store the new user in the database
         $user = User::create([
             'name' => $request->validated('name'),
@@ -64,7 +74,24 @@ class UserController extends Controller
         $role = Role::findById($request->role_id, 'web');
         $user->assignRole($role);
         
-        return redirect()->route('admin.users.index')->with('message', 'the user has been created sucessfully');;
+        $assignedSkills = $request->input('assigned_skills'); // the ids of the added skills 
+        if($assignedSkills != null && sizeof($assignedSkills)>0 ){
+            foreach ($assignedSkills as $assignedSkill) {
+                $user->skills()->attach($assignedSkill);
+            }
+        } 
+
+        $new_skills = $request->input('new_skills');
+        if($new_skills != null && sizeof($new_skills)>0 ){
+            //creating the new skill and attach it to the new user
+            foreach ($request->get('new_skills') as $name) {
+                $skill = Skill::create([
+                    'name' => $name
+                ]);
+                $user->skills()->attach($skill);
+            }
+        }
+        return redirect()->route('admin.users.index')->with('message', 'the user has been created sucessfully');
     }
 
     /**
@@ -72,7 +99,9 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        $user->with('projects');
+        $this->authorize('view', $user);
+
+        $user->with('projects', 'skills');
         return view('admin.users.show', [
             'page' => 'Showing User',
             'user' => $user,
@@ -84,6 +113,8 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        $this->authorize('update', $user);
+        
         // get the roles to iterate throught them in the view
         $roles = DB::select('select name, id from roles');
 
@@ -94,12 +125,15 @@ class UserController extends Controller
         // here is the role id for user 
         $userRoleId = $rolesForUser->first()->id;
         
+        $skills = Skill::all();
+
         // return the edit view with the needed variables
         return view('admin.users.edit', [
             'page'       => 'Editing user',
             'roles'      => $roles,
             'userRoleId' => $userRoleId,
             'user'       => $user,
+            'skills'       => $skills,
         ]);
     }
 
@@ -108,6 +142,8 @@ class UserController extends Controller
      */
     public function update(UserUpdateRequest $request, User $user)
     {
+        // the authorization is in the form request 
+
         //check if the password match the old password - this should be like other way 
         if(!Hash::check($request->old_password, $user->password)){
             return back()->with("message", "old Password Doesn't match!");
@@ -123,12 +159,34 @@ class UserController extends Controller
         // remove all the roles form the user
         $user->roles()->detach();
         // assign the new role to the user
-        $user->assignRole($$request->role_id);
+        $role = Role::findById($request->role_id, 'web');
+        $user->assignRole($role);
 
         //check if the user update the image - if true - then delete the old one from the strorage
         if ($request->hasFile('image')) {
-                $user->clearMediaCollection('articles');
-                $user->addMediaFromRequest('image')->toMediaCollection('articles');
+                $user->clearMediaCollection('users');
+                $user->addMediaFromRequest('image')->toMediaCollection('users');
+        }
+
+        $assignedSkills = $request->input('assigned_skills');
+        if($assignedSkills!= null && sizeof($assignedSkills)>0){
+            $user->skills()->detach();
+                foreach ($assignedSkills as $assignedSkill) {
+                    $user->skills()->attach($assignedSkill);
+                }
+        } else {
+            $user->skills()->detach();
+        }
+
+        $new_skills = $request->input('new_skills');
+        if( $new_skills!= null && sizeof($new_skills)>0 ){
+            //creating the new skill and attach it to the new user
+            foreach ($request->get('new_skills') as $name) {
+                $skill = Skill::create([
+                    'name' => $name
+                ]);
+                $user->skills()->attach($skill);
+            }
         }
 
         return redirect()->route('admin.users.index')->with('message', 'the user has been updated successfully');
@@ -139,7 +197,144 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        $this->authorize('delete');
+
         $user->delete();
         return redirect()->route('admin.users.index')->with('message','the user has been deleted successfully');
+    }
+
+    public function getSortedUsers ()
+    {
+        // $this->authorize('viewAny', User::class);
+       
+        $users = User::orderBy('name')->get();
+
+        $renderedTable = new RenderUsersTableService($users);
+        $table = $renderedTable->getTable();
+
+        return json_encode(array($table));
+    }
+
+    //not finished yet
+    public function getSortedRoles ()
+    {
+        // $this->authorize('viewAny', User::class);
+       
+        $order = 'desc';
+
+        $users = User::with('roles')->orderBy('roles.name')->get();
+        dd($users);
+        $var = '<table class="table table-striped mt-2">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Profile</th>
+                <th scope="col">
+                    <span class="btn px-1 p-0 m-0 text-light" style="background-color: #303c54;" id="getSortedUsers" onclick="getSortedUsers()">
+                    Name
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-arrow-bar-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 3.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5M8 6a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 12.293V6.5A.5.5 0 0 1 8 6"/>
+                        </svg>
+                    </span>
+                </th>
+                <th scope="col">Email</th>
+                <th scope="col">
+                    <span class="btn px-1 p-0 m-0 text-light" style="background-color: #303c54;">
+                        Role
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-arrow-bar-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 3.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5M8 6a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 12.293V6.5A.5.5 0 0 1 8 6"/>
+                        </svg>
+                    </span>
+                </th>
+                <th scope="col">Tasks</th>
+                <th scope="col">Skills</th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody>';
+        // $iterator = 1;  
+        foreach ($users as $user){
+            $var .= '<tr>';
+            $var .= '<th scope="row" class="align-middle">'.$user->id.'</th>';
+            $var .= '<td class="align-middle">';
+
+            if($user->profile){
+                $var .= '<a href="'. route('admin.profiles.show', $user->id) .'" style="text-decoration: none;">';
+            }
+            else{
+                $var .= '<a href="'. route('admin.statuses.notFound') .'" style="text-decoration: none;">';
+            }
+
+            if($user->profile && $user->profile->getFirstMediaUrl("profiles")){
+                $var .= '<img src="'. $user->profile->getFirstMediaUrl("profiles").'" alt="DP"  class="rounded-circle img-fluid border border-success shadow mb-1" width="35" height="35">';
+            }elseif($user->getFirstMediaUrl("users")){
+                $var .= '<img src="'. $user->getMedia("users")[0]->getUrl("thumb") .'" alt="DP"  class="  rounded-circle img-fluid border border-success shadow mb-1" width="35" height="35">';
+            }else{
+                $var .= '<img src="'.asset("images/avatar.png").'" alt="DP"  class="  rounded-circle img-fluid border border-success shadow mb-1" width="35" height="35">';
+            }
+            $var .= '</a>';
+            $var .= '</td>';
+
+            $var .= '<td class="align-middle"><a href="'. route('admin.users.show', $user->id).'" style="text-decoration: none;" >'. $user->name .'</a></td>';
+           
+            $var .= '<td class="align-middle">'.substr($user->email, 0, 15).'...</td>';
+            $var .= '<td class="align-middle">'. $user->getRoleNames()->get('0') .'</td>';
+            $var .= '<td class="align-middle">'. $user->numberOfAssignedTasks .'</td>';
+            $var .= '<td class="align-middle">';
+
+            if($user->skills()->count() > 0){
+                foreach ($user->skills as $skill){
+                    $var .= '<span class="badge m-1" style="background: #673AB7;">'. $skill->name .'</span>';
+                }
+            }else{
+                $var .= '#';
+            }
+            $var .= '</td>';
+
+            $var .= '<td class="align-middle">';
+            $var .= '<div style="display: flex;">';
+            $var .= '<a type="button" class="btn btn-primary m-1" href="'. route('admin.users.show', $user->id) .'" role="button">Show</a>';
+            $var .= '<a type="button" class="btn btn-secondary m-1" href="'.route('admin.users.edit', $user->id) .'" role="button">Edit</a>';
+            $var .= '<a class="btn btn-danger m-1" type="button"';
+            $var .= 'onclick="if (confirm('."'Are you sure?'".') == true) {';
+            $var .= 'document.getElementById('."'delete-item-".$user->id."').submit();";
+            $var .= 'event.preventDefault();';
+            $var .= '} else {';
+            $var .= 'return;';
+            $var .= '}';
+            $var .= '">Delete';
+            $var .= '</a>';
+
+            $var .= '<form id="delete-item-'.$user->id.'" action="'. route('admin.users.destroy', $user).'" class="d-none" method="POST">';
+            $var .= '<input type="hidden" name="_method" value="DELETE">';
+            $var .= '<input type="hidden" name="_token" value="'. csrf_token() .'">';
+            $var .= '</form>';
+            $var .= '</div>';
+            $var .= '</td>';
+            $var .= '</tr>';
+
+        }            
+        $var .= '</tbody>';
+        $var .= '</table>';
+
+        return json_encode(array($var));
+    }
+    
+    public function getSearchResult ()
+    {
+        $queryString = request()->queryString;
+
+        //get all the matched users
+        if ($queryString != null ) {
+            $users = User::where('name', 'like', '%' . $queryString . '%')->get();
+        } else {
+            $users = User::all();
+        }
+
+        $renderedTable = new RenderUsersTableService($users);
+        $table = $renderedTable->getTable();
+
+        return json_encode(array($table));
+
     }
 }
