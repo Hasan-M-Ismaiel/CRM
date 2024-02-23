@@ -23,11 +23,11 @@
                 <div class="row justify-content-center">
                     <div class="card-create-project pt-4 my-3 mx-5 px-5">
                         <h2 id="heading">{{ $page }}</h2>
-                        <p id="pcreateProject">dashboard to manage all created</p>
+                        <p id="pcreateProject">dashboard to assign / de-assign project to users </p>
                         <form action='{{ route("admin.projects.assignStore", $project) }}' method="POST">
                             @csrf
                             @method('PATCH')
-                            <table class="table table-striped mt-2">
+                            <table class="table table-striped border mt-2">
                                 <thead>
                                     <tr>
                                         <th scope="col">#</th>
@@ -50,18 +50,19 @@
                                                     @else
                                                         <a href="{{ route('admin.statuses.notFound') }}" style="text-decoration: none;">
                                                     @endif
+
                                                     @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
-                                                        <img
-                                                        src='{{ $user->profile->getFirstMediaUrl("profiles") }}'
-                                                        alt="DP"  class="  rounded-circle img-fluid  border border-success shadow mb-1" width="35" height="35">
+                                                        <div class="avatar avatar-md">
+                                                            <img src='{{ $user->profile->getFirstMediaUrl("profiles") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                        </div>
                                                     @elseif($user->getFirstMediaUrl("users"))
-                                                    <img
-                                                        src='{{ $user->getMedia("users")[0]->getUrl("thumb") }}'
-                                                        alt="DP"  class="  rounded-circle img-fluid border border-success shadow mb-1" width="35" height="35">
+                                                    <div class="avatar avatar-md">
+                                                        <img src='{{ $user->getMedia("users")[0]->getUrl("thumb") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                    </div>
                                                     @else
-                                                    <img
-                                                        src='{{ asset("images/avatar.png") }}'
-                                                        alt="DP"  class="  rounded-circle img-fluid border border-success shadow mb-1" width="35" height="35">
+                                                    <div class="avatar avatar-md">
+                                                        <img src='{{ asset("images/avatar.png") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                    </div>
                                                     @endif
                                                 </a>
                                             </td>
@@ -84,7 +85,7 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            <button type="submit" class="action-create-button">Assign</button>
+                            <x-forms.assign-button />
                         </form>
                     </div>
                 </div> 

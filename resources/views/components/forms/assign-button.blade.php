@@ -1,11 +1,12 @@
-<button type="submit" class="action-main-create-button" onclick="showSpinner()">
+<button id="assign-button" type="submit" class="action-create-button" onclick="showSpinner()">
     <span id="spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-    Update
+    Assign
 </button>
+
 
 <script>
    function showSpinner(){
         $('#spinner').show();
-        $('#create-button').text('updating...');
+        $('#assign-button').text('assining...');
     }
 </script>

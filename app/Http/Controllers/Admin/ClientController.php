@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreClientRequest;
 use App\Http\Requests\UpdateClientRequest;
 use App\Models\Client;
+use App\Services\RenderClientsTableService;
+use App\Services\RenderUsersTableService;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -83,5 +85,36 @@ class ClientController extends Controller
     {
         $client->delete();
         return redirect()->route('admin.clients.index')->with('message','the client has been deleted successfully');
+    }
+
+    public function getSortedClients ()
+    {
+        // $this->authorize('viewAny', User::class);
+       
+        $clients = Client::orderBy('name')->get();
+
+        $renderedTable = new RenderClientsTableService($clients);
+        $table = $renderedTable->getTable();
+
+        return json_encode(array($table));
+    }
+
+    // this is for the search 
+    public function getSearchResult ()
+    {
+        $queryString = request()->queryString;
+
+        //get all the matched users
+        if ($queryString != null ) {
+            $clients = Client::where('name', 'like', '%' . $queryString . '%')->get();
+        } else {
+            $clients = Client::all();
+        }
+
+        $renderedTable = new RenderClientsTableService($clients);
+        $table = $renderedTable->getTable();
+
+        return json_encode(array($table));
+
     }
 }

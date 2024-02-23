@@ -42,7 +42,7 @@
                                             <div id="row">
                                                 <div class="mb-3">
                                                     <!-- creating task card-->
-                                                    <div class="card p-4">
+                                                    <div class="card p-4 border-success">
                                                         <div class="text-right">
                                                             <span>
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">
@@ -52,17 +52,17 @@
                                                         </div>
                                                         <!--input button-->
                                                         <div class="form-group">
-                                                            <label for="title">Title</label>
+                                                            <label for="title"><strong>Title</strong></label>
                                                             <input type="texts" name="titles[]" class="form-control" id="title" placeholder="add the title of the task" value="{{ old('title') }}">
                                                         </div>
                                                         <!--input button-->
                                                         <div class="form-group mt-4">
-                                                            <label for="description">description</label>
+                                                            <label for="description"><strong>Description</strong></label>
                                                             <input type="textarea" name="descriptions[]" class="form-control" id="description" placeholder="task's description here"  value="{{ old('description') }}">
                                                         </div>
                                                         <!--input button-->
                                                         <div class="form-group mt-4">
-                                                            <label for="user_id">Users</label>
+                                                            <label for="user_id"><strong>Users</strong></label>
                                                             <select name="user_ids[]" id="project_id" class="form-control">
                                                                 <option value="" selected>Choose User ...</option>
                                                                 @foreach ( $users as $user )
@@ -114,7 +114,7 @@
         newRowAdd =
             '<div id="row">' +
                 '<div class="mb-3">' +
-                    '<div class="card p-4">'
+                    '<div class="card p-4 border-success">'
                         +'<div class="text-right">'
                             +'<span>'
                                 +'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">'
@@ -123,15 +123,15 @@
                             +'</span>'
                         +'</div>'
                         +'<div class="form-group">'
-                            +'<label for="title">Title</label>'
+                            +'<label for="title"><strong>Title</strong></label>'
                             +'<input type="texts" name="titles[]" class="form-control" id="title" placeholder="add the title of the task">'
                         +'</div>'
                         +'<div class="form-group mt-4">'
-                            +'<label for="description">description</label>'
+                            +'<label for="description"><strong>Description</strong></label>'
                             +'<input type="textarea" name="descriptions[]" class="form-control" id="description" placeholder="tasks description here">'
                         +'</div>'
                         +'<div class="form-group mt-4">'
-                            +'<label for="user_id">Users</label>'
+                            +'<label for="user_id"><strong>Users</strong></label>'
                             +'<select name="user_ids[]" id="project_id" class="form-control">'
                                 +'<option value="" selected>Choose User ...</option>'
                                 +'@foreach ( $users as $user )'

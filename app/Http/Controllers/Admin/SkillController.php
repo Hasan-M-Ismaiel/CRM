@@ -9,6 +9,7 @@ use App\Models\Project;
 use App\Services\MatcherUserProjectSkillsService;
 use App\Models\Skill;
 use App\Models\User;
+use App\Services\RenderSkillsTableService;
 use Illuminate\Support\Facades\Log;
 
 class SkillController extends Controller
@@ -41,13 +42,27 @@ class SkillController extends Controller
      */
     public function store(SkillStoreRequest $request)
     {
-        foreach ($request->get('names') as $name) {
-            Skill::create([
-                'name' => $name
-            ]);
+        $skills = $request->get('names');
+
+        //double check for the validation
+        foreach($skills as $skill){
+            if($skill== null){
+                return redirect()->back()->with('message', 'the skill/skills not filled');;
+            }
         }
 
-        return redirect()->route('admin.skills.index')->with('message', 'the skill/skills has been created sucessfully');;
+        // if the user click create without adding information in the fields
+        if(sizeof($skills)>0){
+            foreach ($request->get('names') as $name) {
+                Skill::create([
+                    'name' => $name
+                ]);
+            }
+            return redirect()->route('admin.skills.index')->with('message', 'the skill/skills has been created sucessfully');;
+        } else {
+            return redirect()->back()->with('message', 'the skill/skills not filled');;
+        }
+
     }
 
     /**
@@ -99,69 +114,144 @@ class SkillController extends Controller
     // this not should be here - it should be in another service class 
     public function getUsersWithSkills ()
     {
+        //all skills from database to compare with 
+        $Basicskills = Skill::all();
+
+        $affectedUsers = collect();
+        $status="notAffected";
+        // the matched users
+        $users = null;
+
+        //all the skills - assigned + new added
         $requiredSkills = array();
 
         $assigned_skills = request()->assigned_skills;
         $new_skills = request()->new_skills;
-        $from = request()->from;
+        $from = request()->from; //create | edit
 
-        // get the users for the project before editing 
-        $project_id = request()->project_id;
-        $project = Project::find($project_id);
-        
-        // return $projectUsers;
-
-        if($assigned_skills !=null){
-            $skills = Skill::find($assigned_skills);
-            foreach($skills as $skill){
-                array_push($requiredSkills, $skill->name);
-            }
-            if($new_skills != null){
-                $requiredSkills = array_merge($requiredSkills, $new_skills);
-            }
-        } else {
-            return '';
+        if($from == "edit"){
+            // get the users for the project before editing 
+            $project_id = request()->project_id;
+            $project = Project::find($project_id);
         }
 
-        
-        $MatcherUserProjectSkills = new MatcherUserProjectSkillsService($requiredSkills);
-        $matchedUsers =  $MatcherUserProjectSkills->getMatchedUsersToProject();
+        if($from=="create"){
+            // not check any item and not add any field
+            if($assigned_skills==null && $new_skills== null){
+                $message = '<h4 class="text-center mb-5" style="color: #673AB7;">there is no skills selected please add at least one </h4>';
+                $statusCreate='noSkills';
+                return json_encode(array($statusCreate, $message));
+            }
 
-        
+            // if check some skills and were number of selected skills > 0 // then add them to the requrired array
+            if($assigned_skills!=null && sizeof($assigned_skills) > 0){
+                $skills = Skill::find($assigned_skills);
+                foreach($skills as $skill){
+                    array_push($requiredSkills, $skill->name);
+                }
+            }
+            
+            // if the user does add new skills 
+            if($new_skills!=null){
+                if(sizeof($new_skills) > 0){    //this is worthless
+                    foreach($new_skills as $new_skill){ // check if the skilled that entered is not exist in the database
+                        foreach($Basicskills as $skill){
+                            if($skill->name == $new_skill){
+                                $message = '<h4 class="text-center mb-5" style="color: #673AB7;">there is added skills that already exist in the list please select them from the list </h4>';
+                                $statusCreate='noSkills';
+                                return json_encode(array($statusCreate, $message));
+                            }
+                        }
+                    }
+                    // add the new skills to the required skills 
+                    $requiredSkills = array_merge($requiredSkills, $new_skills);
+                }
+            }
+        }elseif($from=="edit"){ //edit page
 
+            // if the user add skills in the check boxes - and even if the old skilles is let as it - then we have a assigned_skills array
+            // we get all the skills that it gives us 
+            if($assigned_skills!=null){
+                if(sizeof($assigned_skills) > 0){
+                    $skills = Skill::find($assigned_skills);
+                    foreach($skills as $skill){
+                        array_push($requiredSkills, $skill->name);
+                    }
+                }
+            }
 
-        // the users after editing skills in the edit project view  +  those are users that have the required skills (generally in the edit or create)
-        $users = User::find($matchedUsers);
-        // Log::info($matchedUsers);
-        
-        Log::info($project);
-        //if we create a project but we dont add any skills
-        if($project == null && $users == null){
-            return '<h4 class="text-center mb-5" style="color: #673AB7;">no users have those skills hire some one &#128513; </h4> ';
+            // get all the skills if the user add new skills in the page 
+            // if those skills are already in the database then return error message
+            //--->      // but the problem is when the user add field but let it empty - this case the request will back an ambisious error 
+            if($new_skills!=null){
+                if(sizeof($new_skills) > 0){
+                    foreach($new_skills as $new_skill){
+                        foreach($Basicskills as $skill){
+                            if($skill->name == $new_skill){
+                                $message = '<h4 class="text-center mb-5" style="color: #673AB7;">there is added skills that already exist in the list please select them from the list </h4>';
+                                $statusCreate='newSkillsEmptyFields';
+                                return json_encode(array($statusCreate, $message));
+                            }
+                        }
+                    }
+                    $requiredSkills = array_merge($requiredSkills, $new_skills);
+                }
+            }
+        }
+
+        // this heppen if the page is edit and we dont add any additional skills - there is just the old project skills
+        if(empty($requiredSkills)){
+        //--->     // if there is not skills then we have to return nothing 
+            $users = null;
+        }else{
+            $MatcherUserProjectSkills = new MatcherUserProjectSkillsService($requiredSkills); //$MatcherUserProjectSkills is an array of user matched ids
+            $matchedUsers =  $MatcherUserProjectSkills->getMatchedUsersToProject();
+            $users = User::find($matchedUsers);
+        }
+
+        //if we are in create project page and we dont have users matched with project skills
+        if(($from == "create" && $users->count()==0) || ($from == "create" && $users==null)){
+            $message = '<h4 class="text-center mb-5" style="color: #673AB7;">no users have those skills - alter skills or hire some one &#128513; dont warry the project will be created and you can assign the users later</h4> ';
+            $statusCreate='NoUsersFound';
+            return json_encode(array($statusCreate, $message));
         }
     
-        // if($project != null){
-        
-        // }
-        $projectUsers = $project->users()->get();
-        
-        if($users->count() > $projectUsers->count()){
-            $diffUsers = $users->diff($projectUsers);
-            $affectedUsers = null;
-        }elseif($users->count() < $projectUsers->count()){
-            $diffUsers = $projectUsers->diff($users);
-            $affectedUsers = $diffUsers;
-        }else{
-            $diffUsers = $users->diff($projectUsers);
-            $affectedUsers = null;
+        // here we are in the edit page 
+        if($from =="edit"){
+            //old project users
+            $projectUsers = $project->users()->get();
+            if($users != null){
+                foreach($projectUsers as $projectUser){
+                    if(!$users->contains($projectUser)){
+                        $affectedUsers->add($projectUser);
+                    }
+                }
+
+                if($affectedUsers->count()>0){
+                    $status="affected";
+                }else{
+                    $status="notAffected";
+                }
+                // if the users that we get from the mateched skills is more than the users project
+                // if($users->count() > $projectUsers->count()){
+                //     $diffUsers = $users->diff($projectUsers);
+                //     $affectedUsers = null;
+                // }elseif($users->count() < $projectUsers->count()){
+                //     $diffUsers = $projectUsers->diff($users);
+                //     $affectedUsers = $diffUsers;
+                // }else{
+                //     $diffUsers = $users->diff($projectUsers);
+                //     $affectedUsers = null;
+                // }
+                // $status="notAffected";
+                // if($affectedUsers !=null){
+                //     $status="affected";
+                // }
+            } else {
+                $affectedUsers = $project->users()->get();
+                $status="affected";
+            }
         }
-        $status="notAffected";
-        //$affectedUsers = $projectUsers->diff($diffUsers);
-        if($affectedUsers !=null){
-            // info($affectedUsers); //hasan2 + hasan3 
-            $status="affected";
-        }
-        
         
         // rendering the table
         if($from == 'create'){
@@ -181,7 +271,32 @@ class SkillController extends Controller
             foreach ($users as $user){
                 $var .= '<tr style="height: 60px;">';
                 $var .= '<th scope="row" class="align-middle">' . $iterator .'</th>';
-                $var .= '<td style="text-align: center; vertical-align: middle;"><input type="checkbox" id="user-'.$user->id.'" name="assigned_users[]" value="'. $user->id .'"></td>';
+                
+                //new added
+                $var .= '<td style="text-align: center; vertical-align: middle;">';
+                $var .= '<div class="avatar avatar-md mt-2">';
+                $var .= '<label class="labelexpanded_">';
+                $var .= '<input type="checkbox" class="m-1" id=user-"' . $user->id .'" name="assigned_users[]" value="'. $user->id .'">';
+                $var .= '<div class="checkbox-btns_ rounded-circle border-1">';
+
+                if($user->profile && $user->profile->getFirstMediaUrl("profiles")){
+                    $var .= '<img src="'. $user->profile->getFirstMediaUrl("profiles").'" alt="DP"  class="avatar-img  shadow ">';
+                }elseif($user->getFirstMediaUrl("users")){
+                    $var .= '<img src="'. $user->getMedia("users")[0]->getUrl("thumb").'" alt="DP"  class="avatar-img  shadow ">';
+                }else{
+                    $var .= '<img src="'. asset("images/avatar.png").'" alt="DP"  class="avatar-img  shadow ">';
+                }
+                $var .= '</div>';
+                $var .= '</input>';
+                $var .= '</label>';
+                $var .= '</div>';
+                $var .= '</td>';
+                // new added
+
+
+
+
+                // $var .= '<td style="text-align: center; vertical-align: middle;"><input type="checkbox" id="user-'.$user->id.'" name="assigned_users[]" value="'. $user->id .'"></td>';
                 $var .= '<td class="align-middle"><a href="'. route('admin.users.show', $user->id) .'" > '. $user->name . '</a></td>';
                 if($user->skills->count() >0){
                     $var .= '<td class="align-middle">';
@@ -199,12 +314,15 @@ class SkillController extends Controller
                 }
                 $var .= '<td class="align-middle"> open/close</td>';
                 $var .= '</tr>';
+                $iterator=$iterator+1;
             }
             $var .='</tbody>';
             $var .='</table>';
 
+            $status ='ok';
             return json_encode(array($status, $var));
-        }if($from == 'edit'){
+
+        }elseif($from == 'edit'){
             $modalData="";
             if($affectedUsers != null){
                 $modalData = '<div>';
@@ -218,7 +336,6 @@ class SkillController extends Controller
                 $status = "notAffected";
             }
 
-
             $var = '<table class="table table-striped mt-2">
             <thead>
                 <tr>
@@ -231,40 +348,72 @@ class SkillController extends Controller
                 </tr>
             </thead>
             <tbody>';
-            $iterator = 1;  
-            foreach ($users as $user){
-                $var .= '<tr style="height: 60px;">';
-                $var .= '<th scope="row" class="align-middle">' . $iterator .'</th>';
-                if($user->checkifAssignedToProject($project)){
-                    $var .= '<td style="text-align: center; vertical-align: middle;"><input type="checkbox" id="user-'.$user->id.'" name="assigned_users[]" value="'. $user->id .'"></td>';                
-                }else{
-                    $var .= '<td style="text-align: center; vertical-align: middle;"><input type="checkbox" id="user-'.$user->id.'" name="assigned_users[]" value="'. $user->id .'" checked ></td>';
-                }
-                $var .= '<td class="align-middle"><a href="'. route('admin.users.show', $user->id) .'" > '. $user->name . '</a></td>';
-                if($user->skills->count() >0){
-                    $var .= '<td class="align-middle">';
-                    foreach($user->skills as $skill){
-                        $var .= '<span class="badge bg-dark m-1">' . $skill->name . '</span>';
-                    }
-                    $var .= '</td>';
-                } else {
-                    $var .= '<td class="align-middle"> # </td>';
-                }
-                if($user->profile != null){
-                    $var .= '<td class="align-middle"><a href="'. route('admin.profiles.show', $user->id) . '" >'. $user->profile->nickname .'</a></td>';
-                }else {
-                    $var .= '<td class="align-middle"> # </td>';
-                }
-                $var .= '<td class="align-middle"> open/close</td>';
-                $var .= '</tr>';
-            }
-            $var .='</tbody>';
-            $var .='</table>';
+            $iterator = 1;
+            if($users!=null){  
+                foreach ($users as $user){
+                    $var .= '<tr style="height: 60px;">';
+                    $var .= '<th scope="row" class="align-middle">' . $iterator .'</th>';
 
-            return json_encode(array($status, $modalData, $var));
+                    //new added
+                    $var .= '<td style="text-align: center; vertical-align: middle;">';
+                    $var .= '<div class="avatar avatar-md mt-2">';
+                    $var .= '<label class="labelexpanded_">';
+                    if($user->checkifAssignedToProject($project)){
+                        $var .= '<input type="checkbox" class="m-1" id=user-"' . $user->id .'" name="assigned_users[]" value="'. $user->id .'">';
+                    }else{
+                        $var .= '<input type="checkbox" class="m-1" id=user-"' . $user->id .'" name="assigned_users[]" value="'. $user->id .'" checked>';
+                    }
+                    $var .= '<div class="checkbox-btns_ rounded-circle border-1">';
+    
+                    if($user->profile && $user->profile->getFirstMediaUrl("profiles")){
+                        $var .= '<img src="'. $user->profile->getFirstMediaUrl("profiles").'" alt="DP"  class="avatar-img  shadow ">';
+                    }elseif($user->getFirstMediaUrl("users")){
+                        $var .= '<img src="'. $user->getMedia("users")[0]->getUrl("thumb").'" alt="DP"  class="avatar-img  shadow ">';
+                    }else{
+                        $var .= '<img src="'. asset("images/avatar.png").'" alt="DP"  class="avatar-img  shadow ">';
+                    }
+                    $var .= '</div>';
+                    $var .= '</input>';
+                    $var .= '</label>';
+                    $var .= '</div>';
+                    $var .= '</td>';
+                    //new added
+
+
+                    // the olde version
+                    // if($user->checkifAssignedToProject($project)){
+                    //     $var .= '<td style="text-align: center; vertical-align: middle;"><input type="checkbox" id="user-'.$user->id.'" name="assigned_users[]" value="'. $user->id .'"></td>';                
+                    // }else{
+                    //     $var .= '<td style="text-align: center; vertical-align: middle;"><input type="checkbox" id="user-'.$user->id.'" name="assigned_users[]" value="'. $user->id .'" checked ></td>';
+                    // }
+                    $var .= '<td class="align-middle"><a href="'. route('admin.users.show', $user->id) .'" > '. $user->name . '</a></td>';
+                    if($user->skills->count() >0){
+                        $var .= '<td class="align-middle">';
+                        foreach($user->skills as $skill){
+                            $var .= '<span class="badge bg-dark m-1">' . $skill->name . '</span>';
+                        }
+                        $var .= '</td>';
+                    } else {
+                        $var .= '<td class="align-middle"> # </td>';
+                    }
+                    if($user->profile != null){
+                        $var .= '<td class="align-middle"><a href="'. route('admin.profiles.show', $user->id) . '" >'. $user->profile->nickname .'</a></td>';
+                    }else {
+                        $var .= '<td class="align-middle"> # </td>';
+                    }
+                    $var .= '<td class="align-middle"> open/close</td>';
+                    $var .= '</tr>';
+                    $iterator=$iterator+1;
+                }
+                $var .='</tbody>';
+                $var .='</table>';
+
+                return json_encode(array($status, $modalData, $var));
+            }else{
+                $var = '<h4 class="text-center mb-5" style="color: #673AB7;">no users appear because there is not skills required for this project please add skills </h4>';
+                return json_encode(array($status, $modalData, $var));
+            }
         }
-        
-        // return $matchedUsers;
     }
 
     public function getProjectsWithSkills ()
@@ -273,6 +422,37 @@ class SkillController extends Controller
         $MatcherUserProjectSkills = new MatcherUserProjectSkillsService($requiredSkills);
         $projects =  $MatcherUserProjectSkills->getMatchedProjectsToUser();
         return $projects;
+    }
+
+
+    public function getSortedSkills ()
+    {
+        // $this->authorize('viewAny', User::class);
+       
+        $skills = Skill::orderBy('name')->get();
+
+        $renderedTable = new RenderSkillsTableService($skills);
+        $table = $renderedTable->getTable();
+
+        return json_encode(array($table));
+    }
+
+    public function getSearchResult ()
+    {
+        $queryString = request()->queryString;
+
+        //get all the matched users
+        if ($queryString != null ) {
+            $skills = Skill::where('name', 'like', '%' . $queryString . '%')->get();
+        } else {
+            $skills = Skill::all();
+        }
+
+        $renderedTable = new RenderSkillsTableService($skills);
+        $table = $renderedTable->getTable();
+
+        return json_encode(array($table));
+
     }
 
 }

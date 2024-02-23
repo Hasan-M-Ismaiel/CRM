@@ -189,7 +189,7 @@
                                     </div>
 
                                 </div>
-                                <input type="submit" type="button" class="next action-button" />
+                                <input id="createproject" type="submit" type="button" class="next action-button" />
                                 <!-- <button type="submit" class="btn btn-primary mt-5">Create</button> -->
                                 <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                             </fieldset>
@@ -200,6 +200,24 @@
         </div>
     </div>
 </div>
+
+<style>
+    .labelexpanded_ > input {
+        display: none;
+    }
+
+    .labelexpanded_ input:checked + .checkbox-btns_ {
+        border-style: solid;
+        border-color: #50ef44;
+    }
+
+    .checkbox-btns_ {
+        cursor: pointer;
+        background-color: #eaeaea;
+    }
+</style>
+
+
 <script>
     $(document).ready(function(){
     var current_fs, next_fs, previous_fs; //fieldsets
@@ -277,6 +295,7 @@
 
     });
 </script>
+
 <script type="text/javascript">
     $("#rowAdder").click(function () {
         newRowAdd =
@@ -292,6 +311,7 @@
         $(this).parents("#row").remove();
     })
 </script>
+
 <script>
     $('#getUsers').on('click', function(){
         var assigned_skills = [];
@@ -315,6 +335,7 @@
 
         // to clear the list if the user change the selected option again
         $('#usersTable').empty();
+        $('#loading').show();     
         $.ajax({
             url: "{{ route('admin.skills.getUsersWithSkills') }}",
             method: 'post',
@@ -324,9 +345,26 @@
                 new_skills: new_skills,
                 from: "create",
             },
-            success: function(result){
-                // alert(result);
-                $('#usersTable').append(result);
+            success: function(output){
+                var result = $.parseJSON(output);
+                if(result[0] =='noSkills'){
+                    $('#usersTable').append(result[1]);
+                    $('#createproject').prop('disabled', true);
+                    $('#loading').hide();
+                } else if(result[0]=='newSkillsEmptyFields')    {
+                    $('#usersTable').append(result[1]);
+                    $('#createproject').prop('disabled', true);
+                    $('#loading').hide();
+                } else if(result[0] == 'NoUsersFound'){
+                    $('#usersTable').append(result[1]);
+                    $('#createproject').prop('disabled', false);
+                    // $('#createproject').prop('disabled', true);  // pass even if there is no users selected (project with out users)
+                    $('#loading').hide();   
+                }else if(result[0] == 'ok') {
+                    $('#usersTable').append(result[1]);
+                    $('#createproject').prop('disabled', false);
+                    $('#loading').hide();   
+                }
             }
         });
     });

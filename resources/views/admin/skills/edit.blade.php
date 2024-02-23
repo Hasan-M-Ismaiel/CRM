@@ -18,20 +18,27 @@
                 </ul>
             </div>
         @endif
-        <div class="card">
-            <div class="card-body">
-                <h2 class="card-title mb-4">{{ $page }}</h2>
-                <form class="row g-3" action='{{ route("admin.skills.update", $skill) }}' method="POST">
-                    @csrf
-                    @method('PATCH')
-                        <div class="col-md-6">
-                            <label for="name">Skill name</label>
-                            <input type="text" name="name" class="form-control" id="name" placeholder="add the name of the skill" value="{{ $skill->name }}">
+        <div class="card p-5">
+            <div class="row border">
+            <!--header section-->
+                <div class="col">
+                    <div class="container-fluid my-3  ">
+                        <div class="row justify-content-center">
+                            <div class="card-create-project pt-4 my-3 mx-5 px-5">
+                            <h2 id="heading">{{ $page }}</h2>
+                            <p id="pcreateProject">edit the skill information here</p>
+                            <form class="row g-3" action='{{ route("admin.skills.update", $skill) }}' method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <div class="card border-success p-3">
+                                    <label for="name"><strong> Skill name</strong></label>
+                                    <input type="text" name="name" class="form-control" id="name" placeholder="add the name of the skill" value="{{ $skill->name }}">
+                                </div>
+                            </form>
+                            <x-forms.update-button />
                         </div>
-                    <button type="submit" class="btn btn-primary mt-5">Update</button>
-                </form>
+                    </div> 
+                </div>
             </div>
-        </div> 
-    </div>
-</div>
+        </div>
 @endsection

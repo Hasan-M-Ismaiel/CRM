@@ -31,7 +31,7 @@
                                         <h5 class="card-title col">{{ $project->title }}</h5>
                                         <!--green | red -->
                                         <x-project-status :status="$project->status" />
-                                        <span class="border-start border-3 border-primary ps-2 "> deadLine: {{ $project->deadline }}</span>|<span># of tasks: <span id="num_of_tasks">{{ $project->tasks->count()}}</span></span>
+                                        <span class="border-start border-3 border-primary ps-2 "> deadLine: {{ $project->deadline }}</span>|<span># of tasks: <span id="number_of_tasks">{{ $project->tasks->count()}}</span></span>
                                         @can('client_show')
                                         <br><strong>owner:</strong> <a href="{{ route('admin.clients.show', $project->client->id) }}" style="text-decoration: none;">{{ $project->client->name }} </a>@endcan
                                         <span class="text-muted h6 col">Created at <time>{{ $project->created_at->diffForHumans() }}</time></span>
@@ -76,11 +76,11 @@
                                                             @if($project->skills->count()>0)
                                                             <div class="col-md-auto pt-1">
                                                                 @foreach ($project->skills as $skill)
-                                                                    <span class="badge m-1" style="background: #673AB7;"><a href="{{ route('admin.skills.show', $skill->id) }}" class="text-white" style="text-decoration: none;">{{ $skill->name }}</a>{{ $skill->name }}</span>
+                                                                    <span class="badge m-1" style="background: #673AB7;"><a href="{{ route('admin.skills.show', $skill->id) }}" class="text-white" style="text-decoration: none;">{{ $skill->name }}</a></span>
                                                                 @endforeach
                                                             </div>
                                                             @else
-                                                            <div class="col-md-auto ">
+                                                            <div class="col-md-auto pt-2 ">
                                                                 <span class="text-danger">no skills assigned yet.</span>
                                                             </div>
                                                             @endif
@@ -92,7 +92,7 @@
                                             <div class="container">
                                                 <div class="card pt-2 pb-0 px-3">
                                                     <div class="bg-white px-0 ">
-                                                        <div class="row">
+                                                        <div class="row mt-2">
                                                             <div class=" col-md-auto ">
                                                                 <a href="#" class="btn btn-outlined btn-black text-muted bg-transparent"
                                                                     data-wow-delay="0.7s">
@@ -108,19 +108,19 @@
                                                                     <li class="list-inline-item"> 
                                                                         @foreach ($project->users as $user)
                                                                         <a href="{{ route('admin.users.show', $user->id) }}" style="text-decoration: none;">
-                                                                            @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
-                                                                                <img
-                                                                                src='{{ $user->profile->getFirstMediaUrl("profiles") }}'
-                                                                                alt="DP"  class="  rounded-circle img-fluid  border border-success shadow mb-1" width="35" height="35">
-                                                                            @elseif($user->getFirstMediaUrl("users"))
-                                                                            <img
-                                                                                src='{{ $user->getMedia("users")[0]->getUrl("thumb") }}'
-                                                                                alt="DP"  class="  rounded-circle img-fluid border border-success shadow mb-1" width="35" height="35">
-                                                                            @else
-                                                                            <img
-                                                                                src='{{ asset("images/avatar.png") }}'
-                                                                                alt="DP"  class="  rounded-circle img-fluid border border-success shadow mb-1" width="35" height="35">
-                                                                            @endif
+                                                                        @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
+                                                                            <div class="avatar avatar-md">
+                                                                                <img src='{{ $user->profile->getFirstMediaUrl("profiles") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                                            </div>
+                                                                        @elseif($user->getFirstMediaUrl("users"))
+                                                                        <div class="avatar avatar-md">
+                                                                            <img src='{{ $user->getMedia("users")[0]->getUrl("thumb") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                                        </div>
+                                                                        @else
+                                                                        <div class="avatar avatar-md">
+                                                                            <img src='{{ asset("images/avatar.png") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                                        </div>
+                                                                        @endif
                                                                         </a>
                                                                         @endforeach
                                                                     </li>
@@ -161,11 +161,11 @@
                                                                         role="button">alter user</a>@endcan
                                                                 @can('task_edit')
                                                                 @if($task->status == "pending")
-                                                                    <a class="btn btn-primary ms-1" 
+                                                                    <button class="btn btn-primary ms-1" 
                                                                         role="button"
                                                                         id="mark_task_as_read"
                                                                         onclick="markAsAccepted({{$task->id}})"
-                                                                        >mark as complete</a>@endif @endcan
+                                                                        >mark as complete</button>@endif @endcan
                                                                 @can('task_show')
                                                                     <a class="btn btn-primary" 
                                                                         href="{{ route('admin.tasks.show', $task) }}" 
@@ -181,9 +181,9 @@
                                                             @endif
                                                             <div class="card-text"><small class="text-muted">started at {{$task->created_at->diffForHumans()}}</small></div>
                                                             @if($task->status == "closed")
-                                                            <div class="card-text"><small class="text-muted">finished at 3 mins ago</small></div>
+                                                            <div id="finished" class="card-text"><small class="text-muted">finished at 3 mins ago</small></div>
                                                             @else
-                                                            <div class="card-text"><small class="text-muted">not finished yet</small></div>
+                                                            <div id="notfinished" class="card-text"><small class="text-muted">not finished yet</small></div>
                                                             @endif
                                                         </div>
                                                     </div>
@@ -212,6 +212,7 @@
     function deleteTask(taskId){
         numberOfTasks = {!! $project->tasks->count() !!};
         if (confirm('Are you sure?') == true) {
+            $('#loading').show();
             $.ajax({
                 url: "{{ route('admin.tasks.remove') }}",
                 method: 'post',
@@ -221,8 +222,9 @@
                 },
                 success: function(result){
                     document.getElementById(taskId).remove();
-                    $("#num_of_tasks").html(numberOfTasks - 1);
-                    numberOfTasks = numberOfTasks - 1; 
+                    $("#number_of_tasks").html(numberOfTasks - 1);
+                    numberOfTasks = numberOfTasks - 1;
+                    $('#loading').hide();
                 }
             });
         }
@@ -231,6 +233,7 @@
     function markAsAccepted(taskId){
 
         if (confirm('Are you sure?') == true) {
+            $('#loading').show();
             $.ajax({
                 url: "{{ route('admin.tasks.accept') }}",
                 method: 'get',
@@ -240,6 +243,10 @@
                 },
                 success: function(result){
                     document.getElementById(taskId).classList.replace("border-warning", "border-danger");
+                    $('#mark_task_as_read').hide();
+                    $('#notfinished').hide();
+                    $('#finished').show();
+                    $('#loading').hide();
                 }
             });
         }

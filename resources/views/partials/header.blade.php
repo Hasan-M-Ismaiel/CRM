@@ -23,20 +23,33 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
                             <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
                         </svg>
-                        <em id = "num_of_notification" class="badge bg-danger text-white px-2 rounded-4"></em>
+                        <em id ="num_of_notification" class="badge bg-danger text-white px-2 rounded-4"></em>
                     @else 
                         <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
                             <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
                         </svg>
-                        <em id = "num_of_notification" class="badge bg-danger text-white px-2 rounded-4">{{ auth()->user()->unreadNotifications->count() }}</em>
+                        <em id ="num_of_notification" class="badge bg-danger text-white px-2 rounded-4">{{ auth()->user()->unreadNotifications->count() }}</em>
                     @endif
                 </a>
             </li>
+
             <li class="nav-item">
-                <a class="nav-link" href="#">
-                <svg class="icon icon-lg">
-                    <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-list-rich') }}"></use>
-                </svg></a></li>
+                <a class="nav-link iconClass" href="{{ route('admin.tasks.index') }}">
+                    @if(auth()->user()->numberOfOpenedTasks==0)
+                    <svg class="icon icon-lg">
+                        <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-list-rich') }}"></use>
+                    </svg>
+                    <em id ="num_of_tasks" class="badge bg-danger text-white px-2 rounded-4"></em>
+                    @else
+                    <svg class="icon icon-lg">
+                        <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-list-rich') }}"></use>
+                    </svg>
+                    <em id ="num_of_tasks" class="badge bg-danger text-white px-2 rounded-4">{{ auth()->user()->numberOfOpenedTasks }}</em>
+                    @endif
+                </a>
+            </li>
+
+            <!--chat-->
             <li class="nav-item">
                 <a class="nav-link chatParentClass" href="#">
                     <svg width="25" height="25">
@@ -48,6 +61,7 @@
         </ul>
         <ul class="header-nav ms-3">
             <li class="nav-item dropdown">
+                <!--image-->
                 <a class="nav-link py-0 imageParentClass" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     @if(Auth::user()->profile && Auth::user()->profile->getFirstMediaUrl("profiles"))
                         <div class="avatar avatar-md">
@@ -74,6 +88,7 @@
                         </span>
                     @endif
                 </a>
+                <!--drop down-->
                 <div class="dropdown-menu dropdown-menu-end pt-0">
                     <div class="dropdown-header bg-light py-2">
                         <div class="fw-semibold">Account</div>
@@ -89,15 +104,17 @@
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-envelope-open') }}"></use>
                         </svg> Messages<span class="badge badge-sm bg-success ms-2">42</span>
                     </a>
-                    <a class="dropdown-item text-muted" style="pointer-events: none; cursor: default;" href="#">
+                    <a class="dropdown-item" href="{{ route('admin.tasks.index') }}">
                         <svg class="icon me-2">
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-task') }}"></use>
-                        </svg> Tasks<span class="badge badge-sm bg-danger ms-2">42</span>
-                    </a>
-                    <a class="dropdown-item text-muted" style="pointer-events: none; cursor: default;" href="#">
-                        <svg class="icon me-2">
-                            <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-comment-square') }}"></use>
-                        </svg> Comments<span class="badge badge-sm bg-warning ms-2">42</span>
+                        </svg> Tasks<span class="badge badge-sm bg-danger ms-2">
+                            @if(auth()->user()->hasRole('admin'))
+                            <?php $tasks = App\Models\Task::all();$tasks->count();?>
+                            {{$tasks->count()}}
+                            @else
+                            {{auth()->user()->numberOfAssignedTasks}}
+                            @endif
+                        </span>
                     </a>
                     <div class="dropdown-header bg-light py-2">
                         <div class="fw-semibold">Settings</div>
@@ -119,7 +136,7 @@
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-credit-card') }}"></use>
                         </svg> Payments<span class="badge badge-sm bg-secondary ms-2">42</span>
                     </a>
-                    <a class="dropdown-item text-muted" style="pointer-events: none; cursor: default;" href="#">
+                    <a class="dropdown-item" href="{{ route('admin.projects.index') }}">
                         <svg class="icon me-2">
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-file') }}"></use>
                         </svg> Projects<span class="badge badge-sm bg-primary ms-2">42</span>
@@ -130,11 +147,17 @@
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-lock-locked') }}"></use>
                         </svg> Lock Account
                     </a>
-                    <a class="dropdown-item text-muted" style="pointer-events: none; cursor: default;" href="#">
+                    <a class="dropdown-item" href="{{ route('logout') }}"
+                                                    onclick="event.preventDefault();
+                                                    document.getElementById('logout-form').submit();">
                         <svg class="icon me-2">
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-account-logout') }}"></use>
-                        </svg> Logout
+                        </svg> 
+                        Logout
                     </a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                        @csrf
+                    </form>
                 </div>
             </li>
         </ul>

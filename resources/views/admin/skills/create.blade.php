@@ -18,57 +18,61 @@
                 </ul>
             </div>
         @endif
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-6">
-                        <h2 class="card-title mb-4">{{ $page }}</h2>
-                    </div>
-                </div>
-                
-                <form class="row g-3" action='{{ route("admin.skills.store") }}' method="POST">
-                    @csrf
-                    <div class="bodyflex">
-                        <div style="width:50%;">
-                            <div class="profile-edit-btn mt-4 row">
-                                <p class="text-center">please add value to all added inputes</p>
-                            </div>
-                            <div class="">
-                                <div class="col-lg-12">
-                                    <div id="row">
-                                        <div class="input-group m-3">
-                                            <div class="input-group-prepend">
-                                                <button class="btn btn-danger"
-                                                        id="DeleteRow"
-                                                        type="button">
-                                                    <i class="bi bi-trash"></i>
-                                                    Delete
+        <div class="card p-5">
+            <div class="row border">
+            <!--header section-->
+                <div class="col">
+                    <div class="container-fluid my-3  ">
+                        <div class="row justify-content-center">
+                            <div class="card-create-project pt-4 my-3 mx-5 px-5">
+                            <h2 id="heading">{{ $page }}</h2>
+                            <p id="pcreateProject">create new skill that your projects or users have</p>
+                        
+                            <form class="" action='{{ route("admin.skills.store") }}' method="POST">
+                                @csrf
+                                <div class="bodyflex">
+                                    <div style="width:100%;">
+                                        <div class="form-card border-success border rounded pb-2">
+                                            <div class="border px-2 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
+                                                <h2 class="fs-title">Add Skills:</h2>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div id="row">
+                                                    <div class="input-group mt-5">
+                                                        <div class="input-group-prepend">
+                                                            <button class="btn btn-danger"
+                                                                    id="DeleteRow"
+                                                                    type="button">
+                                                                <i class="bi bi-trash"></i>
+                                                                Delete
+                                                            </button>
+                                                        </div>
+                                                        <input name="names[]" type="text" class="form-control m-input"> <!--the first one-->
+                                                    </div>
+                                                </div>
+
+                                                <div id="newinput"></div>   <!--the added one-->
+                                                <button id="rowAdder" type="button" class=" mt-3 btn btn-dark">
+                                                    <span class="bi bi-plus-square-dotted ">
+                                                    </span> ADD
                                                 </button>
                                             </div>
-                                            <input name="names[]" type="text" class="form-control m-input"> <!--the first one-->
                                         </div>
                                     </div>
-
-                                    <div id="newinput"></div>   <!--the added one-->
-                                    <button id="rowAdder" type="button" class="btn btn-dark">
-                                        <span class="bi bi-plus-square-dotted">
-                                        </span> ADD
-                                    </button>
                                 </div>
-                            </div>
+                                <x-forms.create-button />
+                            </form>
                         </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary mt-5">Create</button>
-                </form>
+                    </div> 
+                </div>
             </div>
-        </div> 
+        </div>
     </div>
 </div>
 <script type="text/javascript">
     $("#rowAdder").click(function () {
         newRowAdd =
-            '<div id="row"> <div class="input-group m-3">' +
+            '<div id="row"> <div class="input-group mt-5">' +
             '<div class="input-group-prepend">' +
             '<button class="btn btn-danger" id="DeleteRow" type="button">' +
             '<i class="bi bi-trash"></i> Delete</button> </div>' +

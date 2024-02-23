@@ -22,16 +22,12 @@ class TaskGroupsStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //check those
-            // "titles"    => "required|array",
-            // "titles.*"  => "required|string|distinct|min:2", //least 2 characters
-            // "descriptions"    => "required|array",
-            // "descriptions.*"  => "required|string|distinct|min:2", //least 2 characters
-            // "user_ids"    => "required|array",
-            // "user_ids.*"  => "required|string|distinct|min:2", //least 2 characters
-    //-->   // "statuses*"    => "required|array",
-            // "user_ids.*"  => "required|string|distinct|min:2", //least 2 characters
-        
+            "titles"    => "required|array",
+            "titles.*"  => "required|string|min:2", //least 2 characters
+            "descriptions"    => "required|array",
+            "descriptions.*"  => "required|string|min:2", //least 2 characters
+            "user_ids"    => "required|array",
+            "user_ids.*"  => "required|integer", //least 2 characters
         ];
     }
 }
