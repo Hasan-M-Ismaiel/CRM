@@ -29,8 +29,8 @@
                             @method('PATCH')
                             <!--project information-->
                             <fieldset class="mt-5">
-                                <div class="form-card border px-2 pb-2">
-                                    <div class="row border px-3 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
+                                <div class="form-card border px-3  pb-3 border-success rounded">
+                                    <div class="row border px-2 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
                                         <div class="col-7">
                                             <h2 class="fs-title">Project Information:</h2>
                                         </div>
@@ -38,7 +38,7 @@
                                             <h2 class="steps">Step 1 - 4</h2>
                                         </div>
                                     </div>
-                                    <label class="fieldlabels mt-2" for="title">Title:</label>
+                                    <label class="fieldlabels mt-3" for="title">Title:</label>
                                     <input id="title" type="text" name="title" placeholder="add the title of the project" value="{{ $project->title }}"/>
                                     
                                     <label class="fieldlabels" for="description">Description:</label>
@@ -60,8 +60,8 @@
                             </fieldset>
                             <!--skills-->
                             <fieldset class="mt-5">
-                                <div class="form-card border px-2 pb-2">
-                                    <div class="row border px-3 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
+                                <div class="form-card border px-3  pb-3 border-success rounded">
+                                    <div class="row border px-2 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
                                         <div class="col-7">
                                             <h2 class="fs-title">Alter required Skills:</h2>
                                         </div>
@@ -133,8 +133,8 @@
                             </fieldset>
                             <button type="button" id="getUsers" class="btn btn-primary">Press To get Users</button>
                             <fieldset class="mt-5">
-                                <div class="form-card border px-2 pb-2">
-                                    <div class="row border px-3 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
+                                <div class="form-card border px-3  pb-3 border-success rounded">
+                                    <div class="row border px-2 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
                                         <div class="col-7">
                                             <h2 class="fs-title">Alter Users:</h2>
                                         </div>
@@ -158,11 +158,45 @@
                                                 @foreach ($users as $user)
                                                     <tr style="height: 60px;">
                                                         <th scope="row" class="align-middle">{{ $loop->iteration }}</th>
+
                                                         @if($project != null)
-                                                        <td style="text-align: center; vertical-align: middle;"><input type="checkbox" id="user-{{$user->id}}" name="assigned_users[]" value="{{$user->id}}" {{ $user->checkifAssignedToProject($project) ? '' : 'checked' }}></td>
-                                                        @else 
-                                                        <td style="text-align: center; vertical-align: middle;"><input type="checkbox" id="user-{{$user->id}}" name="assigned_users[]" value="{{$user->id}}"></td>
+                                                        <td style="text-align: center; vertical-align: middle;">
+                                                            <div class="avatar avatar-md mt-2">
+                                                                <label class="labelexpanded_">
+                                                                    <input type="checkbox" class="m-1" id="user-{{$user->id}}" name="assigned_users[]" value="{{$user->id}}"  {{ $user->checkifAssignedToProject($project) ? '' : 'checked' }}>
+                                                                        <div class="checkbox-btns_ rounded-circle border-1">
+                                                                            @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
+                                                                            <img src='{{$user->profile->getFirstMediaUrl("profiles")}}' alt="DP"  class="avatar-img  shadow">
+                                                                            @elseif($user->getFirstMediaUrl("users"))
+                                                                            <img src='{{$user->getMedia("users")[0]->getUrl("thumb")}}' alt="DP"  class="avatar-img  shadow">
+                                                                            @else
+                                                                            <img src='{{asset("images/avatar.png")}}' alt="DP"  class="avatar-img  shadow ">
+                                                                            @endif
+                                                                        </div>
+                                                                    </input>
+                                                                </label>
+                                                            </div>
+                                                        </td>
+                                                        @else   
+                                                        <td style="text-align: center; vertical-align: middle;">
+                                                            <div class="avatar avatar-md mt-2">
+                                                                <label class="labelexpanded_">
+                                                                    <input type="checkbox" class="m-1" id="user-{{$user->id}}" name="assigned_users[]" value="{{$user->id}}">
+                                                                        <div class="checkbox-btns_ rounded-circle border-1">
+                                                                            @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
+                                                                            <img src='{{$user->profile->getFirstMediaUrl("profiles")}}' alt="DP"  class="avatar-img  shadow">
+                                                                            @elseif($user->getFirstMediaUrl("users"))
+                                                                            <img src='{{$user->getMedia("users")[0]->getUrl("thumb")}}' alt="DP"  class="avatar-img  shadow">
+                                                                            @else
+                                                                            <img src='{{asset("images/avatar.png")}}' alt="DP"  class="avatar-img  shadow ">
+                                                                            @endif
+                                                                        </div>
+                                                                    </input>
+                                                                </label>
+                                                            </div>
+                                                        </td>
                                                         @endif
+
                                                         <td class="align-middle"><a href="{{ route('admin.users.show', $user->id) }}" >{{ $user->name }} </a></td>
                                                         @if($user->skills->count() >0)
                                                         <td class="align-middle">
@@ -184,12 +218,11 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <!-- <x-users-matched-table :users="$users" :project="$project"  /> -->
                                 </div>
                             </fieldset>
                             <fieldset class="mt-5">
-                                <div class="form-card border px-2 pb-5">
-                                    <div class="row border px-3 pb-5 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);" >
+                                <div class="form-card border px-3  pb-5 border-success rounded">
+                                    <div class="row border px-2 pb-3 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);" >
                                         <div class="col-7">
                                             <h2 class="fs-title">Alter project status:</h2>
                                         </div>
@@ -197,7 +230,7 @@
                                             <h2 class="steps">Step 5 - 5</h2>
                                         </div>
                                     </div>
-                                    <div class="mt-5  mb-5">
+                                    <div class="mt-5 mb-5">
                                     @if($project->status)
                                         <input type="radio" name="status" id="close" value="true" checked />
                                         <input type="radio" name="status" id="open" value="false"/>
@@ -217,7 +250,14 @@
                                     @endif
                                     </div>
                                 </div>
-                                <input type="submit" type="button" class="next action-button mt-5" />
+
+                                <button id="updateproject" type="submit" class="action-create-button" onclick="showSpinner()">
+                                    <span id="spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                    Update
+                                </button>
+
+                                
+                                <!-- <input id="updateproject" type="submit" type="button" class="next action-button mt-5" /> -->
                             </fieldset>
                         </form>
                     </div>
@@ -248,13 +288,29 @@
         <p>You are trying to unassign users from this project by altering the skills:</p>
         <p>affected users: </p>
         <p id="affectedUsers"></p>
-
       </div>
     </div>
   </div>
 </div>
-<!--Modal: modalPush-->
 
+<!--this is for the checkbox image-->
+<style>
+    .labelexpanded_ > input {
+        display: none;
+    }
+
+    .labelexpanded_ input:checked + .checkbox-btns_ {
+        border-style: solid;
+        border-color: #50ef44;
+    }
+
+    .checkbox-btns_ {
+        cursor: pointer;
+        background-color: #eaeaea;
+    }
+</style>
+
+<!--Modal: modalPush-->
 <script type="text/javascript">
     $("#rowAdder").click(function () {
         newRowAdd =
@@ -270,6 +326,7 @@
         $(this).parents("#row").remove();
     })
 </script>
+
 <script>
     $('#getUsers').on('click', function(){  
         var assigned_skills = [];
@@ -293,7 +350,7 @@
 
         // to clear the list if the user change the selected option again 
         $('#usersTable').empty();     
-
+        $('#loading').show();     
         $.ajax({
             url: "{{ route('admin.skills.getUsersWithSkills') }}",
             method: 'post',
@@ -308,16 +365,34 @@
                 var result = $.parseJSON(output);
                 if(result[0] =='affected'){
                     $('#usersTable').append(result[2]);  
+                    $('#affectedUsers').empty();        //clear the old data
                     $('#affectedUsers').append(result[1]);
+                    $('#updateproject').prop('disabled', false);
+                    $('#loading').hide();     
                     $('#modalPush').modal('show'); 
-                    // alert(result[0]);
                 }else if(result[0] == 'notAffected'){
                     $('#usersTable').append(result[2]);  
+                    $('#updateproject').prop('disabled', false);
+                    $('#loading').hide();     
+                }else if(result[0]=='FieldsEmpty'){
+                    $('#usersTable').append(result[1]);
+                    $('#updateproject').prop('disabled', false);
+                    $('#loading').hide();     
+                }else if(result[0]=='newSkillsEmptyFields'){
+                    $('#usersTable').append(result[1]);
+                    $('#updateproject').prop('disabled', true);
+                    $('#loading').hide();     
                 }
-                //  alert(result);
             }
         });
     });
+</script>
+
+<script>
+function showSpinner(){
+        $('#spinner').show();
+        $('#updateproject').text('updating...');
+    }
 </script>
 
 @endsection

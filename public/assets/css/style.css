@@ -2556,9 +2556,9 @@ html:not([dir=rtl]) .form-check .form-check-input {
 .form-check-input[type=checkbox] {
   border-radius: 0.25em;
 }
-.form-check-input[type=radio] {
+/* .form-check-input[type=radio] {
   border-radius: 50%;
-}
+} */
 .form-check-input:active {
   filter: brightness(90%);
 }
@@ -2574,9 +2574,9 @@ html:not([dir=rtl]) .form-check .form-check-input {
 .form-check-input:checked[type=checkbox] {
   background-image: var(--cui-form-check-input-checked-bg-image, url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='rgba%28255, 255, 255, 0.87%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e"));
 }
-.form-check-input:checked[type=radio] {
+/* .form-check-input:checked[type=radio] {
   background-image: var(--cui-form-check-radio-checked-bg-image, url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='rgba%28255, 255, 255, 0.87%29'/%3e%3c/svg%3e"));
-}
+} */
 .form-check-input[type=checkbox]:indeterminate {
   background-color: #321fdb;
   border-color: #321fdb;

@@ -35,9 +35,30 @@ class TaskGroupController extends Controller
         $user_ids = $request->input('user_ids');
         $titles = $request->input('titles'); 
         $descriptions = $request->input('descriptions');
-        $statuses =array(); 
-         
-        if( $user_ids !=null && sizeof($user_ids)>0 && $titles !=null && sizeof($titles)>0 && $descriptions !=null && sizeof($descriptions)>0 ){
+        $statuses =array();
+
+        // check if the titles array is not empty
+        foreach($titles as $title){
+            if($title==null){
+                return redirect()->back()->with('message', 'there is an error in the titles, please try again');
+            }
+        }
+        
+        // check if the user_ids array is not empty
+        foreach($user_ids as $user_id){
+            if($user_id==null){
+                return redirect()->back()->with('message', 'there is an error in the user selection, please try again');
+            }
+        }
+
+        // check if the descriptions array is not empty
+        foreach($descriptions as $description){
+            if($description==null){
+                return redirect()->back()->with('message', 'there is an error in the description, please try again');
+            }
+        }
+
+        if(sizeof($user_ids)>0 && sizeof($titles)>0 && sizeof($descriptions)>0 ){
             $counter = 1;
             foreach ($user_ids as $user_id) {
                 $stingCounter = (string)$counter;

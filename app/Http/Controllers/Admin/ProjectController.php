@@ -16,6 +16,7 @@ use App\Services\MatcherUserProjectSkillsService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 use App\Services\NotificationService;
+use App\Services\RenderProjectsTableService;
 
 class ProjectController extends Controller
 {
@@ -63,7 +64,7 @@ class ProjectController extends Controller
         // $this->authorize('restore');
         
         $assignedUsers = $request->input('assigned_users'); // the ids of the added users 
-        // if( $assignedUsers !=null && sizeof($assignedUsers)>0){
+            // if( $assignedUsers !=null && sizeof($assignedUsers)>0){
             $project = Project::create($request->validated());
 
             //create the team Group that belongs to this project 
@@ -77,8 +78,11 @@ class ProjectController extends Controller
             // } 
             
             if($assignedUsers !=null && sizeof($assignedUsers)>0){
-                foreach ($assignedUsers as $assignedUser) {
-                    $project->users()->attach($assignedUser);
+                $preCreatedUsers = User::find($assignedUsers);
+                foreach ($preCreatedUsers as $preCreatedUser) {
+                    if(!$preCreatedUser->hasRole('admin')){   // becasue we add it later down - if the super admin make a mistake and add the admin(teamleader) as a user we have to exclude the admin (teamleader) here
+                        $project->users()->attach($preCreatedUser);
+                    }
                 }
             }
         
@@ -246,5 +250,35 @@ class ProjectController extends Controller
         $sendNotification->SendNotificationMessages();
 
         return redirect()->route('admin.projects.index')->with('message', 'the project has been updated sucessfully');
+    }
+
+    public function getSortedProjects ()
+    {
+        // $this->authorize('viewAny', User::class);
+       
+        $projects = Project::orderBy('title')->get();
+
+        $renderedTable = new RenderProjectsTableService($projects);
+        $table = $renderedTable->getTable();
+
+        return json_encode(array($table));
+    }
+
+    public function getSearchResult ()
+    {
+        $queryString = request()->queryString;
+
+        //get all the matched projects
+        if ($queryString != null ) {
+            $projects = Project::where('title', 'like', '%' . $queryString . '%')->get();
+        } else {
+            $projects = Project::all();
+        }
+
+        $renderedTable = new RenderProjectsTableService($projects);
+        $table = $renderedTable->getTable();
+
+        return json_encode(array($table));
+
     }
 }

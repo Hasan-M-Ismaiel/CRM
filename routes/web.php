@@ -41,14 +41,20 @@ Route::middleware(['auth'])->group(function () {
     Route::group(['prefix' => 'admin', 'as' => 'admin.'] ,function () {
         Route::group(['middleware' => 'admin_access'] ,function () {
             
+
+            Route::get('clients/getSortedClients', [ClientController::class, 'getSortedClients'])->name('clients.getSortedClients');
+            Route::get('clients/getSearchResult', [ClientController::class, 'getSearchResult'])->name('clients.getSearchResult');
             Route::resource('clients', ClientController::class);
             
+
             Route::get('projects/{project}/assign/create', [ProjectController::class, 'assignCreate'])->name('projects.assignCreate');
             Route::patch('projects/{project}/assign', [ProjectController::class, 'assignStore'])->name('projects.assignStore');
             
             Route::post('getUsers', GetUsersController::class)->name('getUsers');
 
             //skills
+            Route::get('skills/getSearchResult', [SkillController::class, 'getSearchResult'])->name('skills.getSearchResult'); 
+            Route::get('skills/getSortedSkills', [SkillController::class, 'getSortedSkills'])->name('skills.getSortedSkills'); 
             Route::post('skills/getProjectsWithSkills', [SkillController::class, 'getProjectsWithSkills'])->name('skills.getProjectsWithSkills'); 
             Route::post('skills/getUsersWithSkills', [SkillController::class, 'getUsersWithSkills'])->name('skills.getUsersWithSkills'); 
             Route::resource('skills', SkillController::class); 
@@ -60,11 +66,20 @@ Route::middleware(['auth'])->group(function () {
             Route::get('success_create_tasks', CreatingTasksStatusesController::class)->name('success_create_tasks.status');
         });
         
+        Route::get('users/getSearchResult', [UserController::class, 'getSearchResult'])->name('users.getSearchResult'); 
+        Route::get('users/getSortedUsers', [UserController::class, 'getSortedUsers'])->name('users.getSortedUsers'); 
+        Route::get('users/getSortedRoles', [UserController::class, 'getSortedRoles'])->name('users.getSortedRoles'); 
         Route::resource('users', UserController::class);
         Route::resource('profiles', ProfileController::class);
+
+
+        Route::get('projects/getSortedProjects', [ProjectController::class, 'getSortedProjects'])->name('projects.getSortedProjects');
+        Route::get('projects/getSearchResult', [ProjectController::class, 'getSearchResult'])->name('projects.getSearchResult');
         Route::resource('projects', ProjectController::class);
 
         // managing the tasks 
+        Route::get('tasks/getSearchResult',[TaskController::class, 'getSearchResult'])->name('tasks.getSearchResult');
+        Route::get('tasks/getSortedTasks',[TaskController::class, 'getSortedTasks'])->name('tasks.getSortedTasks');
         Route::post('tasks/sendMessage',[TaskController::class, 'sendMessage'])->name('tasks.sendMessage');
         Route::get('tasks/showTaskChat/{task}',[TaskController::class, 'showTaskChat'])->name('tasks.showTaskChat');
         Route::get('tasks/showTasks',[TaskController::class, 'showTasks'])->name('tasks.showTasks');

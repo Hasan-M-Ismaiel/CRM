@@ -69,13 +69,14 @@
         <div class="wrapper d-flex flex-column min-vh-100 bg-light">
             @include('partials.header')
             <div class="body flex-grow-1 px-3">
-                <div class="container-lg">
+                <div class="container-lg ">
                     @yield('content')
                 </div>
             </div>
             
             <x-toast-notification />
-
+            <x-loader />
+           
 
             <footer class="footer">
                 <div><a href="https://coreui.io">CoreUI </a><a href="https://coreui.io">Bootstrap Admin Template</a> © 2023 creativeLabs.</div>
@@ -168,6 +169,7 @@
         <script>
             window.userID = {{ auth()->id() }};
             window.NumberOfNotifications = {!! auth()->user()->unreadNotifications->count() !!};
+            window.NumberOfTasks = {!! auth()->user()->numberOfOpenedTasks !!};
             window.projectIds =  {!! auth()->user()->projects()->pluck('projects.id') !!};
             window.taskIds =  {!! auth()->user()->tasks()->where('user_id',auth()->id())->get()->pluck('id') !!};
             

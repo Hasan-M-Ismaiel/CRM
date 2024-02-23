@@ -24,9 +24,15 @@ Echo.private(`App.Models.User.`+userID)
             $("#toast_body").html(notification['task_title']);
             $("#toast_content").html(notification['project_title']);
             $(".toast").toast('show');
+
             //update the number of notification on the screen 
             $("#num_of_notification").html(window.NumberOfNotifications + 1);
-            window.NumberOfNotifications = window.NumberOfNotifications +1 ;
+            window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
+
+            //update the number of tasks on the screen 
+            $("#num_of_tasks").html(window.NumberOfTasks + 1);
+            window.NumberOfTasks = window.NumberOfTasks + 1 ;
+
         } else if (notification['notification_type'] == 'TaskUnAssigned'){
             $("#toast_link_to_notification_target").attr("href",notification['link_to_project']+'?notificationId='+notification['notification_id']);
             $("#toast_image").attr("src",notification['project_manager_image']);
@@ -37,7 +43,12 @@ Echo.private(`App.Models.User.`+userID)
             $(".toast").toast('show');
             //update the number of notification on the screen 
             $("#num_of_notification").html(window.NumberOfNotifications + 1);
-            window.NumberOfNotifications = window.NumberOfNotifications +1 ;
+            window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
+            
+            //update the number of tasks on the screen 
+            $("#num_of_tasks").html(window.NumberOfTasks - 1);
+            window.NumberOfTasks = window.NumberOfTasks - 1 ;
+
         } else if (notification['notification_type'] == 'ProjectAssigned'){
             $("#toast_link_to_notification_target").attr("href",notification['link_to_project']+'?notificationId='+notification['notification_id']);
             $("#toast_image").attr("src",notification['project_manager_image']);
@@ -129,5 +140,36 @@ window.taskIds.forEach(element => {
 
 
 
-    
+    // for the search box
+// import { Input, Ripple, initMDB } from "mdb-ui-kit";
+
+// initMDB({ Input, Ripple });
+
+// const searchFocus = document.getElementById('search-focus');
+// const keys = [
+//   { keyCode: 'AltLeft', isTriggered: false },
+//   { keyCode: 'ControlLeft', isTriggered: false },
+// ];
+
+// window.addEventListener('keydown', (e) => {
+//   keys.forEach((obj) => {
+//     if (obj.keyCode === e.code) {
+//       obj.isTriggered = true;
+//     }
+//   });
+
+//   const shortcutTriggered = keys.filter((obj) => obj.isTriggered).length === keys.length;
+
+//   if (shortcutTriggered) {
+//     searchFocus.focus();
+//   }
+// });
+
+// window.addEventListener('keyup', (e) => {
+//   keys.forEach((obj) => {
+//     if (obj.keyCode === e.code) {
+//       obj.isTriggered = false;
+//     }
+//   });
+// });
 

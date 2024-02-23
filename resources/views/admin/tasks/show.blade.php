@@ -54,13 +54,15 @@
                                             <br>
                                             <strong>for user:</strong><span class="badge"><a href="{{ route('admin.users.show', $task->user->id) }}" style="text-decoration: none;" >{{ $task->user->name }}</a></span>
                                             <br>
+                                            <!--this is just for the user not for the admin -->
+                                            @if($task->status!="closed")
                                             <div class="text-right" id="disable">
-                                                <a onclick="markascompleted({{$task->id}})">Mark as completed</a>
+                                                <a  id="markAsCompleted" class="btn" onclick="markascompleted({{$task->id}})">Mark as completed</a>
                                             </div>
+                                            @endif
                                         <!-- maybe in the future this task could have a status or deleted -->
                                         </p>
                                     </div>
-                                    
                                 </div>
                             </div>
                         </div>
@@ -75,6 +77,7 @@
     function markascompleted(taskId){
 
         if (confirm('Are you sure?') == true) {
+            $('#loading').show();
             $.ajax({
                 url: "{{ route('admin.tasks.markascompleted') }}",
                 method: 'get',
@@ -83,10 +86,13 @@
                     task_id: taskId,
                 },
                 success: function(result){
+                    // this is for altering the card border
                     document.getElementById(taskId).classList.replace("border-success", "border-warning");
-
+                    // this for alter the spot light to yellow
                     var pendingSpotLight = '<span id="spot_light"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#FFEA4A" class="bi bi-circle-fill" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8"/></svg></span> '
-                    $("#spot_light").replaceWith(pendingSpotLight); 
+                    $("#spot_light").replaceWith(pendingSpotLight);
+                    $('#markAsCompleted').addClass('disabled');
+                    $('#loading').hide();   
                 }
             });
         }

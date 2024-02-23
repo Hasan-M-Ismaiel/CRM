@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Notifications\TaskAssigned;
 use App\Notifications\TaskUnAssigned;
 use App\Notifications\TaskWaitingNotification;
+use App\Services\RenderTasksTableService;
 use Illuminate\Support\Facades\Auth;
 
 use function PHPUnit\Framework\throwException;
@@ -264,4 +265,33 @@ class TaskController extends Controller
         return back()->with('message', 'the task status has been updated');
     }
 
+    public function getSortedTasks ()
+    {
+        // $this->authorize('viewAny', User::class);
+       
+        $tasks = Task::orderBy('title')->get();
+
+        $renderedTable = new RenderTasksTableService($tasks);
+        $table = $renderedTable->getTable();
+
+        return json_encode(array($table));
+    }
+
+    public function getSearchResult ()
+    {
+        $queryString = request()->queryString;
+
+        //get all the matched users
+        if ($queryString != null ) {
+            $tasks = Task::where('title', 'like', '%' . $queryString . '%')->get();
+        } else {
+            $tasks = Task::all();
+        }
+
+        $renderedTable = new RenderTasksTableService($tasks);
+        $table = $renderedTable->getTable();
+
+        return json_encode(array($table));
+
+    }
 }

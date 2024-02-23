@@ -26,18 +26,19 @@
                                                 @else
                                                 <a href="{{ route('admin.statuses.notFound') }}" style="text-decoration: none;">
                                                 @endif
+
                                                 @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
-                                                    <img
-                                                    src='{{$user->profile->getFirstMediaUrl("profiles") }}'
-                                                    alt="DP"  class="  rounded-circle img-fluid border border-success " width="35" height="35">
+                                                <div class="avatar avatar-md">
+                                                    <img src='{{$user->profile->getFirstMediaUrl("profiles") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                </div>
                                                 @elseif($user->getFirstMediaUrl("users"))
-                                                <img
-                                                    src='{{$user->getMedia("users")[0]->getUrl("thumb") }}'
-                                                    alt="DP"  class="  rounded-circle img-fluid  border border-success" width="35" height="35">
+                                                <div class="avatar avatar-md">
+                                                    <img src='{{$user->getMedia("users")[0]->getUrl("thumb") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                </div>
                                                 @else
-                                                <img
-                                                    src='{{ asset("images/avatar.png") }}'
-                                                    alt="DP"  class="rounded-circle img-fluid border border-success " width="35" height="35">
+                                                <div class="avatar avatar-md">
+                                                    <img src='{{ asset("images/avatar.png") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                </div>
                                                 @endif
                                             </a>
                                             @endforeach
