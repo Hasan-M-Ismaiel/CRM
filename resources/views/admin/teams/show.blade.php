@@ -27,20 +27,20 @@
                                                 <a href="{{ route('admin.statuses.notFound') }}" style="text-decoration: none;">
                                                 @endif
 
-                                                @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
-                                                <div class="avatar avatar-md">
-                                                    <img src='{{$user->profile->getFirstMediaUrl("profiles") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
-                                                </div>
-                                                @elseif($user->getFirstMediaUrl("users"))
-                                                <div class="avatar avatar-md">
-                                                    <img src='{{$user->getMedia("users")[0]->getUrl("thumb") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
-                                                </div>
-                                                @else
-                                                <div class="avatar avatar-md">
-                                                    <img src='{{ asset("images/avatar.png") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
-                                                </div>
-                                                @endif
-                                            </a>
+                                                    @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
+                                                    <div class="avatar avatar-md">
+                                                        <img src='{{$user->profile->getFirstMediaUrl("profiles") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                    </div>
+                                                    @elseif($user->getFirstMediaUrl("users"))
+                                                    <div class="avatar avatar-md">
+                                                        <img src='{{$user->getMedia("users")[0]->getUrl("thumb") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                    </div>
+                                                    @else
+                                                    <div class="avatar avatar-md">
+                                                        <img src='{{ asset("images/avatar.png") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                    </div>
+                                                    @endif
+                                                </a>
                                             @endforeach
                                         </li>
                                     </ul>
@@ -58,12 +58,13 @@
 						<div class="chat-messages p-4" id="parentmessages">
                         @if($team->project->users()->count() > 0)
                             @foreach($team->messages as $message)
+                                <!-- the full message-->
                                 @if($message->user->id == auth()->user()->id)
                                 <!--sender-->
-                                <div class="chat-message-right pb-4">
+                                <div id="" class="chat-message-right pb-4">
                                 @else
                                 <!--recievers-->
-                                <div class="chat-message-left pb-4">
+                                <div id="" class="chat-message-left pb-4">
                                 @endif   
                                     <div>
                                         @if($message->user->profile && $message->user->profile->getFirstMediaUrl("profiles"))
@@ -75,15 +76,29 @@
                                         @endif
                                         <div class="text-muted small text-nowrap mt-2">{{$message->created_at->format('g:i a')}}</div>
                                     </div>
-                                    <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
-                                        <div class="font-weight-bold mb-1">{{$message->user->name}}</div>
-                                        {{$message->message}}
+                                    <div>
+                                        <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
+                                            <div class="font-weight-bold mb-1">{{$message->user->name}}</div>
+                                            <div>{{$message->message}}</div>
+                                        </div>
+                                        <!--the readed users-->
+                                        <div id="{{$message->id}}">
+                                            @foreach($message->getusersWhoReadThisMessage as $user)
+                                                @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
+                                                <img id="image-{{$user->id}}" src='{{ $user->profile->getFirstMediaUrl("profiles") }}' class="rounded-circle mr-1 border border-success" width="15" height="15" />
+                                                @elseif($user->getFirstMediaUrl("users"))
+                                                <img id="image-{{$user->id}}" src='{{ $user->getMedia("users")[0]->getUrl("thumb") }}' class="rounded-circle mr-1 border border-success" width="15" height="15" />
+                                                @else 
+                                                <img id="image-{{$user->id}}" src="{{ asset('images/avatar.png') }}" class="rounded-circle mr-1 border border-success" width="15" height="15" />
+                                                @endif
+                                            <!-- <img src="{{ asset('images/avatar.png') }}" class="rounded-circle mr-1 border border-success" width="15" height="15" /> -->
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach
                         @endif
 					</div>
-
                     <!--place to sent-->
 					<div class="flex-grow-0 py-3 px-4 border-top">
 						<div class="input-group">
@@ -91,7 +106,6 @@
 							<button id="send" class="btn btn-primary">Send</button>
 						</div>
 					</div>
-
 				</div>
 			</div>
 		</div>
@@ -99,7 +113,6 @@
 </main>
 <script>
     $('#send').on('click', function(){  
-        
         // get the user image
         <?php 
         if (auth()->user()->profile && auth()->user()->profile->getFirstMediaUrl("profiles")){
@@ -140,8 +153,5 @@
         });
     });
 </script>
-
-
-
 
 @endsection

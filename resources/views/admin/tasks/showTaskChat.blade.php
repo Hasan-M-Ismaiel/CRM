@@ -29,17 +29,17 @@
                                                     @endif
 
                                                     @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
-                                                        <img
-                                                            src='{{$user->profile->getFirstMediaUrl("profiles") }}'
-                                                            alt="DP"  class="  rounded-circle img-fluid border border-success " width="35" height="35">
+                                                    <div class="avatar avatar-md">
+                                                        <img src='{{$user->profile->getFirstMediaUrl("profiles") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                    </div>    
                                                     @elseif($user->getFirstMediaUrl("users"))
-                                                        <img
-                                                            src='{{$user->getMedia("users")[0]->getUrl("thumb") }}'
-                                                            alt="DP"  class="  rounded-circle img-fluid  border border-success" width="35" height="35">
+                                                    <div class="avatar avatar-md">
+                                                        <img src='{{$user->getMedia("users")[0]->getUrl("thumb") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                    </div>
                                                     @else
-                                                        <img
-                                                            src='{{ asset("images/avatar.png") }}'
-                                                            alt="DP"  class="rounded-circle img-fluid border border-success " width="35" height="35">
+                                                    <div class="avatar avatar-md">
+                                                        <img src='{{ asset("images/avatar.png") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                    </div>
                                                     @endif
                                                         </a>
                                                 @elseif($task->user->id == $user->id)
@@ -50,17 +50,17 @@
                                                     @endif
                                                     
                                                     @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
-                                                        <img
-                                                        src='{{$user->profile->getFirstMediaUrl("profiles") }}'
-                                                        alt="DP"  class="  rounded-circle img-fluid border border-success " width="35" height="35">
+                                                    <div class="avatar avatar-md">
+                                                        <img src='{{$user->profile->getFirstMediaUrl("profiles") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                    </div>    
                                                     @elseif($user->getFirstMediaUrl("users"))
-                                                        <img
-                                                            src='{{$user->getMedia("users")[0]->getUrl("thumb") }}'
-                                                            alt="DP"  class="  rounded-circle img-fluid  border border-success" width="35" height="35">
+                                                    <div class="avatar avatar-md">
+                                                        <img src='{{$user->getMedia("users")[0]->getUrl("thumb") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                    </div>
                                                     @else
-                                                        <img
-                                                            src='{{ asset("images/avatar.png") }}'
-                                                            alt="DP"  class="rounded-circle img-fluid border border-success " width="35" height="35">
+                                                    <div class="avatar avatar-md">
+                                                        <img src='{{ asset("images/avatar.png") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                    </div>
                                                     @endif
                                                         </a>
                                                 @endif
@@ -98,9 +98,24 @@
                                         @endif
                                         <div class="text-muted small text-nowrap mt-2">{{$message->created_at->format('g:i a')}}</div>
                                     </div>
-                                    <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
-                                        <div class="font-weight-bold mb-1">{{$message->user->name}}</div>
-                                        {{$message->message}}
+
+                                    <div>
+                                        <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
+                                            <div class="font-weight-bold mb-1">{{$message->user->name}}</div>
+                                            <div>{{$message->message}}</div>
+                                        </div>
+                                        <!--the readed users-->
+                                        <div id="taskmessage-{{$message->id}}">
+                                            @foreach($message->getusersWhoReadThisMessage as $user)
+                                                @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
+                                                <img id="image-{{$user->id}}" src='{{ $user->profile->getFirstMediaUrl("profiles") }}' class="rounded-circle mr-1 border border-success" width="15" height="15" />
+                                                @elseif($user->getFirstMediaUrl("users"))
+                                                <img id="image-{{$user->id}}" src='{{ $user->getMedia("users")[0]->getUrl("thumb") }}' class="rounded-circle mr-1 border border-success" width="15" height="15" />
+                                                @else 
+                                                <img id="image-{{$user->id}}" src="{{ asset('images/avatar.png') }}" class="rounded-circle mr-1 border border-success" width="15" height="15" />
+                                                @endif
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach
@@ -114,7 +129,6 @@
 							<button id="send" class="btn btn-primary">Send</button>
 						</div>
 					</div>
-
 				</div>
 			</div>
 		</div>
@@ -148,7 +162,7 @@
 
         
         $.ajax({
-            url: "{{ route('admin.tasks.sendMessage') }}",
+            url: "{{ route('admin.tasks.sendTaskMessage') }}",
             method: 'post',
             data: {
                 "_token": "{{ csrf_token() }}",

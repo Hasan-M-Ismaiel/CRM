@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -26,6 +27,26 @@ class Task extends Model
     public function taskMessages()
     {
         return $this->hasMany(TaskMessage::class);
+    }
+
+    // this is for the Team message notifications
+    public function taskmessagenotifications()
+    {
+        return $this->hasMany(Taskmessagenotification::class);
+    }
+
+
+    public function numberOfUnreadedTaskMessages():Attribute
+    {
+
+        $numberOfUnreadedTaskMessages = $this->taskmessagenotifications->where('readed_at','==' ,null)
+                                                                    ->where('user_id', auth()->user()->id)
+                                                                    ->count();
+
+        return Attribute::make(
+            get: fn () => $numberOfUnreadedTaskMessages
+        );
+
     }
 
 }
