@@ -122,9 +122,11 @@ window.projectIds.forEach(element => {
                 $("#num_of_team_messages_notifications").html(window.NumberOfTeamMessageNotifications + 1);
                 window.NumberOfTeamMessageNotifications = window.NumberOfTeamMessageNotifications + 1 ;
 
-                // var spotlight= '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fe0131" class="bi bi-circle-fill" viewBox="0 0 16 16"> <circle cx="8" cy="8" r="8"/></svg>';
-                // numberOfSingle = $('#num_of_single_team_notifications-'+teamId).html() + (int) 1;
-                $('#num_of_single_team_notifications-'+teamId).html(window.NumberOfTeamkMessageNotifications + "+1");
+                if(window.NumberOfTaskMessageNotifications==0){
+                    $('#num_of_single_team_notifications-'+teamId).html("new messages");
+                }else{
+                    $('#num_of_single_team_notifications-'+teamId).html(window.NumberOfTaskMessageNotifications + "+");
+                }
             }
         }
 
@@ -168,20 +170,18 @@ window.projectIds.forEach(element => {
 
 //for the task channel messages
 window.taskIds.forEach(element => {
-    Echo.private(`tasks.`+element)
+    Echo.private(`tasks.`+element)                                      // element is the item ( task id ) who the user own - the admin get all of them - see the app layout js section 
     .listen('TaskMessageSent', (e) => {
-        alert();
-        var searchString_task = 'admin/tasks/showTaskChat/'+element;
-        var userimage_task = e.user_image_url;
-        var message_task = e.message;
-        var username_task = e.user_name;
-        var taskId_task = e.task_id;
-        var userId_task = e.user_id;
-        var taskmessage_id = e.taskmessage_id;
+        var searchString_task = 'admin/tasks/showTaskChat/'+element;    // to check if the chat is opened in the reciver section 
+        var userimage_task = e.user_image_url;                          // the url for the person how send the message
+        var message_task = e.message;                                   // the sended message
+        var username_task = e.user_name;                                // the name for the sender
+        var taskId_task = e.task_id;                                    // the conversation chat - here is the task id 
+        var userId_task = e.user_id;                                    // the user id who send the message ( the sender )
+        var taskmessage_id = e.taskmessage_id;                          // id for the created task message (the new added task message id)
+        var userprofile = e.user_profile_url;                           // the url for going to profile for the user 
 
-        // alert(e.taskmessage_id);
-
-        var userprofile = e.user_profile_url;
+        // alert(e.taskmessage_id);                // this should be 109 
 
         // if the user is open this conversation then do not increase the number of unreaded messages on the screen and send ajax request to the back end to make the messages readed in the database and you should send (message readed) event in the server for the sender to know that
         if (window.location.href.indexOf(searchString_task) > -1) {
@@ -190,38 +190,38 @@ window.taskIds.forEach(element => {
                 authUserId: window.userID,
               })
               .then((response) => { 
-                alert('success');
-                console.log(response);
+                // the event message readed in catched down listener
+                // alert('the markTaskMessagesAsReaded is fired');
               });
-
+              
         } else {
-            //if the auth is the same as the person who send the message then ignore
+            //if the logedin user is the same as the person who send the message then ignore [dont update the number of notifications]
             if(window.userID != userId_task){
-                if(NumberOfTotalMessageNotifications==0){
-                    $("#num_of_total_messages_notifications").html("+");
-                    window.window.NumberOfTotalMessageNotifications = window.window.NumberOfTotalMessageNotifications + 1 ;
-                }else{
-                    $("#num_of_total_messages_notifications").html(window.NumberOfTotalMessageNotifications + 1);
-                    window.window.NumberOfTotalMessageNotifications = window.window.NumberOfTotalMessageNotifications + 1 ;
-                }
-
+                // main fab button
+                $("#num_of_total_messages_notifications").html(window.NumberOfTotalMessageNotifications + 1);
+                window.window.NumberOfTotalMessageNotifications = window.window.NumberOfTotalMessageNotifications + 1 ;
+                // task fab button  
                 $("#num_of_task_messages_notifications").html(window.NumberOfTaskMessageNotifications + 1);
                 window.NumberOfTaskMessageNotifications = window.NumberOfTaskMessageNotifications + 1 ;
 
                 // var spotlight= '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fe0131" class="bi bi-circle-fill" viewBox="0 0 16 16"> <circle cx="8" cy="8" r="8"/></svg>';
                 // numberOfSingle = $('#num_of_single_team_notifications-'+teamId).html() + (int) 1;
-                $('#num_of_single_task_notifications-'+taskId_task).html(window.NumberOfTaskMessageNotifications + "+");
+                if(window.NumberOfTaskMessageNotifications==0){
+                    $('#num_of_single_task_notifications-'+taskId_task).html("new messages");
+                }else{
+                    $('#num_of_single_task_notifications-'+taskId_task).html(window.NumberOfTaskMessageNotifications + "+");
+                }
             }
         }
         //current time for the message received
         var time2= new Date();
         var currentTime2 = time2.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
 
+        // if the sender was the same as the loged in user - add the added message on the right
         if(e.user_id == window.userID){ // is the auth // for user experince you can comment this first line and add the message from the sender side that is faster to render the sender message
-            var newMessageFromHereTask = $('<div class="chat-message-right pb-4"> <div> <img src="'+userimage_task+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime2+'</div> </div> <div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username_task +'</div><div>'+ message_task+ '</div></div><div id="#taskmessage-'+taskmessage_id+'"></div></div></div>');
-        
+            var newMessageFromHereTask = $('<div class="chat-message-right pb-4"> <div> <img src="'+userimage_task+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime2+'</div> </div> <div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username_task +'</div><div>'+ message_task+ '</div></div><div id="taskmessage-'+taskmessage_id+'"></div></div></div>');
         }else{
-            var newMessageFromHereTask = $('<div class="chat-message-left pb-4"> <div> <img src="'+userimage_task+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime2+'</div> </div> <div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username_task +'</div><div>'+ message_task+ '</div></div><div id="#taskmessage-'+taskmessage_id+'"></div></div></div>');
+            var newMessageFromHereTask = $('<div class="chat-message-left pb-4"> <div> <img src="'+userimage_task+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime2+'</div> </div> <div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username_task +'</div><div>'+ message_task+ '</div></div><div id="taskmessage-'+taskmessage_id+'"></div></div></div>');
         }
 
         //append the message to UI
@@ -230,13 +230,13 @@ window.taskIds.forEach(element => {
 
     // listen if the users read the messages of this conversation
     .listen('TaskMessageReaded',(e)=>{
-        var fromUser_task = e.user_id;
-        var userimage_task = e.user_image_url;
-        var taskmessagesId = e.taskmessages_id;
-        var taskId = e.task_id;
+        var fromUser_task = e.user_id;                  // the user id who see the messages
+        var userimage_task = e.user_image_url;          // the user image who see the messages
+        var taskmessagesId = e.taskmessages_id;         // the ids of the readed messages in the task
+        var taskId = e.task_id;                         // task id that contain the messages that have been seen by the user 
         
-        alert(taskmessagesId);  //'
-        alert('readed');
+        // alert(taskmessagesId);                          //'
+        // alert('readed');                       // you can add condition here to check if the sender is the same as the reciver 
         
         // add the pictures of the users who readed the message
         taskmessagesId.forEach(myFunctiontask);

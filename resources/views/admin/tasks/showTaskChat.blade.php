@@ -78,61 +78,64 @@
 					</div>
                     <!--content-->
 					<div class="position-relative">
+                        <!--chat messages-->
 						<div class="chat-messages p-4" id="parenttaskmessages">
-                        @if($task->user && $task->taskmessages != null)
-                            @foreach($task->taskmessages as $message)
-                                @if($message->user->id == auth()->user()->id)
-                                <!--sender-->
-                                <div class="chat-message-right pb-4">
-                                @else
-                                <!--recievers-->
-                                <div class="chat-message-left pb-4">
-                                @endif   
-                                    <div>
-                                        @if($message->user->profile && $message->user->profile->getFirstMediaUrl("profiles"))
-                                        <img src='{{ $message->user->profile->getFirstMediaUrl("profiles") }}' class="rounded-circle mr-1 border border-success" width="40" height="40" />
-                                        @elseif($message->user->getFirstMediaUrl("users"))
-                                        <img src='{{ $message->user->getMedia("users")[0]->getUrl("thumb") }}' class="rounded-circle mr-1 border border-success" width="40" height="40" />
-                                        @else 
-                                        <img src="{{ asset('images/avatar.png') }}" class="rounded-circle mr-1 border border-success" width="40" height="40" />
-                                        @endif
-                                        <div class="text-muted small text-nowrap mt-2">{{$message->created_at->format('g:i a')}}</div>
-                                    </div>
-
-                                    <div>
-                                        <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
-                                            <div class="font-weight-bold mb-1">{{$message->user->name}}</div>
-                                            <div>{{$message->message}}</div>
-                                        </div>
-                                        <!--the readed users-->
-                                        <div id="taskmessage-{{$message->id}}">
-                                            @foreach($message->getusersWhoReadThisMessage as $user)
-                                                @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
-                                                <img id="image-{{$user->id}}" src='{{ $user->profile->getFirstMediaUrl("profiles") }}' class="rounded-circle mr-1 border border-success" width="15" height="15" />
-                                                @elseif($user->getFirstMediaUrl("users"))
-                                                <img id="image-{{$user->id}}" src='{{ $user->getMedia("users")[0]->getUrl("thumb") }}' class="rounded-circle mr-1 border border-success" width="15" height="15" />
+                                @if($task->user && $task->taskmessages != null)
+                                    @foreach($task->taskmessages as $message)
+                                        @if($message->user->id == auth()->user()->id)
+                                        <!--sender-->
+                                        <div class="chat-message-right pb-4">
+                                        @else
+                                        <!--recievers-->
+                                        <div class="chat-message-left pb-4">
+                                        @endif   
+                                            <div>
+                                                @if($message->user->profile && $message->user->profile->getFirstMediaUrl("profiles"))
+                                                <img src='{{ $message->user->profile->getFirstMediaUrl("profiles") }}' class="rounded-circle mr-1 border border-success" width="40" height="40" />
+                                                @elseif($message->user->getFirstMediaUrl("users"))
+                                                <img src='{{ $message->user->getMedia("users")[0]->getUrl("thumb") }}' class="rounded-circle mr-1 border border-success" width="40" height="40" />
                                                 @else 
-                                                <img id="image-{{$user->id}}" src="{{ asset('images/avatar.png') }}" class="rounded-circle mr-1 border border-success" width="15" height="15" />
+                                                <img src="{{ asset('images/avatar.png') }}" class="rounded-circle mr-1 border border-success" width="40" height="40" />
                                                 @endif
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        @endif
-					</div>
+                                                <div class="text-muted small text-nowrap mt-2">{{$message->created_at->format('g:i a')}}</div>
+                                            </div>
 
-                    <!--place to sent-->
-					<div class="flex-grow-0 py-3 px-4 border-top">
-						<div class="input-group">
-							<input name="message" id="message" type="text" class="form-control" placeholder="Type your message">
-							<button id="send" class="btn btn-primary">Send</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                                            <div>
+                                                <!--name and message-->
+                                                <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
+                                                    <div class="font-weight-bold mb-1">{{$message->user->name}}</div>
+                                                    <div>{{$message->message}}</div>
+                                                </div>
+                                                <!--the readed users-->
+                                                <div id="taskmessage-{{$message->id}}">
+                                                    @foreach($message->getusersWhoReadThisMessage as $user)
+                                                        @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
+                                                        <img id="image-{{$user->id}}" src='{{ $user->profile->getFirstMediaUrl("profiles") }}' class="rounded-circle mr-1 border border-success" width="15" height="15" />
+                                                        @elseif($user->getFirstMediaUrl("users"))
+                                                        <img id="image-{{$user->id}}" src='{{ $user->getMedia("users")[0]->getUrl("thumb") }}' class="rounded-circle mr-1 border border-success" width="15" height="15" />
+                                                        @else 
+                                                        <img id="image-{{$user->id}}" src="{{ asset('images/avatar.png') }}" class="rounded-circle mr-1 border border-success" width="15" height="15" />
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @endif
+                        </div>
+                        <!--place to sent-->
+                        <div class="flex-grow-0 py-3 px-4 border-top">
+                            <div class="input-group">
+                                <input name="message" id="message" type="text" class="form-control" placeholder="Type your message">
+                                <button id="send" class="btn btn-primary">Send</button>
+                            </div>
+                        </div>
+				    </div>
+			    </div>
+		    </div>
+	    </div>
+    </div>
+</div>
 </main>
 <script>
     $('#send').on('click', function(){  

@@ -259,6 +259,7 @@ class TaskController extends Controller
 
     }
 
+    // render the task modal items [every one has different amount of tasks]
     public function render ($tasks, $taskItems)
     {
         if($tasks != null && $tasks->count()>0){
@@ -268,9 +269,9 @@ class TaskController extends Controller
                 $taskItems .= '<div class="col-4 text-right ">';
                 $taskItems .= '<img alt="DP" class="rounded-circle img-fluid" width="45" height="40" src="'. asset('images/taskChat.png') .'">';
                 if($task->numberOfUnreadedTaskMessages==0){
-                    $taskItems .= '<em id= "num_of_single_team_notifications-'.$task->id.'" class="badge bg-danger text-white px-2 rounded-4 position-absolute bottom-0 end-0" style="font-size: 0.6em"></em>';
+                    $taskItems .= '<em id= "num_of_single_task_notifications-'.$task->id.'" class="badge bg-danger text-white px-2 rounded-4 position-absolute bottom-0 end-0" style="font-size: 0.6em"></em>';
                 }else{
-                    $taskItems .= '<em id= "num_of_single_team_notifications-'.$task->id.'" class="badge bg-danger text-white px-2 rounded-4 position-absolute bottom-0 end-0" style="font-size: 0.6em">'.$task->numberOfUnreadedTaskMessages.'</em>';
+                    $taskItems .= '<em id= "num_of_single_task_notifications-'.$task->id.'" class="badge bg-danger text-white px-2 rounded-4 position-absolute bottom-0 end-0" style="font-size: 0.6em">'.$task->numberOfUnreadedTaskMessages.'</em>';
                 }
                 $taskItems .= '</div>';
                 $taskItems .= '<div class="col-8">';
@@ -343,24 +344,29 @@ class TaskController extends Controller
     //done
     public function markTaskMessagesAsReaded ()
     {
-        $taskId = request()->input('taskId');
-        $authUserId = request()->input('authUserId');
+        $taskId = request()->input('taskId');           // in this conversation 
+        $authUserId = request()->input('authUserId');   // by this user 
 
-        $readedTaskMessages= array();
+        $readedTaskMessages= array();                   // it could be alot of un readed messages - it contains the ids of readed messages 
 
-        $user = User::find($authUserId);
-        $task = Task::find($taskId);
+        $user = User::find($authUserId);                // find the user that see the notification
+        $task = Task::find($taskId);                    // find the task
+
+        // Log::info($authUserId);
 
         // get all the records from the "messagenotifications" table that match the user id - notifications that realted to this user in this team  
-        $taskMessagenotifications = $task->taskmessagenotifications->where('user_id', $authUserId);
+        $taskMessagenotifications = $task->taskmessagenotifications->where('user_id','=', $authUserId);
+        // Log::info($taskMessagenotifications);
         
         foreach($taskMessagenotifications as $taskMessagenotification){
             $taskMessagenotification->readed_at = now();
             $taskMessagenotification->save();
-            array_push($readedTaskMessages, $taskMessagenotification->message_id);
+            array_push($readedTaskMessages, $taskMessagenotification->task_message_id);
         }
 
+        // Log::info($readedTaskMessages);
         //dipatch (((messages))) readed
+        // the [user] see the [task messages] with ids [readedTaskMessages]
         TaskMessageReaded::dispatch($user, $readedTaskMessages, $task);
 
     }
