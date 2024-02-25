@@ -76,7 +76,6 @@
             
             <x-toast-notification />
             <x-loader />
-           
 
             <footer class="footer">
                 <div><a href="https://coreui.io">CoreUI </a><a href="https://coreui.io">Bootstrap Admin Template</a> © 2023 creativeLabs.</div>
@@ -87,7 +86,7 @@
         <x-flash />
  
         <!-- Modal -->
-        <!--group modal -->
+        <!--team modal -->
         <div class="modal fade" id="myModalTeam" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content clearfix">
@@ -136,24 +135,37 @@
             
         <!--fab button-->
         <div class="fab-container" style="position: fixed;">
+            <!-- the main fab button to show the total number of messages-->
             <div class="fab shadow">
-                <div class="fab-content" >
+                <div class="fab-content position-relative">
                     <span class="material-icons">
                         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
                             <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/>
                         </svg>  
                     </span>
+                    @if(auth()->user()->numberOfTotalMessageNotifications==0)
+                    <em id= "num_of_total_messages_notifications" class="badge bg-danger text-white px-2 rounded-4 position-absolute bottom-0 start-0" style="font-size: 0.9em"></em>
+                    @else
+                    <em id= "num_of_total_messages_notifications" class="badge bg-danger text-white px-2 rounded-4 position-absolute bottom-0 start-0" style="font-size: 0.9em">{{ auth()->user()->numberOfTotalMessageNotifications }}</em>
+                    @endif
                 </div>
             </div>
+            <!--for the task fab button | number of messages for all the tasks -->
             <div class="sub-button shadow">
-                <a href="google.com" target="_blank" data-bs-toggle="modal" data-bs-target="#myModalTask">
+                <a href="google.com" target="_blank" data-bs-toggle="modal" data-bs-target="#myModalTask" >
                     <span class="material-icons">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
                             <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
                         </svg>
                     </span>
                 </a>
+                @if(auth()->user()->numberOfTaskMessageNotifications==0)
+                <em id= "num_of_task_messages_notifications" class="badge bg-danger text-white px-2 rounded-4 position-absolute bottom-0 start-0" style="font-size: 0.9em"></em>
+                @else
+                <em id= "num_of_task_messages_notifications" class="badge bg-danger text-white px-2 rounded-4 position-absolute bottom-0 start-0" style="font-size: 0.9em">{{ auth()->user()->numberOfTaskMessageNotifications }}</em>
+                @endif
             </div>
+            <!--for the team fab button | number of messages for all the teams -->
             <div class="sub-button shadow">
                 <a href="google.com" target="_blank" data-bs-toggle="modal" data-bs-target="#myModalTeam">
                     <span class="material-icons">
@@ -162,18 +174,32 @@
                         </svg>
                     </span>
                 </a>
+                @if(auth()->user()->numberOfTeamMessageNotifications==0)
+                <em id= "num_of_team_messages_notifications" class="badge bg-danger text-white px-2 rounded-4 position-absolute bottom-0 start-0" style="font-size: 0.9em"></em>
+                @else
+                <em id= "num_of_team_messages_notifications" class="badge bg-danger text-white px-2 rounded-4 position-absolute bottom-0 start-0" style="font-size: 0.9em">{{ auth()->user()->numberOfTeamMessageNotifications }}</em>
+                @endif
             </div>
         </div>
 
-         
         <script>
+            // user loged in id 
             window.userID = {{ auth()->id() }};
+            // number of general notifications 
             window.NumberOfNotifications = {!! auth()->user()->unreadNotifications->count() !!};
+            // total messages number 
+            window.NumberOfTotalMessageNotifications = {!! auth()->user()->numberOfTotalMessageNotifications !!};   
+            // team messages number           
+            window.NumberOfTeamMessageNotifications = {!! auth()->user()->numberOfTeamMessageNotifications !!}; 
+            // task messages number
+            window.NumberOfTaskMessageNotifications = {!! auth()->user()->numberOfTaskMessageNotifications !!}; 
+            // number of opened tasks to show in the header section for each user 
             window.NumberOfTasks = {!! auth()->user()->numberOfOpenedTasks !!};
+            // projects ids for the loged in user to show in the header section - from what i remember 
             window.projectIds =  {!! auth()->user()->projects()->pluck('projects.id') !!};
+            // tasks ids for the loged in user to show in the header section - from what i remember 
             window.taskIds =  {!! auth()->user()->tasks()->where('user_id',auth()->id())->get()->pluck('id') !!};
-            
-            //check if the current user is the admin
+            // check if the current user is the admin - then the number of ids is all the tasks in the database
             window.checkIfAdmin = {!! auth()->user()->hasRole('admin') ? 'true' : 'false' ; !!}
             if(window.checkIfAdmin){
                 window.taskIds =  {!! App\Models\Task::all()->pluck('id') !!};
@@ -182,31 +208,84 @@
 
         <script>
             function loadteams(){
-                    $.ajax({
-                        url: "{{ route('admin.teams.index') }}",
-                        method: 'get',
-                        data: {
-                            "_token": "{{ csrf_token() }}",
-                        },
-                        success: function(output){
-                            var result = $.parseJSON(output);
-                            $('#modal_content_team').append(result[0]);
-                        }
-                    });
-                    $.ajax({
-                        url: "{{ route('admin.tasks.showTasks') }}",
-                        method: 'get',
-                        data: {
-                            "_token": "{{ csrf_token() }}",
-                        },
-                        success: function(output){
-                            var result = $.parseJSON(output);
-                            $('#modal_content_task').append(result[0]);
-                            // $("task").addClass("bg-secondary");
-                            // $("#modal_content_task").listview('refresh');
-                        }
-                    });
-                }
+                $.ajax({
+                    url: "{{ route('admin.teams.index') }}",
+                    method: 'get',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                    },
+                    success: function(output){
+                        var result = $.parseJSON(output);
+                        $('#modal_content_team').append(result[0]);
+                    }
+                });
+                $.ajax({
+                    url: "{{ route('admin.tasks.showTasks') }}",
+                    method: 'get',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                    },
+                    success: function(output){
+                        var result = $.parseJSON(output);
+                        $('#modal_content_task').append(result[0]);
+                        // $("task").addClass("bg-secondary");
+                        // $("#modal_content_task").listview('refresh');
+                    }
+                });
+            }
+        </script>
+
+        <!--mark task/team - messages as readed clicked from the rendered items in the task/team controller render method and show it in the model here up ^ -->
+        <script>
+            //mark team messages as readed
+            function markasread(teamId, authUserId, numberOfReadedMessages){
+                // number of readed messages from this chat 
+                
+                alert(numberOfReadedMessages);
+                alert(teamId);
+                alert(authUserId);
+                $.ajax({
+                    url: "{{ route('admin.teams.markMessagesAsReaded') }}",
+                    method: 'post',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        teamId: teamId,
+                        authUserId: authUserId,
+                    },
+                    success: function(output){
+                        alert('get');
+                        // $('#num_of_team_messages_notifications').html(NumberOfTotalMessageNotifications - numberOfReadedMessages);
+                        // $('#num_of_total_messages_notifications').html(NumberOfTotalMessageNotifications - numberOfReadedMessages);
+                        // var result = $.parseJSON(output);
+                        //decrease the numbers in the ui 
+                    }
+                });
+            }
+
+            //mark task messages as readed
+            function markasreadtask(taskId, authUserId, numberOfReadedTaskMessages){
+                // number of readed messages from this chat 
+                
+                alert(numberOfReadedTaskMessages);
+                alert(taskId);
+                alert(authUserId);
+                $.ajax({
+                    url: "{{ route('admin.tasks.markTaskMessagesAsReaded') }}",
+                    method: 'post',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        taskId: taskId,
+                        authUserId: authUserId,
+                    },
+                    success: function(output){
+                        alert('get in task');
+                        // $('#num_of_team_messages_notifications').html(NumberOfTotalMessageNotifications - numberOfReadedMessages);
+                        // $('#num_of_total_messages_notifications').html(NumberOfTotalMessageNotifications - numberOfReadedMessages);
+                        // var result = $.parseJSON(output);
+                        //decrease the numbers in the ui 
+                    }
+                });
+            } 
         </script>
     </body>
 </html>

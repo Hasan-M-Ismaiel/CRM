@@ -2,37 +2,33 @@
 
 namespace App\Events;
 
-use App\Models\Team;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class MessageSent implements ShouldBroadcast
+class TaskMessageReaded implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-
     // this team has access to all users through project class - and access to the chat to get the chat token
-    protected $team;
     protected $user;
-    protected $message;
-    protected $createdmessageId;
+    protected $task;
+    protected $readedTaskMessages;  // array of messages id tha have been readed by the user $user 
     // protected $numberOfUnreadedMessages;
     /**
      * Create a new event instance.
      */
-    public function __construct(Team $team, User $user, String $message, $createdmessageId)
+    public function __construct(User $authUserId, $readedTaskMessages, Task $task)
     {
-        $this->user = $user;
-        $this->team = $team;
-        $this->message = $message;
-        $this->createdmessageId = $createdmessageId;
+        $this->task = $task;
+        $this->user = $authUserId;
+        $this->readedTaskMessages = $readedTaskMessages;
         // $this->numberOfUnreadedMessages = $numberOfUnreadedMessages;
     }
 
@@ -44,16 +40,15 @@ class MessageSent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('teams.'.$this->team->id),
+            new PrivateChannel('tasks.'.$this->task->id),
         ];
     }
 
     public function broadcastWith(): array
     {
-        $userProfileRoute = '';  // route to the user profile
+        // $userProfileRoute = '';  // route to the user profile
         $userImageRoute = '';    // route to the user image
-        
-        // get the image url for the user 
+        // $number = $this->team->numberOfUnreadedTeamMessages;
         if ($this->user->profile && $this->user->profile->getFirstMediaUrl("profiles")){
          $userImageRoute = $this->user->profile->getFirstMediaUrl("profiles");
         } elseif ($this->user->getFirstMediaUrl("users")){
@@ -62,21 +57,13 @@ class MessageSent implements ShouldBroadcast
          $userImageRoute = asset('images/avatar.png');
         }
 
-        // get the profile url for the user 
-        if($this->user->profile){
-            $userProfileRoute = route('admin.profiles.show',$this->user->profile->id);
-        } else {
-            $userProfileRoute = route('admin.statuses.notFound');
-        }
-
         return [
-            'team_id'   => $this->team->id,
+            'task_id'   => $this->task->id,
+            'user_id'   => $this->user->id,
             'user_name' => $this->user->name,
-            'user_id' => $this->user->id,
-            'user_profile_url' => $userProfileRoute,
             'user_image_url' => $userImageRoute,
-            'message' => $this->message,
-            'message_id'=> $this->createdmessageId,
+            'taskmessages_id' => $this->readedTaskMessages,
+            // 'number_of_unreaded_messages' => $this->numberOfUnreadedMessages,
         ];
     }
 

@@ -88,7 +88,19 @@ class User extends Authenticatable implements HasMedia
 
     public function taskmessages()
     {
-        return $this->hasMay(TaskMessage::class);
+        return $this->hasMany(TaskMessage::class);
+    }
+
+    // this is for the Team message notifications
+    public function messagenotifications()
+    {
+        return $this->hasMany(Messagenotification::class);
+    }
+
+    //this is for the Task message notifications
+    public function taskmessagenotifications()
+    {
+        return $this->hasMany(Taskmessagenotification::class);
     }
 
 
@@ -157,6 +169,42 @@ class User extends Authenticatable implements HasMedia
 
         return Attribute::make(
             get: fn () => $numberOfClosedTasks
+        );
+    }
+
+    
+    // tasks notifications 
+    public function numberOfTaskMessageNotifications():Attribute
+    {
+
+        $numberOfTaskMessageNotifications = $this->taskmessagenotifications->where('readed_at',null)->count();
+
+        return Attribute::make(
+            get: fn () => $numberOfTaskMessageNotifications
+        );
+    }
+
+    // team notifications 
+    public function numberOfTeamMessageNotifications():Attribute
+    {
+
+        $numberOfTeamMessageNotifications = $this->messagenotifications->where('readed_at',null)->count();
+
+        return Attribute::make(
+            get: fn () => $numberOfTeamMessageNotifications
+        );
+    }
+
+    // total notifications
+    public function numberOfTotalMessageNotifications():Attribute
+    {
+
+        // you have to update that later to add the Task message notification to this
+        // $numberOfTotalMessageNotifications = $this->messagenotifications->where('readed_at',null)->count();
+        $numberOfTotalMessageNotifications = $this->numberOfTeamMessageNotifications + $this->numberOfTaskMessageNotifications;
+
+        return Attribute::make(
+            get: fn () => $numberOfTotalMessageNotifications
         );
     }
 }

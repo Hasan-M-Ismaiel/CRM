@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\TaskMessageReaded;
 use App\Events\TaskMessageSent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTaskRequest;
@@ -9,12 +10,14 @@ use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\TaskMessage;
+use App\Models\Taskmessagenotification;
 use App\Models\User;
 use App\Notifications\TaskAssigned;
 use App\Notifications\TaskUnAssigned;
 use App\Notifications\TaskWaitingNotification;
 use App\Services\RenderTasksTableService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 use function PHPUnit\Framework\throwException;
 
@@ -201,7 +204,8 @@ class TaskController extends Controller
         ]);
     }
 
-    public function sendMessage ()
+    //done
+    public function sendTaskMessage ()
     {
 
         $message = request()->input('message');
@@ -211,13 +215,47 @@ class TaskController extends Controller
         $user = User::find($fromUser);
         $task = Task::find($taskChat);
 
-        TaskMessage::create([
+        $createdtaskmessage = TaskMessage::create([
             'task_id' => $task->id,
             'user_id' => $user->id,
             'message' => $message,
         ]);
-        
-        TaskMessageSent::dispatch($task,$user,$message);
+
+        $createdtaskmessageId = $createdtaskmessage->id;
+
+        // if the sender was the admin
+        if($user->hasRole('admin')){
+            Taskmessagenotification::create([
+                'user_id' => $task->user->id,
+                'task_id' => $task->id,
+                'task_message_id' => $createdtaskmessage->id,  
+                'from_user_id' => $user->id,
+            ]);
+        } else {
+            // search for the admin /// in the future you have to alter this because the admin could be muiple teamleaders 
+            // this should be in the future as this :  if($adminuser->hasRole('teamleader') && in the $task->project->users)
+            $adminUser = null;
+            $users = User::all();
+            foreach($users as $admin_user){
+                if($admin_user->hasRole('admin')){
+                    $adminUser = $admin_user;
+                }
+            }
+            if($adminUser != null){
+                Taskmessagenotification::create([
+                    'user_id' => $adminUser->id,
+                    'task_id' => $task->id,
+                    'task_message_id' => $createdtaskmessage->id,  
+                    'from_user_id' => $user->id,
+                ]);
+            }else{
+                Log::info('error : there is no admins in the database- this error in the task controller - send message');
+                abort('error : there is no admins in the database');
+            }
+        }
+
+
+        TaskMessageSent::dispatch($task,$user,$message, $createdtaskmessageId);
 
     }
 
@@ -225,13 +263,18 @@ class TaskController extends Controller
     {
         if($tasks != null && $tasks->count()>0){
             foreach($tasks as $task){
-                $taskItems .= '<a id="task" href="'.route('admin.tasks.showTaskChat', $task).'" style="text-decoration: none;" class="">';
+                $taskItems .= '<a id="task-'.$task->id.'" href="'.route('admin.tasks.showTaskChat', $task).'" style="text-decoration: none;" class="" onclick="markasreadtask('.$task->id.','. auth()->user()->id .','. $task->taskmessagenotifications->where('user_id', auth()->user()->id)->count().')">';
                 $taskItems .= '<div class="row">';
                 $taskItems .= '<div class="col-4 text-right ">';
                 $taskItems .= '<img alt="DP" class="rounded-circle img-fluid" width="45" height="40" src="'. asset('images/taskChat.png') .'">';
+                if($task->numberOfUnreadedTaskMessages==0){
+                    $taskItems .= '<em id= "num_of_single_team_notifications-'.$task->id.'" class="badge bg-danger text-white px-2 rounded-4 position-absolute bottom-0 end-0" style="font-size: 0.6em"></em>';
+                }else{
+                    $taskItems .= '<em id= "num_of_single_team_notifications-'.$task->id.'" class="badge bg-danger text-white px-2 rounded-4 position-absolute bottom-0 end-0" style="font-size: 0.6em">'.$task->numberOfUnreadedTaskMessages.'</em>';
+                }
                 $taskItems .= '</div>';
                 $taskItems .= '<div class="col-8">';
-                $taskItems .= '<h5 class="text-left text-md pt-2">'. substr($task->title, 0, 15) .'...</h5>';
+                $taskItems .= '<h5 class="text-left text-md pt-2">'. substr($task->title, 0, 20) .'...</h5>';
                 $taskItems .= '</div>';
                 $taskItems .= '</div>';
                 $taskItems .= '</a>';
@@ -243,7 +286,7 @@ class TaskController extends Controller
         return $taskItems;
     }
 
-    // this method is just for the 
+    // this method is just for the user  - not for the admin
     public function markascompleted()
     {
         $task = Task::find(request()->task_id);
@@ -265,6 +308,7 @@ class TaskController extends Controller
         return back()->with('message', 'the task status has been updated');
     }
 
+    // the sorted tasks by title
     public function getSortedTasks ()
     {
         // $this->authorize('viewAny', User::class);
@@ -276,7 +320,8 @@ class TaskController extends Controller
 
         return json_encode(array($table));
     }
-
+    
+    // the result for the searched task title
     public function getSearchResult ()
     {
         $queryString = request()->queryString;
@@ -292,6 +337,31 @@ class TaskController extends Controller
         $table = $renderedTable->getTable();
 
         return json_encode(array($table));
+
+    }
+
+    //done
+    public function markTaskMessagesAsReaded ()
+    {
+        $taskId = request()->input('taskId');
+        $authUserId = request()->input('authUserId');
+
+        $readedTaskMessages= array();
+
+        $user = User::find($authUserId);
+        $task = Task::find($taskId);
+
+        // get all the records from the "messagenotifications" table that match the user id - notifications that realted to this user in this team  
+        $taskMessagenotifications = $task->taskmessagenotifications->where('user_id', $authUserId);
+        
+        foreach($taskMessagenotifications as $taskMessagenotification){
+            $taskMessagenotification->readed_at = now();
+            $taskMessagenotification->save();
+            array_push($readedTaskMessages, $taskMessagenotification->message_id);
+        }
+
+        //dipatch (((messages))) readed
+        TaskMessageReaded::dispatch($user, $readedTaskMessages, $task);
 
     }
 }

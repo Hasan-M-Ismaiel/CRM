@@ -21,14 +21,17 @@ class TaskMessageSent implements ShouldBroadcast
     protected $task;
     protected $user;
     protected $message;
+    protected $createdtaskmessageId;
+
     /**
      * Create a new event instance.
      */
-    public function __construct(Task $task, User $user, String $message)
+    public function __construct(Task $task, User $user, String $message, $createdtaskmessageId)
     {
         $this->user = $user;        
         $this->task = $task;
         $this->message = $message;
+        $this->createdtaskmessageId = $createdtaskmessageId;
     }
 
     /**
@@ -48,18 +51,19 @@ class TaskMessageSent implements ShouldBroadcast
         $userProfileRoute = '';  // route to the user profile
         $userImageRoute = '';    // route to the user image
 
+        // get the image url for the user 
         if ($this->user->profile && $this->user->profile->getFirstMediaUrl("profiles")){
          $userImageRoute = $this->user->profile->getFirstMediaUrl("profiles");
-        } elseif ($this->user->getFirstMediaUrl("users")) 
-        {
+        } elseif ($this->user->getFirstMediaUrl("users")) {
          $userImageRoute = $this->user->getMedia("users")->first()->getUrl("thumb");
         }else{
          $userImageRoute = asset('images/avatar.png');
         } 
 
+        // get the profile url for the user 
         if($this->user->profile){
             $userProfileRoute = route('admin.profiles.show',$this->user->profile->id);
-        }else{
+        } else {
             $userProfileRoute = route('admin.statuses.notFound');
         }
 
@@ -70,6 +74,7 @@ class TaskMessageSent implements ShouldBroadcast
             'user_profile_url' => $userProfileRoute, 
             'user_image_url' => $userImageRoute, 
             'message' => $this->message,
+            'taskmessage_id'=> $this->createdtaskmessageId,
         ];
     }
 

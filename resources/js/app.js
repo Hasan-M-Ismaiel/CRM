@@ -1,175 +1,257 @@
 import './bootstrap';
 
-//for the notifications 
+//for the notifications
 Echo.private(`App.Models.User.`+userID)
     .notification((notification) => {
-        if(notification['notification_type'] == 'TaskAssigned'){
-            $("#toast_link_to_notification_target").attr("href",notification['link_to_task']+'?notificationId='+notification['notification_id']);
-            // $("#toast_link_to_notification_target").on('click', function(){
-            //     $.ajax({
-            //         url: "{{ route('admin.notifications.markNotification') }}",
-            //         method: 'post',
-            //         data: {
-            //             "_token": "{{ csrf_token() }}",
-            //         notificationId: notification['notification_id'],
-            //         },
-            //         success: function(result){
-            //             alert(result);  
-            //         }
-            //     });
-            // });
-            $("#toast_image").attr("src",notification['project_manager_image']);
-            $("#toast_project_manager_name").html(notification['project_manager_name']);
-            $("#toast_title").html("finish this new task");
-            $("#toast_body").html(notification['task_title']);
-            $("#toast_content").html(notification['project_title']);
-            $(".toast").toast('show');
+    if(notification['notification_type'] == 'TaskAssigned'){
+        $("#toast_link_to_notification_target").attr("href",notification['link_to_task']+'?notificationId='+notification['notification_id']);
+        // $("#toast_link_to_notification_target").on('click', function(){
+        //     $.ajax({
+        //         url: "{{ route('admin.notifications.markNotification') }}",
+        //         method: 'post',
+        //         data: {
+        //             "_token": "{{ csrf_token() }}",
+        //         notificationId: notification['notification_id'],
+        //         },
+        //         success: function(result){
+        //             alert(result);
+        //         }
+        //     });
+        // });
+        $("#toast_image").attr("src",notification['project_manager_image']);
+        $("#toast_project_manager_name").html(notification['project_manager_name']);
+        $("#toast_title").html("finish this new task");
+        $("#toast_body").html(notification['task_title']);
+        $("#toast_content").html(notification['project_title']);
+        $(".toast").toast('show');
 
-            //update the number of notification on the screen 
-            $("#num_of_notification").html(window.NumberOfNotifications + 1);
-            window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
+        //update the number of notification on the screen
+        $("#num_of_notification").html(window.NumberOfNotifications + 1);
+        window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
 
-            //update the number of tasks on the screen 
-            $("#num_of_tasks").html(window.NumberOfTasks + 1);
-            window.NumberOfTasks = window.NumberOfTasks + 1 ;
+        //update the number of tasks on the screen
+        $("#num_of_tasks").html(window.NumberOfTasks + 1);
+        window.NumberOfTasks = window.NumberOfTasks + 1 ;
 
-        } else if (notification['notification_type'] == 'TaskUnAssigned'){
-            $("#toast_link_to_notification_target").attr("href",notification['link_to_project']+'?notificationId='+notification['notification_id']);
-            $("#toast_image").attr("src",notification['project_manager_image']);
-            $("#toast_project_manager_name").html(notification['project_manager_name']);
-            $("#toast_title").html("the task is unassigned from you ");
-            $("#toast_body").html(notification['task_title']);
-            $("#toast_content").html(notification['project_title']);
-            $(".toast").toast('show');
-            //update the number of notification on the screen 
-            $("#num_of_notification").html(window.NumberOfNotifications + 1);
-            window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
-            
-            //update the number of tasks on the screen 
-            $("#num_of_tasks").html(window.NumberOfTasks - 1);
-            window.NumberOfTasks = window.NumberOfTasks - 1 ;
+    } else if (notification['notification_type'] == 'TaskUnAssigned'){
+        $("#toast_link_to_notification_target").attr("href",notification['link_to_project']+'?notificationId='+notification['notification_id']);
+        $("#toast_image").attr("src",notification['project_manager_image']);
+        $("#toast_project_manager_name").html(notification['project_manager_name']);
+        $("#toast_title").html("the task is unassigned from you ");
+        $("#toast_body").html(notification['task_title']);
+        $("#toast_content").html(notification['project_title']);
+        $(".toast").toast('show');
+        //update the number of notification on the screen
+        $("#num_of_notification").html(window.NumberOfNotifications + 1);
+        window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
 
-        } else if (notification['notification_type'] == 'ProjectAssigned'){
-            $("#toast_link_to_notification_target").attr("href",notification['link_to_project']+'?notificationId='+notification['notification_id']);
-            $("#toast_image").attr("src",notification['project_manager_image']);
-            $("#toast_project_manager_name").html(notification['project_manager_name']);
-            $("#toast_title").html(" you are now one of team member for this project ");
-            $("#toast_body").html(notification['project_title']);
-            $(".toast").toast('show');
-            //update the number of notification on the screen 
-            $("#num_of_notification").html(window.NumberOfNotifications + 1);
-            window.NumberOfNotifications = window.NumberOfNotifications +1 ;
-        } else if (notification['notification_type'] == 'ProjectUnAssigned'){
-            $("#toast_image").attr("src",notification['project_manager_image']);
-            $("#toast_project_manager_name").html(notification['project_manager_name']);
-            $("#toast_title").html(" you are now not one of team member for this project ");
-            $("#toast_body").html(notification['project_title']);
-            $(".toast").toast('show');
-            //update the number of notification on the screen 
-            $("#num_of_notification").html(window.NumberOfNotifications + 1);
-            window.NumberOfNotifications = window.NumberOfNotifications +1 ;
-        }else if (notification['notification_type'] == 'TaskWaitingNotification'){
-            $("#toast_link_to_notification_target").attr("href",notification['link_to_task']+'?notificationId='+notification['notification_id']);
-            $("#toast_image").attr("src",notification['project_manager_image']);
-            $("#toast_project_manager_name").html(notification['project_manager_name']);
-            $("#toast_title").html(" there is a task pending and waiting to be closed");
-            $("#toast_body").html(" there is a task pending and waiting to be closed from project"+notification['project_title']);
-            alert()
-            $(".toast").toast('show');
-            //update the number of notification on the screen 
-            $("#num_of_notification").html(window.NumberOfNotifications + 1);
-            window.NumberOfNotifications = window.NumberOfNotifications +1 ;
-        }
+        //update the number of tasks on the screen
+        $("#num_of_tasks").html(window.NumberOfTasks - 1);
+        window.NumberOfTasks = window.NumberOfTasks - 1 ;
+
+    } else if (notification['notification_type'] == 'ProjectAssigned'){
+        $("#toast_link_to_notification_target").attr("href",notification['link_to_project']+'?notificationId='+notification['notification_id']);
+        $("#toast_image").attr("src",notification['project_manager_image']);
+        $("#toast_project_manager_name").html(notification['project_manager_name']);
+        $("#toast_title").html(" you are now one of team member for this project ");
+        $("#toast_body").html(notification['project_title']);
+        $(".toast").toast('show');
+        //update the number of notification on the screen
+        $("#num_of_notification").html(window.NumberOfNotifications + 1);
+        window.NumberOfNotifications = window.NumberOfNotifications +1 ;
+    } else if (notification['notification_type'] == 'ProjectUnAssigned'){
+        $("#toast_image").attr("src",notification['project_manager_image']);
+        $("#toast_project_manager_name").html(notification['project_manager_name']);
+        $("#toast_title").html(" you are now not one of team member for this project ");
+        $("#toast_body").html(notification['project_title']);
+        $(".toast").toast('show');
+        //update the number of notification on the screen
+        $("#num_of_notification").html(window.NumberOfNotifications + 1);
+        window.NumberOfNotifications = window.NumberOfNotifications +1 ;
+    }else if (notification['notification_type'] == 'TaskWaitingNotification'){
+        $("#toast_link_to_notification_target").attr("href",notification['link_to_task']+'?notificationId='+notification['notification_id']);
+        $("#toast_image").attr("src",notification['project_manager_image']);
+        $("#toast_project_manager_name").html(notification['project_manager_name']);
+        $("#toast_title").html(" there is a task pending and waiting to be closed");
+        $("#toast_body").html(" there is a task pending and waiting to be closed from project"+notification['project_title']);
+        alert()
+        $(".toast").toast('show');
+        //update the number of notification on the screen
+        $("#num_of_notification").html(window.NumberOfNotifications + 1);
+        window.NumberOfNotifications = window.NumberOfNotifications +1 ;
+    }
 });
 
 
 //for the team channel messages
 window.projectIds.forEach(element => {
     Echo.private(`teams.`+element)
-    .listen('MessageSent', (e) => {
-    alert(e.message);
-
+        .listen('MessageSent', (e) => {
+        var searchString = 'admin/teams/'+element;
         var userimage = e.user_image_url;
         var message = e.message;
         var username = e.user_name;
         var teamId = e.team_id;
+        var userId = e.user_id;
+        var message_id = e.message_id;
+        alert(e.message_id);
+
         var userprofile = e.user_profile_url;
-            
+        var numberOfSingle;
+
+        // if the user is open this conversation then do not increase the number of unreaded messages on the screen and send ajax request to the back end to make the messages readed in the database and you should send (message readed) event in the server for the sender to know that
+        if (window.location.href.indexOf(searchString) > -1) {
+            axios.post("markMessagesAsReaded", {
+                teamId: teamId,
+                authUserId: window.userID,
+              })
+              .then((response) => {
+                alert('success');
+                alert('done');
+                console.log(response);
+              }, (error) => {
+                console.log(error);
+              });
+
+        } else {
+            //if the auth is the same as the person who send the message then ignore
+            if(window.userID != userId){
+                $("#num_of_total_messages_notifications").html(window.NumberOfTotalMessageNotifications + 1);
+                window.window.NumberOfTotalMessageNotifications = window.window.NumberOfTotalMessageNotifications + 1 ;
+
+                $("#num_of_team_messages_notifications").html(window.NumberOfTeamMessageNotifications + 1);
+                window.NumberOfTeamMessageNotifications = window.NumberOfTeamMessageNotifications + 1 ;
+
+                // var spotlight= '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fe0131" class="bi bi-circle-fill" viewBox="0 0 16 16"> <circle cx="8" cy="8" r="8"/></svg>';
+                // numberOfSingle = $('#num_of_single_team_notifications-'+teamId).html() + (int) 1;
+                $('#num_of_single_team_notifications-'+teamId).html(window.NumberOfTeamkMessageNotifications + "+1");
+            }
+        }
+
         //current time for the message received
-        time1= new Date();
-        currentTime = time1.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
+        var time1= new Date();
+        var currentTime = time1.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
 
         if(e.user_id == window.userID){ // is the auth // for user experince you can comment this first line and add the message from the sender side that is faster to render the sender message
-            var newMessageFromHere = $('<div class="chat-message-right pb-4"> <div> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime+'</div> </div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div> '+ message+ '</div></div>');
+            var newMessageFromHere = $('<div class="chat-message-right pb-4"> <div> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime+'</div> </div><div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div><div> '+ message+ '</div></div><div id="'+message_id+'"></div></div></div>');
         }else{
-            var newMessageFromHere = $('<div class="chat-message-left pb-4"> <div> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime+'</div> </div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div> '+ message+ '</div></div>');
+            var newMessageFromHere = $('<div class="chat-message-left pb-4"> <div> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime+'</div> </div><div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div><div> '+ message+ '</div></div><div id="'+message_id+'"></div></div></div>');
         }
 
         //append the message to UI
         $('#parentmessages').append(newMessageFromHere);
-    });
+    })
+    // listen if the users read the messages of this conversation
+    .listen('MessageReaded',(e)=>{
+        var fromUser = e.user_id;
+        var userimage = e.user_image_url;
+        var messagesId = e.messages_id;
+        var teamId = e.team_id;
 
+        // add the pictures of the users who readed the message
+        messagesId.forEach(myFunction);
+
+        function myFunction(value, index, array) {
+            var message_id_team = '#'+value;
+            var child = '#image-'+fromUser;
+            if ($(message_id_team).children(child).length > 0) {
+                // do something
+            }else{
+               var newUserImage = '<img id="image-'+fromUser+'" src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="15" height="15" />';
+               $(message_id_team).append(newUserImage);
+           }
+         }
+    })
 });
+
+
 
 //for the task channel messages
 window.taskIds.forEach(element => {
     Echo.private(`tasks.`+element)
     .listen('TaskMessageSent', (e) => {
         alert();
-        var userimage = e.user_image_url;
-        var message = e.message;
-        var username = e.user_name;
-        var taskId = e.task_id;
+        var searchString_task = 'admin/tasks/showTaskChat/'+element;
+        var userimage_task = e.user_image_url;
+        var message_task = e.message;
+        var username_task = e.user_name;
+        var taskId_task = e.task_id;
+        var userId_task = e.user_id;
+        var taskmessage_id = e.taskmessage_id;
+
+        // alert(e.taskmessage_id);
+
         var userprofile = e.user_profile_url;
-            
+
+        // if the user is open this conversation then do not increase the number of unreaded messages on the screen and send ajax request to the back end to make the messages readed in the database and you should send (message readed) event in the server for the sender to know that
+        if (window.location.href.indexOf(searchString_task) > -1) {
+            axios.post("../markTaskMessagesAsReaded", {
+                taskId: taskId_task,
+                authUserId: window.userID,
+              })
+              .then((response) => { 
+                alert('success');
+                console.log(response);
+              });
+
+        } else {
+            //if the auth is the same as the person who send the message then ignore
+            if(window.userID != userId_task){
+                if(NumberOfTotalMessageNotifications==0){
+                    $("#num_of_total_messages_notifications").html("+");
+                    window.window.NumberOfTotalMessageNotifications = window.window.NumberOfTotalMessageNotifications + 1 ;
+                }else{
+                    $("#num_of_total_messages_notifications").html(window.NumberOfTotalMessageNotifications + 1);
+                    window.window.NumberOfTotalMessageNotifications = window.window.NumberOfTotalMessageNotifications + 1 ;
+                }
+
+                $("#num_of_task_messages_notifications").html(window.NumberOfTaskMessageNotifications + 1);
+                window.NumberOfTaskMessageNotifications = window.NumberOfTaskMessageNotifications + 1 ;
+
+                // var spotlight= '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fe0131" class="bi bi-circle-fill" viewBox="0 0 16 16"> <circle cx="8" cy="8" r="8"/></svg>';
+                // numberOfSingle = $('#num_of_single_team_notifications-'+teamId).html() + (int) 1;
+                $('#num_of_single_task_notifications-'+taskId_task).html(window.NumberOfTaskMessageNotifications + "+");
+            }
+        }
         //current time for the message received
-        time1= new Date();
-        currentTime = time1.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
+        var time2= new Date();
+        var currentTime2 = time2.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
 
         if(e.user_id == window.userID){ // is the auth // for user experince you can comment this first line and add the message from the sender side that is faster to render the sender message
-            var newMessageFromHere = $('<div class="chat-message-right pb-4"> <div> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime+'</div> </div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div> '+ message+ '</div></div>');
+            var newMessageFromHereTask = $('<div class="chat-message-right pb-4"> <div> <img src="'+userimage_task+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime2+'</div> </div> <div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username_task +'</div><div>'+ message_task+ '</div></div><div id="#taskmessage-'+taskmessage_id+'"></div></div></div>');
+        
         }else{
-            var newMessageFromHere = $('<div class="chat-message-left pb-4"> <div> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime+'</div> </div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div> '+ message+ '</div></div>');
+            var newMessageFromHereTask = $('<div class="chat-message-left pb-4"> <div> <img src="'+userimage_task+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime2+'</div> </div> <div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username_task +'</div><div>'+ message_task+ '</div></div><div id="#taskmessage-'+taskmessage_id+'"></div></div></div>');
         }
 
         //append the message to UI
-        $('#parenttaskmessages').append(newMessageFromHere);
-    });
+        $('#parenttaskmessages').append(newMessageFromHereTask);
+    })
+
+    // listen if the users read the messages of this conversation
+    .listen('TaskMessageReaded',(e)=>{
+        var fromUser_task = e.user_id;
+        var userimage_task = e.user_image_url;
+        var taskmessagesId = e.taskmessages_id;
+        var taskId = e.task_id;
+        
+        alert(taskmessagesId);  //'
+        alert('readed');
+        
+        // add the pictures of the users who readed the message
+        taskmessagesId.forEach(myFunctiontask);
+
+        function myFunctiontask(value, index, array) {
+            var taskmessage_id_task = '#taskmessage-'+value;
+            var child = '#image-'+fromUser_task;
+            if ($(taskmessage_id_task).children(child).length > 0) {
+                // do something
+                // if the picture is already exist
+            }else{
+               var newUserImage_task = '<img id="image-'+fromUser_task+'" src="'+userimage_task+'" class="rounded-circle mr-1 border border-success" width="15" height="15" />';
+               $(taskmessage_id_task).append(newUserImage_task);
+           }
+         }
+    })
 
 });
-
-
-
-    // for the search box
-// import { Input, Ripple, initMDB } from "mdb-ui-kit";
-
-// initMDB({ Input, Ripple });
-
-// const searchFocus = document.getElementById('search-focus');
-// const keys = [
-//   { keyCode: 'AltLeft', isTriggered: false },
-//   { keyCode: 'ControlLeft', isTriggered: false },
-// ];
-
-// window.addEventListener('keydown', (e) => {
-//   keys.forEach((obj) => {
-//     if (obj.keyCode === e.code) {
-//       obj.isTriggered = true;
-//     }
-//   });
-
-//   const shortcutTriggered = keys.filter((obj) => obj.isTriggered).length === keys.length;
-
-//   if (shortcutTriggered) {
-//     searchFocus.focus();
-//   }
-// });
-
-// window.addEventListener('keyup', (e) => {
-//   keys.forEach((obj) => {
-//     if (obj.keyCode === e.code) {
-//       obj.isTriggered = false;
-//     }
-//   });
-// });
-

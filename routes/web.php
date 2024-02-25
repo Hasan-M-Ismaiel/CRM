@@ -80,7 +80,8 @@ Route::middleware(['auth'])->group(function () {
         // managing the tasks 
         Route::get('tasks/getSearchResult',[TaskController::class, 'getSearchResult'])->name('tasks.getSearchResult');
         Route::get('tasks/getSortedTasks',[TaskController::class, 'getSortedTasks'])->name('tasks.getSortedTasks');
-        Route::post('tasks/sendMessage',[TaskController::class, 'sendMessage'])->name('tasks.sendMessage');
+        Route::post('tasks/markTaskMessagesAsReaded',[TaskController::class, 'markTaskMessagesAsReaded'])->name('tasks.markTaskMessagesAsReaded');
+        Route::post('tasks/sendTaskMessage',[TaskController::class, 'sendTaskMessage'])->name('tasks.sendTaskMessage');
         Route::get('tasks/showTaskChat/{task}',[TaskController::class, 'showTaskChat'])->name('tasks.showTaskChat');
         Route::get('tasks/showTasks',[TaskController::class, 'showTasks'])->name('tasks.showTasks');
         Route::post('tasks/remove',[TaskController::class, 'remove'])->name('tasks.remove');
@@ -89,6 +90,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('tasks', TaskController::class);
 
         //team manager controller 
+        Route::post('teams/markMessagesAsReaded',[TeamController::class, 'markMessagesAsReaded'])->name('teams.markMessagesAsReaded');
         Route::post('teams/sendMessage',[TeamController::class, 'sendMessage'])->name('teams.sendMessage');
         Route::resource('teams', TeamController::class)->only('index','show')->name('teams.index', 'teams.show');
         
@@ -119,3 +121,7 @@ Route::middleware(['auth'])->group(function () {
 // Route::get('/testview', function () {
 //     return view('success_create_project');
 // });
+
+// Route::post('/test', function () {
+//     return true;
+// })->name('test');
