@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\StatusMessagesController;
 use App\Http\Controllers\Admin\TaskGroupController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\TeamManagerController;
+use App\Http\Controllers\Admin\UploadController;
 use App\Http\Controllers\CreatingProjectStatusesController;
 use App\Http\Controllers\CreatingTasksStatusesController;
 use App\Http\Controllers\NotificationController;
@@ -104,6 +105,9 @@ Route::middleware(['auth'])->group(function () {
         
         // this route is responsible for retrive the status message like - not found - success - error ----
         Route::get('statuses', [StatusMessagesController::class,'notFound'])->name('statuses.notFound');
+
+        // upload files using file pond
+        Route::post('upload', [UploadController::class,'store']);
 
         
         Route::get('test', [TestBroadcastController::class,'sendbroadcast']);

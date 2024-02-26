@@ -26,13 +26,13 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // admin area
-        // generate admin permissions
+        // generate super admin permissions
          $adminPermissions = [
-            'user_create',  //create page
-            'user_edit',    // edit page
-            'user_show',    // show
-            'user_delete',  // destroy method
-            'user_access',  // index page - method
+            'user_create',              //create page
+            'user_edit',                // edit page
+            'user_show',                // show
+            'user_delete',              // destroy method
+            'user_access',              // index page - method
             'project_create',
             'project_edit',
             'project_show',

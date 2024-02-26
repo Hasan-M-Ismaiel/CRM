@@ -33,6 +33,8 @@ class ProfileFactory extends Factory
             'twitter_account'   => fake()->url(),
             'instagram_account' => fake()->url(),
             'description'       => fake()->paragraph(),
+            'profession'        => 'Web developer',
+
         ];
     }
 }

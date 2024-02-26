@@ -6,6 +6,6 @@
 <script>
    function showSpinner(){
         $('#spinner').show();
-        $('#create-button').text('creating...');
+        // $('#create-button').text('creating...');
     }
 </script>

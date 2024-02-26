@@ -60,6 +60,11 @@
         <link rel="stylesheet" href='{{ asset("css/vendors/simplebar.css") }}'>
         <link rel="stylesheet" href='{{ asset("vendors/simplebar/css/simplebar.css") }}'>
         <link href='{{ asset("css/style.css") }}' rel="stylesheet">
+
+        <!--for file pond-->
+        <link href="https://unpkg.com/filepond@^4/dist/filepond.css" rel="stylesheet" />
+
+
         <title>Hello, world!</title>
         @vite(['resources/js/app.js', 'resources/css/app.css', 'resources/css/profile.css', 'resources/css/createProject.css', 'resources/sass/app.scss', 'resources/css/editProject.css', 'resources/css/radioButton.styl', 'resources/css/chat.css' ])
 
@@ -241,9 +246,9 @@
             function markasread(teamId, authUserId, numberOfReadedMessages){
                 // number of readed messages from this chat 
                 
-                alert(numberOfReadedMessages);
-                alert(teamId);
-                alert(authUserId);
+                // alert(numberOfReadedMessages);
+                // alert(teamId);
+                // alert(authUserId);
                 $.ajax({
                     url: "{{ route('admin.teams.markMessagesAsReaded') }}",
                     method: 'post',
@@ -266,9 +271,9 @@
             function markasreadtask(taskId, authUserId, numberOfReadedTaskMessages){
                 // number of readed messages from this chat 
                 
-                alert(numberOfReadedTaskMessages);
-                alert(taskId);
-                alert(authUserId);
+                // alert(numberOfReadedTaskMessages);
+                // alert(taskId);
+                // alert(authUserId);
                 $.ajax({
                     url: "{{ route('admin.tasks.markTaskMessagesAsReaded') }}",
                     method: 'post',
@@ -287,5 +292,41 @@
                 });
             } 
         </script>
+
+        <!--for file pond-->
+        <script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
+        <script>
+            // Get a reference to the file input element
+            const inputElement = document.querySelector('input[id="image"]');
+
+            // Create a FilePond instance
+            const pond = FilePond.create(inputElement);
+
+            FilePond.setOptions({
+                server: {
+                   url: '/admin/upload',
+                   headers:{
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                   }
+
+                }
+            });
+        </script>
+
+        <!--for the spinner on each click button - like create - update-->
+        <!-- <script>
+            function showUpdatingSpinner(){
+                    $('#spinner').show();
+                    $('#create-button').text('updating...');
+                }
+        </script> -->
+
+        <!--for the spinner on each click button - like create - update-->
+        <!-- <script>
+            function showSpinner(){
+                    $('#spinner').show();
+                    $('#create-button').text('creating...');
+                }
+        </script> -->
     </body>
 </html>

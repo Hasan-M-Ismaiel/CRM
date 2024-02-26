@@ -50,14 +50,14 @@
             </li>
 
             <!--chat-->
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                 <a class="nav-link chatParentClass" href="#">
                     <svg width="25" height="25">
                         <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-chat-bubble') }}"></use>
                     </svg>
                     <em id = "num_of_messages" class="badge bg-danger text-white px-2 rounded-4">1</em>
                 </a>
-            </li>
+            </li> -->
         </ul>
         <ul class="header-nav ms-3">
             <li class="nav-item dropdown">
