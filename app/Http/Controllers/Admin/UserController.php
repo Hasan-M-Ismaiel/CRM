@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Models\Skill;
+use App\Models\TemporaryFile;
 use App\Models\User;
 use App\Services\NotificationService;
 use App\Services\RenderUsersTableService;
@@ -66,9 +67,17 @@ class UserController extends Controller
         ]);
         
         //if the user choose image then save it in the database media table
-        if ($request->hasFile('image')) {
-            $user->addMediaFromRequest('image')->toMediaCollection('users');
-        } 
+        // if ($request->hasFile('image')) {
+            // $user->addMediaFromRequest('image')->toMediaCollection('users');
+            // dd(request()->image);
+            $temporaryFile = TemporaryFile::where('folder', request()->image)->first();
+            if($temporaryFile){
+                $user->addMedia(storage_path('app/avatars/tmp/' . request()->image . '/' . $temporaryFile->filename))
+                    ->toMediaCollection('users');
+                rmdir(storage_path('app/avatars/tmp/' . request()->image));
+                $temporaryFile->delete();
+            }
+        // } 
 
         // get the role that set for the user and assign it 
         $role = Role::findById($request->role_id, 'web');
@@ -145,15 +154,19 @@ class UserController extends Controller
         // the authorization is in the form request 
 
         //check if the password match the old password - this should be like other way 
-        if(!Hash::check($request->old_password, $user->password)){
-            return back()->with("message", "old Password Doesn't match!");
+        if(request()->old_password){
+            // dd(request()->old_password,request()->password, $user->password);
+            if(!Hash::check($request->old_password, $user->password)){
+                return back()->with("message", "old Password Doesn't match!");
+            }
+            $user->password = Hash::make($request->validated('password'));
+            $user->save();
         }
 
         //update the user information
         $user->update([
             'name' => $request->validated('name'),
             'email' => $request->validated('email'),
-            'password' => Hash::make($request->validated('password')),
         ]);
         
         // remove all the roles form the user
@@ -163,9 +176,18 @@ class UserController extends Controller
         $user->assignRole($role);
 
         //check if the user update the image - if true - then delete the old one from the strorage
-        if ($request->hasFile('image')) {
-                $user->clearMediaCollection('users');
-                $user->addMediaFromRequest('image')->toMediaCollection('users');
+        // if ($request->hasFile('image')) {
+        //         $user->clearMediaCollection('users');
+        //         $user->addMediaFromRequest('image')->toMediaCollection('users');
+        // }
+        
+        // get the image if presented
+        $temporaryFile = TemporaryFile::where('folder', request()->image)->first();
+        if($temporaryFile){
+            $user->addMedia(storage_path('app/avatars/tmp/' . request()->image . '/' . $temporaryFile->filename))
+                ->toMediaCollection('users');
+            rmdir(storage_path('app/avatars/tmp/' . request()->image));
+            $temporaryFile->delete();
         }
 
         $assignedSkills = $request->input('assigned_skills');

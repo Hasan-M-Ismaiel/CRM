@@ -36,13 +36,13 @@ class UserUpdateRequest extends FormRequest
         return [
             'name'          => ['required', 'string', 'max:100'],
             'email'         => ['required', 'string', 'max:255', Rule::unique('users')->ignore($this->user)],
-            // 'old_password'  => ['required', 'current_password'],   
-            'password'      => ['required', 'confirmed', 'min:8',Password::defaults()],   
+            'old_password'  => ['sometimes'],   
+            'password'      => ['present_with:old_password', 'confirmed', 'min:8',Password::defaults()],   
             'role_id'       => ['required', Rule::in($collection)],
-            // "new_skills"    => "array",                  //not required but you should add something like - sometimes - if presented check about that 
-            // "new_skills.*"  => "string|distinct|min:2", //least 2 characters
             "new_skills"    => "array",
             "new_skills.*"  => "required|string|distinct|min:2|unique:skills,name", //least 2 characters
+            // "new_skills"    => "array",                  //not required but you should add something like - sometimes - if presented check about that 
+            // "new_skills.*"  => "string|distinct|min:2", //least 2 characters
         ];
     }
 }

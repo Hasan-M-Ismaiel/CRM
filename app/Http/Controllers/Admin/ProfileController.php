@@ -58,11 +58,13 @@ class ProfileController extends Controller
         if ($request->hasFile('image')) {
             $profile->addMediaFromRequest('profileImage')->toMediaCollection('profiles');
         } else {
-            //copy the image file from the basic images folder to the folder "avatars" that the media library take from - this because the library delete the image after using it 
-            File::copy(public_path('assets/avatars_basic/'.$request->avatar_image.'.jpg'), public_path('assets/avatars/'.$request->avatar_image.'.jpg'));
-            
-            $pathToFile=public_path('assets/avatars/'.$request->avatar_image.'.jpg');
-            $profile->addMedia($pathToFile)->toMediaCollection('profiles');
+
+            if($request->avatar_image){
+                //copy the image file from the basic images folder to the folder "avatars" that the media library take from - this because the library delete the image after using it 
+                File::copy(public_path('assets/avatars_basic/'.$request->avatar_image.'.jpg'), public_path('assets/avatars/'.$request->avatar_image.'.jpg'));
+                $pathToFile=public_path('assets/avatars/'.$request->avatar_image.'.jpg');
+                $profile->addMedia($pathToFile)->toMediaCollection('profiles');
+            }
         }
 
         return redirect()->route('admin.profiles.show', $profile->user)->with('message', 'the profile has been created sucessfully');;
@@ -116,12 +118,15 @@ class ProfileController extends Controller
         if ($request->hasFile('image')) {
             $profile->addMediaFromRequest('profileImage')->toMediaCollection('profiles');
         } else {
-            //copy the image file from the basic images folder to the folder "avatars" that the media library take from - this because the library delete the image after using it 
-            File::copy(public_path('assets/avatars_basic/'.$request->avatar_image.'.jpg'), public_path('assets/avatars/'.$request->avatar_image.'.jpg'));
 
-            $pathToFile=public_path('assets/avatars/'.$request->avatar_image.'.jpg');
-            $profile->clearMediaCollection('profiles');
-            $profile->addMedia($pathToFile)->toMediaCollection('profiles');
+            if($request->avatar_image){
+                //copy the image file from the basic images folder to the folder "avatars" that the media library take from - this because the library delete the image after using it 
+                File::copy(public_path('assets/avatars_basic/'.$request->avatar_image.'.jpg'), public_path('assets/avatars/'.$request->avatar_image.'.jpg'));
+                $pathToFile=public_path('assets/avatars/'.$request->avatar_image.'.jpg');
+                $profile->clearMediaCollection('profiles');
+                $profile->addMedia($pathToFile)->toMediaCollection('profiles');
+            }
+
         }
 
         return redirect()->route('admin.profiles.show', $profile->user)->with('message', 'the profile has been updated sucessfully');;

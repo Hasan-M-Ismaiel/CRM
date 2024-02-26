@@ -7,6 +7,6 @@
 <script>
    function showSpinner(){
         $('#spinner').show();
-        $('#assign-button').text('assining...');
+        // $('#assign-button').text('assining...');
     }
 </script>

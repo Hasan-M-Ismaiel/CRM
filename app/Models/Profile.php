@@ -11,7 +11,7 @@ class Profile extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
 
-    protected $fillable = ['nickname', 'phone_number', 'postal_code', 'age', 'gender', 'facebook_account', 'linkedin_account', 'country', 'city', 'github_account', 'instagram_account', 'twitter_account', 'description', 'user_id'];
+    protected $fillable = ['nickname', 'phone_number', 'postal_code', 'age', 'gender', 'facebook_account', 'linkedin_account', 'country', 'city', 'github_account', 'instagram_account', 'twitter_account', 'description', 'user_id', 'profession'];
 
     public function user ()
     {

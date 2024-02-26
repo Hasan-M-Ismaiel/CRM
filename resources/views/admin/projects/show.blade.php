@@ -11,6 +11,7 @@
                             <div class="col">
                                 <div class="card">
                                     <div class="card-body cardParentEditClass">
+                                        @can('task_edit')
                                         <div class="x-project-card row">
                                             <div><a class="x-task-card text-secondary btn p-0" style="text-decoration: none;" href="{{ route('admin.projects.edit', $project) }}">Edit</a></div>
                                             <div><a class="x-task-card text-secondary btn p-0" style="text-decoration: none;"  onclick="if (confirm('Are you sure?') == true) {
@@ -22,6 +23,7 @@
                                             <div><a class="x-task-card text-secondary btn p-0" style="text-decoration: none;" href="{{ route('admin.taskGroups.create', ['projectId'=> $project->id]) }}">Add Tasks</a></div>
                                             <div><a class="x-task-card text-secondary btn p-0" style="text-decoration: none;" href="{{ route('admin.projects.assignCreate', $project->id) }}">Assign Users</a></div>
                                         </div>
+                                        @endcan
 
                                         <!--this for the deletion-->
                                         <form id="delete-item-{{$project->id}}" action="{{ route('admin.projects.destroy', $project->id) }}" class="d-none" method="POST">
@@ -194,7 +196,7 @@
                                             <div class="card-header">Tasks</div>
                                             <div class="card-body text-secondary">
                                                 <h5 class="card-title">There is no tasks</h5>
-                                                <p class="card-text">click <a href="{{ route('admin.taskGroups.create', ['projectId'=> $project->id]) }}">here</a> to add new tasks.</p>
+                                                @can('task_create')<p class="card-text">click <a href="{{ route('admin.taskGroups.create', ['projectId'=> $project->id]) }}">here</a> to add new tasks.</p>@endcan
                                             </div>
                                         </div>
                                         @endif
