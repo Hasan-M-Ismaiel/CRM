@@ -35,7 +35,7 @@
                                             <h2 class="fs-title">Project Information:</h2>
                                         </div>
                                         <div class="col-5">
-                                            <h2 class="steps">Step 1 - 4</h2>
+                                            <h2 class="steps">Step 1 - 5</h2>
                                         </div>
                                     </div>
                                     <label class="fieldlabels mt-3" for="title">Title:</label>
@@ -66,7 +66,7 @@
                                             <h2 class="fs-title">Alter required Skills:</h2>
                                         </div>
                                         <div class="col-5">
-                                            <h2 class="steps">Step 2 - 4</h2>
+                                            <h2 class="steps">Step 2 - 5</h2>
                                         </div>
                                     </div>
                                     <div class="row mt-4">
@@ -131,7 +131,9 @@
                                     </div>
                                 </div>
                             </fieldset>
+                            <!--get users button-->
                             <button type="button" id="getUsers" class="btn btn-primary">Press To get Users</button>
+                            <!--users-->
                             <fieldset class="mt-5">
                                 <div class="form-card border px-3  pb-3 border-success rounded">
                                     <div class="row border px-2 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
@@ -220,6 +222,78 @@
                                     </div>
                                 </div>
                             </fieldset>
+                            <!--teamleader-->
+                            <fieldset class="mt-5">
+                                <div class="form-card border px-3  pb-3 border-success rounded">
+                                    <div class="row border px-2 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
+                                        <div class="col-7">
+                                            <h2 class="fs-title">Alter the teamleader:</h2>
+                                        </div>
+                                        <div class="col-5">
+                                            <h2 class="steps">Step 4 - 5</h2>
+                                        </div>
+                                    </div>
+                                    <div id="teamleaderTable" class="mt-4">
+                                        <table class="table table-striped mt-2">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">#</th>
+                                                    <th scope="col">Select</th>
+                                                    <th scope="col">Name</th>
+                                                    <th scope="col">Skills</th>
+                                                    <th scope="col">Profile</th>
+                                                    <th scope="col">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($users as $user)
+                                                    <tr style="height: 60px;">
+                                                        <th scope="row" class="align-middle">{{ $loop->iteration }}</th>
+                                                        <td style="text-align: center; vertical-align: middle;">
+                                                            <div class="avatar avatar-md mt-2">
+                                                                <label class="labelexpanded_teamleader">
+                                                                    @if($user->id==$project->teamleader->id)
+                                                                    <input type="radio" class="m-1" id="{{$user->id}}" name="teamleader_id" value="{{$user->id}}" checked>
+                                                                    @else
+                                                                    <input type="radio" class="m-1" id="{{$user->id}}" name="teamleader_id" value="{{$user->id}}">
+                                                                    @endif
+                                                                        <div class="radio-btns_teamleader rounded-circle border-1">
+                                                                            @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
+                                                                            <img src='{{$user->profile->getFirstMediaUrl("profiles")}}' alt="DP"  class="avatar-img  shadow">
+                                                                            @elseif($user->getFirstMediaUrl("users"))
+                                                                            <img src='{{$user->getMedia("users")[0]->getUrl("thumb")}}' alt="DP"  class="avatar-img  shadow">
+                                                                            @else
+                                                                            <img src='{{asset("images/avatar.png")}}' alt="DP"  class="avatar-img  shadow ">
+                                                                            @endif
+                                                                        </div>
+                                                                    </input>
+                                                                </label>
+                                                            </div>
+                                                        </td>
+                                                        <td class="align-middle"><a href="{{ route('admin.users.show', $user->id) }}" >{{ $user->name }} </a></td>
+                                                        @if($user->skills->count() >0)
+                                                        <td class="align-middle">
+                                                            @foreach($user->skills as $skill)
+                                                                <span class="badge bg-dark m-1">{{ $skill->name }}</span>
+                                                            @endforeach
+                                                        </td>
+                                                        @else
+                                                        <td class="align-middle"> # </td>
+                                                        @endif
+                                                        @if($user->profile != null)
+                                                        <td class="align-middle"><a href="{{ route('admin.profiles.show', $user->id) }}" >{{ $user->profile->nickname }} </a></td>
+                                                        @else
+                                                        <td class="align-middle"> # </td>
+                                                        @endif
+                                                        <td class="align-middle"> open/close</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <!--update status and click submit button-->
                             <fieldset class="mt-5">
                                 <div class="form-card border px-3  pb-5 border-success rounded">
                                     <div class="row border px-2 pb-3 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);" >
@@ -230,33 +304,31 @@
                                             <h2 class="steps">Step 5 - 5</h2>
                                         </div>
                                     </div>
+                                    <!--radio button [project status]-->
                                     <div class="mt-5 mb-5">
-                                    @if($project->status)
-                                        <input type="radio" name="status" id="close" value="true" checked />
-                                        <input type="radio" name="status" id="open" value="false"/>
-                                        <div class="switch">
-                                            <label for="close">close</label>
-                                            <label for="open">open</label>
-                                            <span></span>
-                                        </div>
-                                    @else
-                                        <input type="radio" name="status" id="close" value="true" />
-                                        <input type="radio" name="status" id="open"  value="false" checked/>
-                                        <div class="switch">
-                                            <label for="close">close</label>
-                                            <label for="open">open</label>
-                                            <span></span>
-                                        </div>
-                                    @endif
+                                        @if($project->status)
+                                            <input type="radio" name="status" id="close" value="true" checked />
+                                            <input type="radio" name="status" id="open" value="false"/>
+                                            <div class="switch">
+                                                <label for="close">close</label>
+                                                <label for="open">open</label>
+                                                <span></span>
+                                            </div>
+                                        @else
+                                            <input type="radio" name="status" id="close" value="true" />
+                                            <input type="radio" name="status" id="open"  value="false" checked/>
+                                            <div class="switch">
+                                                <label for="close">close</label>
+                                                <label for="open">open</label>
+                                                <span></span>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
-
                                 <button id="updateproject" type="submit" class="action-create-button" onclick="showSpinner()">
                                     <span id="spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
                                     Update
                                 </button>
-
-                                
                                 <!-- <input id="updateproject" type="submit" type="button" class="next action-button mt-5" /> -->
                             </fieldset>
                         </form>
@@ -266,6 +338,23 @@
         </div>
     </div>
 </div>
+
+<!--this is for the teamleader [redio button]-->
+<style>
+    .labelexpanded_teamleader > input {
+        display: none;
+    }
+
+    .labelexpanded_teamleader input:checked + .radio-btns_teamleader {
+        border-style: solid;
+        border-color: #50ef44;
+    }
+
+    .radio-btns_teamleader {
+        cursor: pointer;
+        background-color: #eaeaea;
+    }
+</style>
 
 <!--Modal: modalPush-->
 <div class="modal fade" id="modalPush" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" style="display: none;">
@@ -280,9 +369,9 @@
       <!--Body-->
       <div class="modal-body">
 
-      <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-bell-fill text-danger" viewBox="0 0 16 16">
-        <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/>
-      </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-bell-fill text-danger" viewBox="0 0 16 16">
+            <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/>
+        </svg>
         <!-- <i class="bi bi-bell bi-4x animated rotateIn mb-4"></i> -->
 
         <p>You are trying to unassign users from this project by altering the skills:</p>
@@ -331,6 +420,7 @@
     $('#getUsers').on('click', function(){  
         var assigned_skills = [];
         var new_skills = [];
+        var teamleader_id = $('#teamleader_id').val();
         var inputs1 = document.getElementsByClassName('assigned_skills'); // get all elements within this class 
         var inputs = document.getElementsByClassName('new_skills'); // get all elements within this class 
 
@@ -350,6 +440,7 @@
 
         // to clear the list if the user change the selected option again 
         $('#usersTable').empty();     
+        $('#teamleaderTable').empty();     
         $('#loading').show();     
         $.ajax({
             url: "{{ route('admin.skills.getUsersWithSkills') }}",
@@ -360,11 +451,13 @@
                 new_skills: new_skills,
                 from: "edit",
                 project_id:'{{$project->id}}',
+                teamleader_id:teamleader_id,
             },
             success: function(output){
                 var result = $.parseJSON(output);
                 if(result[0] =='affected'){
-                    $('#usersTable').append(result[2]);  
+                    $('#usersTable').append(result[2]);
+                    $('#teamleaderTable').append(result[3]);
                     $('#affectedUsers').empty();        //clear the old data
                     $('#affectedUsers').append(result[1]);
                     $('#updateproject').prop('disabled', false);
@@ -372,6 +465,7 @@
                     $('#modalPush').modal('show'); 
                 }else if(result[0] == 'notAffected'){
                     $('#usersTable').append(result[2]);  
+                    $('#teamleaderTable').append(result[3]);
                     $('#updateproject').prop('disabled', false);
                     $('#loading').hide();     
                 }else if(result[0]=='FieldsEmpty'){
@@ -389,10 +483,10 @@
 </script>
 
 <script>
-function showSpinner(){
-        $('#spinner').show();
-        $('#updateproject').text('updating...');
-    }
+    function showSpinner(){
+            $('#spinner').show();
+            $('#updateproject').text('updating...');
+        }
 </script>
 
 @endsection

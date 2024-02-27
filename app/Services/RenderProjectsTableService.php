@@ -36,6 +36,7 @@ class RenderProjectsTableService{
                     </th>
                 <th scope="col" class="align-middle">Deadline</th>
                 <th scope="col" class="align-middle">Techniques</th>
+                <th scope="col" class="align-middle">Leader</th>
                 <th scope="col" class="align-middle">Users</th>
                 <th scope="col" class="align-middle">Owner</th>
                 <th scope="col" class="align-middle">Tasks</th>
@@ -72,7 +73,39 @@ class RenderProjectsTableService{
             }
             $var .= '</td>';
                 
+            // user images
+            $var .= '<td class="align-middle">';
+            if($project->teamleader){
+                $var .='<div>';
+                if($project->teamleader->profile)
+                    if($project->teamleader->profile){
+                        $var .='<a href="'. route('admin.profiles.show', $project->teamleader).'" style="text-decoration: none;">';
+                    }else{
+                        $var .='<a href="'.route('admin.statuses.notFound') .'" style="text-decoration: none;">';
+                    }
 
+                    if($project->teamleader && $project->teamleader->profile->getFirstMediaUrl("profiles")){
+                        $var .= '<div class="avatar avatar-md mt-1">';
+                        $var .= '<img src="'. $project->teamleader->profile->getFirstMediaUrl("profiles").'" alt="DP"  class="  rounded-circle img-fluid  border border-success shadow mb-1" width="35" height="35">';
+                        $var .= '</div>';
+                    }elseif($project->teamleader->getFirstMediaUrl("users")){
+                        $var .= '<div class="avatar avatar-md mt-1">';
+                        $var .= '<img src="'. $project->teamleader->getMedia("users")[0]->getUrl("thumb").'" alt="DP"  class="  rounded-circle img-fluid border border-success shadow mb-1" width="35" height="35">';
+                        $var .= '</div>';
+                    }else{
+                        $var .= '<div class="avatar avatar-md mt-1">';
+                        $var .= '<img src="'. asset("images/avatar.png").'" alt="DP"  class="  rounded-circle img-fluid border border-success shadow mb-1" width="35" height="35">';
+                        $var .= '</div>';
+                    }
+                    $var .='<span class="badge m-1" style="background: #673AB7;">'. $project->teamleader->name .'</span>';
+                    $var .='</a>';
+                    $var .='</div>';
+                } else {
+                $var .= '#';
+            }
+            $var .= '</td>';
+
+            // user images
             $var .= '<td class="align-middle">';
             if($project->users()->count() > 0){
                 foreach ($project->users as $user){

@@ -26,6 +26,7 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
+    // this is unauthorized because every role can see multiple tasks 
     public function index()
     {
         if(auth()->user()->hasRole('admin')){
@@ -140,6 +141,9 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    //[you have to remove the old policy and ]
+    // with out having to add gate to authServiceProvider | in the view you can use the if(auth()->user()->id == $task->project->teamleader_id) because the person how responsible for accept the task can delete it 
+    // if(auth()->user()->id == $task->project->teamleader_id){
     public function destroy(Task $task)
     {
         $this->authorize('delete', $task);
@@ -149,18 +153,26 @@ class TaskController extends Controller
 
     }
 
+    //[todo]
     public function remove()
     {
         // $this->destroy( request()->task_id);
         $task = Task::find(request()->task_id);
+        // with out having to add gate to authServiceProvider | in the view you can use the if(auth()->user()->id == $task->project->teamleader_id) because the person how responsible for accept the task can delete it 
+        // if(auth()->user()->id == $task->project->teamleader_id){
         $task->delete();
+        //}
         return true;
     }
 
+    //[todo]
     public function accept()
     {
         $task = Task::find(request()->task_id);
 
+        // [to do ] - using gate
+        // if(auth()->user()->id == $task->project->teamleader_id)
+        // $this->authorize('accept-task', $task);
         $task->update([
             'status' => "closed",
         ]);
@@ -168,14 +180,17 @@ class TaskController extends Controller
         return back()->with('message', 'the task status has been updated');
     }
 
+    // authorized 
     public function showTasks()
     {
+        // this should like this 
+        // here the end user see the same tasks that the teamleader see [ the admin here is the super admin]
         if(auth()->user()->hasRole('admin')){
             $tasks = Task::all();
         } else {
             $user = Auth::user();
             
-            // get all the tasks related to the  registered user 
+            // get all the tasks related to the registered user 
             $tasks = collect();
             $projects = $user->projects()->get();
             $projects->map(function (Project $project) use($tasks, $user) {
@@ -191,12 +206,13 @@ class TaskController extends Controller
         $var = $this->render($tasks,  $taskItems);
 
         return json_encode(array($var));
-
-
     }
 
+    // authorized using gate in the AuthServiceProvider
     public function showTaskChat(Task $task)
     {
+        $this->authorize('showTaskChat', $task);
+
         $users = User::all();
         return view('admin.tasks.showTaskChat', [
             'task' => $task,
@@ -204,61 +220,67 @@ class TaskController extends Controller
         ]);
     }
 
-    //done
+    // authorized by the own of this task chat and the admin role [here should be the team leader of the project that this task belongs to ] 
     public function sendTaskMessage ()
     {
-
         $message = request()->input('message');
         $fromUser = request()->input('user_id');
         $taskChat = request()->input('task_id');
-
+        
         $user = User::find($fromUser);
         $task = Task::find($taskChat);
-
-        $createdtaskmessage = TaskMessage::create([
-            'task_id' => $task->id,
-            'user_id' => $user->id,
-            'message' => $message,
-        ]);
-
-        $createdtaskmessageId = $createdtaskmessage->id;
-
-        // if the sender was the admin
-        if($user->hasRole('admin')){
-            Taskmessagenotification::create([
-                'user_id' => $task->user->id,
+        
+        //this check is for authorization
+        if($user->id == $task->user_id || auth()->user()->hasRole('admin')){
+            $createdtaskmessage = TaskMessage::create([
                 'task_id' => $task->id,
-                'task_message_id' => $createdtaskmessage->id,  
-                'from_user_id' => $user->id,
+                'user_id' => $user->id,
+                'message' => $message,
             ]);
-        } else {
-            // search for the admin /// in the future you have to alter this because the admin could be muiple teamleaders 
-            // this should be in the future as this :  if($adminuser->hasRole('teamleader') && in the $task->project->users)
-            $adminUser = null;
-            $users = User::all();
-            foreach($users as $admin_user){
-                if($admin_user->hasRole('admin')){
-                    $adminUser = $admin_user;
-                }
-            }
-            if($adminUser != null){
+
+            $createdtaskmessageId = $createdtaskmessage->id;
+
+            // if the sender was the admin
+            if($user->hasRole('admin')){
                 Taskmessagenotification::create([
-                    'user_id' => $adminUser->id,
+                    'user_id' => $task->user->id,
                     'task_id' => $task->id,
                     'task_message_id' => $createdtaskmessage->id,  
                     'from_user_id' => $user->id,
                 ]);
-            }else{
-                Log::info('error : there is no admins in the database- this error in the task controller - send message');
-                abort('error : there is no admins in the database');
+            } else {
+                // search for the admin /// in the future you have to alter this because the admin could be muiple teamleaders 
+                // this should be in the future as this :  if($adminuser->hasRole('teamleader') && in the $task->project->users)
+                $adminUser = null;
+                $users = User::all();
+                foreach($users as $admin_user){
+                    if($admin_user->hasRole('admin')){
+                        $adminUser = $admin_user;
+                    }
+                }
+                if($adminUser != null){
+                    Taskmessagenotification::create([
+                        'user_id' => $adminUser->id,
+                        'task_id' => $task->id,
+                        'task_message_id' => $createdtaskmessage->id,  
+                        'from_user_id' => $user->id,
+                    ]);
+                }else{
+                    Log::info('error : there is no admins in the database- this error in the task controller - send message');
+                    abort('error : there is no admins in the database');
+                }
             }
+
+
+            TaskMessageSent::dispatch($task,$user,$message, $createdtaskmessageId);
+        }else{
+            //unauthorized
+            abort(403);   
         }
-
-
-        TaskMessageSent::dispatch($task,$user,$message, $createdtaskmessageId);
 
     }
 
+    // this should [not] be [public] its [private] in just here
     // render the task modal items [every one has different amount of tasks]
     public function render ($tasks, $taskItems)
     {
@@ -288,28 +310,37 @@ class TaskController extends Controller
     }
 
     // this method is just for the user  - not for the admin
+    // this is authorized by only the owner of this task
     public function markascompleted()
     {
         $task = Task::find(request()->task_id);
         
-        $task->update([
-            'status' => "pending",
-        ]);
+        if(auth()->user()->tasks->contains($task)){
+            $task->update([
+                'status' => "pending",
+            ]);
 
-        // here you have to notify the admin tha the task is waiting to be accepted
-        //notify the team leader
-        foreach($task->project->users as $user){    
-            if($user->hasRole('admin')){
-                $user->notify(new TaskWaitingNotification($task));
-            } else {
-                //throwException();  // and catch it // in the case that the admin delete him self - 'admin not exist on this project'
+            // here you have to notify the admin tha the task is waiting to be accepted
+            //notify the team leader
+            foreach($task->project->users as $user){    
+                if($user->hasRole('admin')){
+                    $user->notify(new TaskWaitingNotification($task));
+                } else {
+                    //throwException();  // and catch it // in the case that the admin delete him self - 'admin not exist on this project'
+                }
             }
+
+            return back()->with('message', 'the task status has been updated');
+
+        } else {
+            //un authorized
+            abort(403);
         }
 
-        return back()->with('message', 'the task status has been updated');
     }
 
     // the sorted tasks by title
+    // not need to authorize this feature
     public function getSortedTasks ()
     {
         // $this->authorize('viewAny', User::class);
@@ -323,6 +354,7 @@ class TaskController extends Controller
     }
     
     // the result for the searched task title
+    // not need to authorize this feature
     public function getSearchResult ()
     {
         $queryString = request()->queryString;
@@ -341,7 +373,7 @@ class TaskController extends Controller
 
     }
 
-    //done
+    // this is authorized by only the owner of the task and the admin
     public function markTaskMessagesAsReaded ()
     {
         $taskId = request()->input('taskId');           // in this conversation 
@@ -352,22 +384,25 @@ class TaskController extends Controller
         $user = User::find($authUserId);                // find the user that see the notification
         $task = Task::find($taskId);                    // find the task
 
-        // Log::info($authUserId);
+        if($user->id == $task->user_id || auth()->user()->hasRole('admin')){
 
-        // get all the records from the "messagenotifications" table that match the user id - notifications that realted to this user in this team  
-        $taskMessagenotifications = $task->taskmessagenotifications->where('user_id','=', $authUserId);
-        // Log::info($taskMessagenotifications);
-        
-        foreach($taskMessagenotifications as $taskMessagenotification){
-            $taskMessagenotification->readed_at = now();
-            $taskMessagenotification->save();
-            array_push($readedTaskMessages, $taskMessagenotification->task_message_id);
+            // get all the records from the "messagenotifications" table that match the user id - notifications that realted to this user in this team  
+            $taskMessagenotifications = $task->taskmessagenotifications->where('user_id','=', $authUserId);
+            // Log::info($taskMessagenotifications);
+            
+            foreach($taskMessagenotifications as $taskMessagenotification){
+                $taskMessagenotification->readed_at = now();
+                $taskMessagenotification->save();
+                array_push($readedTaskMessages, $taskMessagenotification->task_message_id);
+            }
+
+            // Log::info($readedTaskMessages);
+            //dipatch (((messages))) readed
+            // the [user] see the [task messages] with ids [readedTaskMessages]
+            TaskMessageReaded::dispatch($user, $readedTaskMessages, $task);
+        }else{
+            //unauthorized
+            abort(403);
         }
-
-        // Log::info($readedTaskMessages);
-        //dipatch (((messages))) readed
-        // the [user] see the [task messages] with ids [readedTaskMessages]
-        TaskMessageReaded::dispatch($user, $readedTaskMessages, $task);
-
     }
 }

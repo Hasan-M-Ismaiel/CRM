@@ -140,54 +140,69 @@
                             <!--stage three-->
                             <fieldset>
                                 <div class="form-card">
-                                    <div class="row">
-                                        <div class="col-7">
-                                            <h2 class="fs-title">Add User:</h2>
+                                    <div class="card border border-success rounded p-4">
+                                        <div class="row">
+                                            <div class="col-7">
+                                                <h2 class="fs-title">Add User:</h2>
+                                            </div>
+                                            <div class="col-5">
+                                                <h2 class="steps">Step 3 - 4</h2>
+                                            </div>
                                         </div>
-                                        <div class="col-5">
-                                            <h2 class="steps">Step 3 - 4</h2>
-                                        </div>
-                                    </div>
-                                    <!-- <x-users-matched-table :users="$users"  /> -->
-                                    <div id="usersTable">
-                                        <table class="table table-striped mt-2">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col">#</th>
-                                                    <th scope="col">Select</th>
-                                                    <th scope="col">Name</th>
-                                                    <th scope="col">Skills</th>
-                                                    <th scope="col">Profile</th>
-                                                    <th scope="col">Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($users as $user)
-                                                    <tr style="height: 60px;">
-                                                        <th scope="row" class="align-middle">{{ $loop->iteration }}</th>
-                                                        <td style="text-align: center; vertical-align: middle;"><input type="checkbox" id="user-{{$user->id}}" name="assigned_users[]" value="{{$user->id}}"></td>
-                                                        <td class="align-middle"><a href="{{ route('admin.users.show', $user->id) }}" >{{ $user->name }} </a></td>
-                                                        @if($user->skills->count() >0)
-                                                        <td class="align-middle">
-                                                            @foreach($user->skills as $skill)
-                                                                <span class="badge bg-dark m-1">{{ $skill->name }}</span>
-                                                            @endforeach
-                                                        </td>
-                                                        @else
-                                                        <td class="align-middle"> # </td>
-                                                        @endif
-                                                        @if($user->profile != null)
-                                                        <td class="align-middle"><a href="{{ route('admin.profiles.show', $user->id) }}" >{{ $user->profile->nickname }} </a></td>
-                                                        @else
-                                                        <td class="align-middle"> # </td>
-                                                        @endif
-                                                        <td class="align-middle"> open/close</td>
+                                        <!-- <x-users-matched-table :users="$users"  /> -->
+                                        <div id="usersTable">
+                                            <table class="table table-striped mt-2">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">#</th>
+                                                        <th scope="col">Select</th>
+                                                        <th scope="col">Name</th>
+                                                        <th scope="col">Skills</th>
+                                                        <th scope="col">Profile</th>
+                                                        <th scope="col">Status</th>
                                                     </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($users as $user)
+                                                        <tr style="height: 60px;">
+                                                            <th scope="row" class="align-middle">{{ $loop->iteration }}</th>
+                                                            <td style="text-align: center; vertical-align: middle;"><input type="checkbox" id="user-{{$user->id}}" name="assigned_users[]" value="{{$user->id}}"></td>
+                                                            <td class="align-middle"><a href="{{ route('admin.users.show', $user->id) }}" >{{ $user->name }} </a></td>
+                                                            @if($user->skills->count() >0)
+                                                            <td class="align-middle">
+                                                                @foreach($user->skills as $skill)
+                                                                    <span class="badge bg-dark m-1">{{ $skill->name }}</span>
+                                                                @endforeach
+                                                            </td>
+                                                            @else
+                                                            <td class="align-middle"> # </td>
+                                                            @endif
+                                                            @if($user->profile != null)
+                                                            <td class="align-middle"><a href="{{ route('admin.profiles.show', $user->id) }}" >{{ $user->profile->nickname }} </a></td>
+                                                            @else
+                                                            <td class="align-middle"> # </td>
+                                                            @endif
+                                                            <td class="align-middle"> open/close</td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
-
+                                    <!--adding teamleader-->
+                                    <div class=" card border border-success rounded mt-3 p-4">
+                                        <div class="row">
+                                            <div class="col-7">
+                                                <h2 class="fs-title">Add TeamLeader:</h2>
+                                            </div>
+                                            <div class="col-5">
+                                                <h2 class="steps">required</h2>
+                                            </div>
+                                        </div>
+                                        <!-- <x-users-matched-table :users="$users"  /> -->
+                                        <div id="teamleaderTable">
+                                        </div>
+                                    </div>
                                 </div>
                                 <input id="createproject" type="submit" type="button" class="next action-button" />
                                 <!-- <button type="submit" class="btn btn-primary mt-5">Create</button> -->
@@ -201,6 +216,7 @@
     </div>
 </div>
 
+<!--this is for the users [checkbox button]-->
 <style>
     .labelexpanded_ > input {
         display: none;
@@ -212,6 +228,23 @@
     }
 
     .checkbox-btns_ {
+        cursor: pointer;
+        background-color: #eaeaea;
+    }
+</style>
+
+<!--this is for the teamleader [redio button]-->
+<style>
+    .labelexpanded_teamleader > input {
+        display: none;
+    }
+
+    .labelexpanded_teamleader input:checked + .radio-btns_teamleader {
+        border-style: solid;
+        border-color: #50ef44;
+    }
+
+    .radio-btns_teamleader {
         cursor: pointer;
         background-color: #eaeaea;
     }
@@ -316,6 +349,7 @@
     $('#getUsers').on('click', function(){
         var assigned_skills = [];
         var new_skills = [];
+        var teamleader_id = $('#teamleader_id').val();
         var inputs1 = document.getElementsByClassName('assigned_skills'); // get all elements within this class
         var inputs = document.getElementsByClassName('new_skills'); // get all elements within this class
 
@@ -324,17 +358,16 @@
             if(inputs1[key].checked)
                 assigned_skills.push(value);
         }
-        // alert(assigned_skills);
 
         for(var key in inputs) {
             var value = inputs[key].value;
             if(inputs[key].value)
                 new_skills.push(value);
         }
-        // alert(new_skills);
 
         // to clear the list if the user change the selected option again
         $('#usersTable').empty();
+        $('#teamleaderTable').empty();
         $('#loading').show();     
         $.ajax({
             url: "{{ route('admin.skills.getUsersWithSkills') }}",
@@ -344,6 +377,7 @@
                 assigned_skills: assigned_skills,
                 new_skills: new_skills,
                 from: "create",
+                teamleader_id:teamleader_id,
             },
             success: function(output){
                 var result = $.parseJSON(output);
@@ -362,6 +396,7 @@
                     $('#loading').hide();   
                 }else if(result[0] == 'ok') {
                     $('#usersTable').append(result[1]);
+                    $('#teamleaderTable').append(result[2]);
                     $('#createproject').prop('disabled', false);
                     $('#loading').hide();   
                 }

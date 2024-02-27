@@ -33,14 +33,15 @@ class ProjectRequest extends FormRequest
             'description' => ['required', 'string', 'max:255'],
             'deadline' => ['required', 'date'],   
             'client_id' => ['required', Rule::in($clients)],
-
+            "new_skills"    => "array",
+            "new_skills.*"  => "required|string|distinct|min:2|unique:skills,name", //least 2 characters
+            "teamleader_id" => "required",
             //check those
             // "assigned_users"    => "required|array",
             // "assigned_users.*"  => "required|string|distinct|min:2", //least 2 characters
             // "assigned_skills"    => "required|array",
             // "assigned_skills.*"  => "required|string|distinct|min:2", //least 2 characters
-            "new_skills"    => "array",
-            "new_skills.*"  => "required|string|distinct|min:2|unique:skills,name", //least 2 characters
         ];
+
     }
 }

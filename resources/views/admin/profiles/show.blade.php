@@ -15,9 +15,14 @@
                             @else 
                             <img class="avatar-img" src="{{ asset('images/avatar.png') }}" />
                             @endif
-                            <div class="file btn btn-lg btn-primary">
-                                {{ $profile->user->name }}
-                                <input type="file" name="file"/>
+                            <div class="row file btn btn-lg btn-primary">
+                                <div class="col">{{ $profile->user->name }} | 
+                                    @if($profile->user->hasRole('admin'))
+                                        <strong>Boss</strong>
+                                    @elseif($profile->user->teamleaderon)
+                                        <strong>Team Leader</strong>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -44,6 +49,7 @@
                                         </svg>
                                     </span>
                                 </div>
+                                
                             </h6>
                             <p><span class="proile-rating mr-3">RANKINGS : <span>8/10</span></span><span class="proile-rating">TOTLE PROJECTS : <span>20</span></span></p><br><br>
                             <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -57,7 +63,10 @@
                         </div>
                     </div>
                     <div class="col-md-2">
+                        @can('update', $profile)
                         <a class="profile-edit-btn" href="{{ route('admin.profiles.edit', $profile) }}" style="text-decoration: none;" role="button">Edit Profile</a>
+                        @endcan
+                        @can('delete', $profile)
                         <a class="profile-edit-btn" type="button"
                                 onclick="if (confirm('Are you sure?') == true) {
                                             document.getElementById('delete-item-{{$profile->id}}').submit();
@@ -68,6 +77,8 @@
                                         ">
                             {{ __('Delete') }}
                         </a>
+                        @endcan
+
                         <!-- for the delete  -->
                         <form id="delete-item-{{$profile->id}}" action="{{ route('admin.profiles.destroy', $profile->id) }}" class="d-none" method="POST">
                             @csrf

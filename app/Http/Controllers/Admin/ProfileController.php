@@ -23,7 +23,6 @@ class ProfileController extends Controller
     //not nessesary now you should throw exception
     public function index()
     {
-        // $this->authorize('viewAny', User::class);
         abort(404);
     }
     
@@ -33,8 +32,6 @@ class ProfileController extends Controller
      */
     public function create()
     {
-        // $this->authorize('create', User::class);
-
         if(auth()->user()->profile == null){
             return view('admin.profiles.create', [
                 'page' => 'Creating profile',
@@ -75,7 +72,6 @@ class ProfileController extends Controller
      */
     public function show(String $id)
     {
-        // $this->authorize('view', $user);
         $user = User::findOrFail($id);
         if($user->profile != null){
             $profile = $user->profile()->get()->first();
@@ -87,9 +83,6 @@ class ProfileController extends Controller
             ]);
         } else {
             return view('admin.statusesMessages.notFound');
-            // return view('admin.profiles.create', [
-            //     'page' => 'You Dont have profile, Create one',
-            // ]);
         }
     }
 
@@ -98,8 +91,8 @@ class ProfileController extends Controller
      */
     public function edit(Profile $profile)
     {
-        // $this->authorize('update', $user);
-        
+        $this->authorize('update', $profile);
+
         return view('admin.profiles.edit', [
             'page'       => 'Editing profile',
             'profile'    => $profile,
@@ -111,14 +104,14 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request, Profile $profile)
     {
-        //the authorization is in the form request 
+        $this->authorize('update', $profile);
+
         // store the new profile in the database
         $updatedProfile = $profile->update($request->validated());
         //if the user choose image then save it in the database media table
         if ($request->hasFile('image')) {
             $profile->addMediaFromRequest('profileImage')->toMediaCollection('profiles');
         } else {
-
             if($request->avatar_image){
                 //copy the image file from the basic images folder to the folder "avatars" that the media library take from - this because the library delete the image after using it 
                 File::copy(public_path('assets/avatars_basic/'.$request->avatar_image.'.jpg'), public_path('assets/avatars/'.$request->avatar_image.'.jpg'));
@@ -126,9 +119,7 @@ class ProfileController extends Controller
                 $profile->clearMediaCollection('profiles');
                 $profile->addMedia($pathToFile)->toMediaCollection('profiles');
             }
-
         }
-
         return redirect()->route('admin.profiles.show', $profile->user)->with('message', 'the profile has been updated sucessfully');;
     }
 
@@ -137,7 +128,7 @@ class ProfileController extends Controller
      */
     public function destroy(Profile $profile)
     {
-        // $this->authorize('delete');
+        $this->authorize('delete', $profile);
 
         $profile->delete();
         return redirect()->route('admin.profiles.create')->with('message','the profile has been deleted successfully');

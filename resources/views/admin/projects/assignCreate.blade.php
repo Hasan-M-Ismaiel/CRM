@@ -24,6 +24,7 @@
                     <div class="card-create-project pt-4 my-3 mx-5 px-5">
                         <h2 id="heading">{{ $page }}</h2>
                         <p id="pcreateProject">dashboard to assign / de-assign project to users </p>
+                        <p id="pcreateProject">please add users with skills that match the project skills to avoid removing users in update project later</p>
                         <form action='{{ route("admin.projects.assignStore", $project) }}' method="POST">
                             @csrf
                             @method('PATCH')

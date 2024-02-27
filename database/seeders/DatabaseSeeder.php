@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
     {
         // admin area
         // generate super admin permissions
-         $adminPermissions = [
+        $adminPermissions = [
             'user_create',              //create page
             'user_edit',                // edit page
             'user_show',                // show
@@ -48,8 +48,23 @@ class DatabaseSeeder extends Seeder
             'task_show',
             'task_delete',
             'task_access',
+            'skill_create',
+            'skill_edit',
+            'skill_show',
+            'skill_delete',
+            'skill_access',
+            'profile_create',
+            'profile_edit',
+            'profile_show',
+            'profile_delete',
+            'profile_access',
+            'teamchat_show',
+            'teamchat_access',
+            'taskchat_show',
+            'taskchat_access',
             'assign_project_to_user',
         ];
+
         foreach ($adminPermissions as $adminPermission)   {
             Permission::create([
                 'name' => $adminPermission
@@ -59,14 +74,14 @@ class DatabaseSeeder extends Seeder
         //create admin role
         $adminRole = Role::create(['name' => 'admin']);
 
-        //create user role 
+        //create admin user  
         $adminUser = User::create([
             'name' => 'hasan',
             'email' => 'test@gmail.com',
             'password' => Hash::make('1234567890')
         ]);
 
-        //assign permissions to the adminRole
+        //assign permissions to the admin Role
         $adminPermissions = Permission::pluck('id', 'id')->all();
         $adminRole->syncPermissions($adminPermissions);
         
@@ -74,15 +89,60 @@ class DatabaseSeeder extends Seeder
         $adminUser->assignRole([$adminRole->id]);
 
         // dd($adminUser->getRoleNames());
+
+
+        //------------------teamleader role-------------------
+        //create teamleader role
+        $teamLeaderRole = Role::create(['name' => 'teamleader']);
+
+        $teamleaderPermissions = [
+            //'user_create',              
+            //'user_edit',                
+            'user_show',                
+            //'user_delete',              
+            'user_access',              
+            //'project_create',
+            'project_edit',
+            'project_show',
+            //'project_delete',
+            'project_access',
+            //'client_create',
+            //'client_edit',
+            //'client_show',
+            //'client_delete',
+            //'client_access',
+            'task_create',
+            'task_edit',
+            'task_show',
+            'task_delete',
+            'task_access',
+            'skill_create',
+            //'skill_edit',
+            'skill_show',
+            //'skill_delete',
+            'skill_access',
+            'profile_create',
+            'profile_edit',
+            'profile_show',
+            'profile_delete',
+            'profile_access',
+            'teamchat_show',
+            'teamchat_access',
+            'taskchat_show',
+            'taskchat_access',
+            'assign_project_to_user',
+        ];
+
+        foreach ($teamleaderPermissions as $teamleaderPermission)   {
+            $teamLeaderRole->givePermissionTo($teamleaderPermission);
+        }
+        //------------------user role--------------------------
         //user area
         //generate user permissions
         $userPermissions = [
             'project_show',
             'project_access',
-            // 'task_create',
-            // 'task_edit',
             'task_show',
-            // 'task_delete',
             'task_access',
         ];
         
@@ -134,7 +194,5 @@ class DatabaseSeeder extends Seeder
         Skill::create([
             'name' => 'english',
         ]);
-
-        
     }
 }
