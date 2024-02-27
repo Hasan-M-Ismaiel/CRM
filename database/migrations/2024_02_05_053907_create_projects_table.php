@@ -16,7 +16,12 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->date('deadline');
-            // $table->foreignId('user_id');
+           
+            // this is new 
+            $table->unsignedBigInteger('teamleader_id');
+            $table->foreign('teamleader_id')->references('id')->on('users');
+            // this is new 
+
             $table->foreignId('client_id')->constrained()->onDelete('cascade');
             $table->boolean('status')->default(0);
             $table->timestamps();

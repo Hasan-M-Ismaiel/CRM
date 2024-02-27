@@ -11,7 +11,7 @@ class Project extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'description', 'deadline', 'user_id', 'client_id', 'status'];
+    protected $fillable = ['title', 'description', 'deadline', 'user_id', 'client_id', 'status', 'teamleader_id'];
 
     public function users ()
     {
@@ -36,6 +36,11 @@ class Project extends Model
     public function team()
     {
         return $this->hasOne(Team::class);
+    }
+
+    public function teamleader()
+    {
+        return $this->belongsTo(User::class);
     }
 
     protected function statusOfProject(): Attribute

@@ -39,12 +39,13 @@ class TeamController extends Controller
         return json_encode(array($var));
     }
 
-
     /**
      * Display the specified resource.
      */
     public function show(Team $team)
     {
+        $this->authorize('view', $team);
+
         // users that read the message
         return view('admin.teams.show', [
             'team' => $team,
@@ -60,28 +61,33 @@ class TeamController extends Controller
         $user = User::find($fromUser);
         $team = Team::find($teamChat);
 
-        $createdmessage = Message::create([
-            'team_id' => $team->id,
-            'user_id' => $user->id,
-            'message' => $message,
-        ]);
+        if($team->project->users->contains($user)){
+            $createdmessage = Message::create([
+                'team_id' => $team->id,
+                'user_id' => $user->id,
+                'message' => $message,
+            ]);
 
-        $createdmessageId = $createdmessage->id;
+            $createdmessageId = $createdmessage->id;
 
-        // add the notification in the table
-        foreach($team->project->users as $teamuser){
-            if($teamuser->id != auth()->user()->id){
-                Messagenotification::create([
-                    'user_id' => $teamuser->id,
-                    'team_id' => $team->id,
-                    'message_id' => $createdmessage->id,
-                    // 'team_id' => $team->id,
-                    'from_user_id' => auth()->user()->id,
-                ]);
-            }
-        }    
-        // $numberOfUnreadedMessages = $team->numberOfUnreadedTeamMessages;    
-        MessageSent::dispatch($team,$user,$message, $createdmessageId);
+            // add the notification in the table
+            foreach($team->project->users as $teamuser){
+                if($teamuser->id != auth()->user()->id){
+                    Messagenotification::create([
+                        'user_id' => $teamuser->id,
+                        'team_id' => $team->id,
+                        'message_id' => $createdmessage->id,
+                        // 'team_id' => $team->id,
+                        'from_user_id' => auth()->user()->id,
+                    ]);
+                }
+            }    
+            // $numberOfUnreadedMessages = $team->numberOfUnreadedTeamMessages;    
+            MessageSent::dispatch($team,$user,$message, $createdmessageId);
+        }else{
+            //unauthorized
+            abort(403);
+        }
 
     }
 
@@ -132,17 +138,20 @@ class TeamController extends Controller
         $user = User::find($authUserId);
         $team = Team::find($teamId);
 
-        // get all the records from the "messagenotifications" table that match the user id - notifications that realted to this user in this team  
-        $teamMessagenotifications = $team->messagenotifications->where('user_id', $authUserId);
-        
-        foreach($teamMessagenotifications as $teamMessagenotification){
-            $teamMessagenotification->readed_at = now();
-            $teamMessagenotification->save();
-            array_push($readedMessages, $teamMessagenotification->message_id);
+        if($team->project->users->contains($user)){
+            // get all the records from the "messagenotifications" table that match the user id - notifications that realted to this user in this team  
+            $teamMessagenotifications = $team->messagenotifications->where('user_id', $authUserId);
+            
+            foreach($teamMessagenotifications as $teamMessagenotification){
+                $teamMessagenotification->readed_at = now();
+                $teamMessagenotification->save();
+                array_push($readedMessages, $teamMessagenotification->message_id);
+            }
+
+            //dipatch (((messages))) readed
+            MessageReaded::dispatch($user, $readedMessages, $team);
+        } else {
+            abort(403);
         }
-
-        //dipatch (((messages))) readed
-        MessageReaded::dispatch($user, $readedMessages, $team);
-
     }
 }

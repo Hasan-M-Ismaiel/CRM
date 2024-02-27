@@ -79,6 +79,25 @@ Echo.private(`App.Models.User.`+userID)
         //update the number of notification on the screen
         $("#num_of_notification").html(window.NumberOfNotifications + 1);
         window.NumberOfNotifications = window.NumberOfNotifications +1 ;
+    }else if (notification['notification_type'] == 'TeamleaderRoleAssigned'){
+        $("#toast_link_to_notification_target").attr("href",notification['link_to_project']+'?notificationId='+notification['notification_id']);
+        $("#toast_image").attr("src",notification['project_manager_image']);
+        $("#toast_project_manager_name").html(notification['project_manager_name']);
+        $("#toast_title").html(" you are now the teamleader of this project ");
+        $("#toast_body").html(notification['project_title']);
+        $(".toast").toast('show');
+        //update the number of notification on the screen
+        $("#num_of_notification").html(window.NumberOfNotifications + 1);
+        window.NumberOfNotifications = window.NumberOfNotifications +1 ;
+    }else if (notification['notification_type'] == 'TeamleaderRoleUnAssigned'){
+        $("#toast_image").attr("src",notification['project_manager_image']);
+        $("#toast_project_manager_name").html(notification['project_manager_name']);
+        $("#toast_title").html(" you are now not the teamleader of this project ");
+        $("#toast_body").html(notification['project_title']);
+        $(".toast").toast('show');
+        //update the number of notification on the screen
+        $("#num_of_notification").html(window.NumberOfNotifications + 1);
+        window.NumberOfNotifications = window.NumberOfNotifications +1 ;
     }
 });
 

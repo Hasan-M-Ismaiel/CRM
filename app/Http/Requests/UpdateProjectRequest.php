@@ -32,6 +32,7 @@ class UpdateProjectRequest extends FormRequest
             'deadline'      => ['required', 'date'],   
             // 'user_id'       => ['required', Rule::in($users)],
             'client_id'     => ['required', Rule::in($clients)],
+            'teamleader_id' => "required",
             "new_skills"    => "array",
             "new_skills.*"  => "required|string|distinct|min:2|unique:skills,name",
         ];

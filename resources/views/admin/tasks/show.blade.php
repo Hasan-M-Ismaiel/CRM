@@ -56,9 +56,11 @@
                                             <br>
                                             <!--this is just for the user not for the admin -->
                                             @if($task->status!="closed")
+                                            @can('markTaskAsCompleted-task', $task)
                                             <div class="text-right" id="disable">
                                                 <a  id="markAsCompleted" class="btn" onclick="markascompleted({{$task->id}})">Mark as completed</a>
                                             </div>
+                                            @endcan
                                             @endif
                                         <!-- maybe in the future this task could have a status or deleted -->
                                         </p>

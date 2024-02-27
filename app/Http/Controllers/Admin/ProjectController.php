@@ -12,6 +12,8 @@ use App\Models\Skill;
 use App\Models\Team;
 use App\Models\User;
 use App\Notifications\ProjectAssigned;
+use App\Notifications\TeamleaderRoleAssigned;
+use App\Notifications\TeamleaderRoleUnAssigned;
 use App\Services\MatcherUserProjectSkillsService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
@@ -62,13 +64,15 @@ class ProjectController extends Controller
     public function store(ProjectRequest $request)
     {
         // $this->authorize('restore');
-        
+        $teamleader = User::findOrFail($request->teamleader_id);
+
         $assignedUsers = $request->input('assigned_users'); // the ids of the added users 
             // if( $assignedUsers !=null && sizeof($assignedUsers)>0){
             $project = Project::create($request->validated());
 
             //create the team Group that belongs to this project 
             $team = Team::create([
+                // here we should add field as user_id - refer to the teamleader - but it is fine becasue you can get the teamleader [$team->project->teamleader]
                 'project_id' => $project->id,
                 'name' => 'team-'.$project->id,   // this is by default
             ]);
@@ -84,6 +88,12 @@ class ProjectController extends Controller
                         $project->users()->attach($preCreatedUser);
                     }
                 }
+            }
+
+            //check if the super admin add the teamleader in the selected users - and add it as teamleader
+            // if the super admin does not add him in the table above then we have to assign him to the project. [it is nessesary to make the teamleader on of the project member]
+            if(!$project->users->contains($teamleader) && !$teamleader->hasRole('admin')){
+                $project->users()->attach($teamleader);
             }
         
             $assignedSkills = $request->input('assigned_skills'); // the ids of the added skills 
@@ -105,7 +115,12 @@ class ProjectController extends Controller
             }
             
             // attach the admin to every project new created
-            $project->users()->attach(auth()->user());
+            if(!$project->users->contains(auth()->user())){
+                $project->users()->attach(auth()->user());
+            }
+
+            $teamleader->notify(new TeamleaderRoleAssigned($project));
+            
             Notification::send($project->users, new ProjectAssigned($project));
 
             // return redirect()->route('admin.projects.index')->with('message', 'the project has been created sucessfully');;
@@ -174,12 +189,15 @@ class ProjectController extends Controller
     public function update(UpdateProjectRequest $request, Project $project)
     {
         $this->authorize('update', $project);   
-        
+        $oldTeamleader = $project->teamleader;
+        $teamleader = User::findOrFail($request->teamleader_id);
+
         $project->update([
             'title'       => $request->validated('title'),
             'description' => $request->validated('description'),
             'deadline'    => $request->validated('deadline'),
             'client_id'   => $request->validated('client_id'),
+            'teamleader_id'   => $request->validated('teamleader_id'),
         ]);
         
         $assignedSkills = $request->input('assigned_skills'); // the ids of the added skills 
@@ -200,10 +218,20 @@ class ProjectController extends Controller
             }
         }
 
-        
         $assignedUsers = $request->input('assigned_users');
         $sendNotification = new NotificationService($project, $assignedUsers);
         $sendNotification->SendNotificationMessages();
+        
+        if(!$project->users->contains($teamleader)){
+            $project->users()->attach($teamleader);
+        }
+
+        //check if the new teamleader is not the old one [to send the notifications]
+        if($teamleader->id != $oldTeamleader->id){
+            $teamleader->notify(new TeamleaderRoleAssigned($project));
+            $oldTeamleader->notify(new TeamleaderRoleUnAssigned($project));
+        }
+
 
         if($request->status == 'true') {
             $project->status = true;  

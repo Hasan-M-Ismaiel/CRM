@@ -23,6 +23,7 @@
                     </th>
                 <th scope="col" class="align-middle">Deadline</th>
                 <th scope="col" class="align-middle">Techniques</th>
+                <th scope="col" class="align-middle">Leader</th>
                 <th scope="col" class="align-middle">Users</th>
                 <th scope="col" class="align-middle">Owner</th>
                 <th scope="col" class="align-middle">Tasks</th>
@@ -55,6 +56,37 @@
                             #
                         @endif
                     </td>
+                    
+                    <td class="align-middle">
+                        @if($project->teamleader)
+                        <div>
+                            @if($project->teamleader->profile)
+                                <a href="{{ route('admin.profiles.show', $project->teamleader->id) }}" style="text-decoration: none;">
+                            @else
+                                <a href="{{ route('admin.statuses.notFound') }}" style="text-decoration: none;">
+                            @endif
+                            <!--image-->
+                            @if($project->teamleader->profile && $project->teamleader->profile->getFirstMediaUrl("profiles"))
+                            <div class="avatar avatar-md mt-1">
+                                <img src='{{ $project->teamleader->profile->getFirstMediaUrl("profiles") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                            </div>
+                            @elseif($project->teamleader->getFirstMediaUrl("users"))
+                            <div class="avatar avatar-md mt-1">
+                                <img src='{{ $project->teamleader->getMedia("users")[0]->getUrl("thumb") }}'alt="DP"  class="avatar-img border border-success shadow mb-1">
+                            </div>
+                            @else
+                            <div class="avatar avatar-md mt-1">
+                                <img src='{{ asset("images/avatar.png") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                            </div>
+                            @endif
+                            <span class="badge m-1" style="background: #673AB7;">{{ $project->teamleader->name }}</span>
+                            </a>
+                        </div>
+                        @else
+                            #
+                        @endif
+                    </td>
+
                     <td class="align-middle">
                         @if($project->users()->count() > 0)
                             @foreach ($project->users as $user)

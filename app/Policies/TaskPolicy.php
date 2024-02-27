@@ -12,28 +12,36 @@ class TaskPolicy
     //  */
     // public function viewAny(User $user): bool
     // {
-    //     //
+    //     // how can see multiple tasks 
+    //     //if ($user->hasRole('admin') || $user->teamleaderOn)
     // }
 
     /**
      * Determine whether the user can view the model.
      */
+    //[todo]
     public function view(User $user, Task $task): bool
     {
+
+        //if($user->hasRole('admin') || $user->id == $task->project->teamleader_id)
         if($user->hasRole('admin')){
             return true;
         }
+
+
+        return $user->tasks->contains($task);
+        
         // get the user's tasks 
-        $userTasks = $user->tasks()->get();
-        if($userTasks->count()>0){
-            // check if the passed project matches the user's project
-            foreach($userTasks as $userTask){
-                if($userTask->id == $task->id){
-                    return true;
-                }
-            }
-        }
-        return false;
+        // $userTasks = $user->tasks()->get();
+        // if($userTasks->count()>0){
+        //     // check if the passed project matches the user's project
+        //     foreach($userTasks as $userTask){
+        //         if($userTask->id == $task->id){
+        //             return true;
+        //         }
+        //     }
+        // }
+        // return false;
     }
 
     /**
@@ -41,6 +49,7 @@ class TaskPolicy
      */
     public function create(User $user): bool
     {
+        // if ($user->teamleaderOn()){return true;}
         return $user->hasRole('admin');
     }
 
@@ -49,6 +58,7 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
+        // if ($user->id == $task->project->teamleader_id || $user->hasRole('admin')){return true}
         return $user->hasRole('admin');
     }
 
@@ -57,6 +67,7 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task): bool
     {
+        // if ($user->id == $task->project->teamleader_id || $user->hasRole('admin')){return true}
         return $user->hasRole('admin');
     }
 

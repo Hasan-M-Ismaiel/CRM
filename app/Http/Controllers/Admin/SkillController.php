@@ -168,7 +168,6 @@ class SkillController extends Controller
                 }
             }
         }elseif($from=="edit"){ //edit page
-
             // if the user add skills in the check boxes - and even if the old skilles is let as it - then we have a assigned_skills array
             // we get all the skills that it gives us 
             if($assigned_skills!=null){
@@ -319,8 +318,66 @@ class SkillController extends Controller
             $var .='</tbody>';
             $var .='</table>';
 
+            // the teamleader section 
+            $teamleader = '<table class="table table-striped mt-2">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Select</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Skills</th>
+                    <th scope="col">Profile</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>';
+            $iterator = 1;  
+            foreach ($users as $user){
+                $teamleader .= '<tr style="height: 60px;">';
+                $teamleader .= '<th scope="row" class="align-middle">' . $iterator .'</th>';
+                $teamleader .= '<td style="text-align: center; vertical-align: middle;">';
+                $teamleader .= '<div class="avatar avatar-md mt-2">';
+                $teamleader .= '<label class="labelexpanded_teamleader">';
+                $teamleader .= '<input type="radio" class="m-1" id="' . $user->id .'" name="teamleader_id"  value="'. $user->id .'">';
+                $teamleader .= '<div class="radio-btns_teamleader rounded-circle border-1">';
+
+                if($user->profile && $user->profile->getFirstMediaUrl("profiles")){
+                    $teamleader .= '<img src="'. $user->profile->getFirstMediaUrl("profiles").'" alt="DP"  class="avatar-img  shadow ">';
+                }elseif($user->getFirstMediaUrl("users")){
+                    $teamleader .= '<img src="'. $user->getMedia("users")[0]->getUrl("thumb").'" alt="DP"  class="avatar-img  shadow ">';
+                }else{
+                    $teamleader .= '<img src="'. asset("images/avatar.png").'" alt="DP"  class="avatar-img  shadow ">';
+                }
+                $teamleader .= '</div>';
+                $teamleader .= '</input>';
+                $teamleader .= '</label>';
+                $teamleader .= '</div>';
+                $teamleader .= '</td>';
+                $teamleader .= '<td class="align-middle"><a href="'. route('admin.users.show', $user->id) .'" > '. $user->name . '</a></td>';
+                if($user->skills->count() >0){
+                    $teamleader .= '<td class="align-middle">';
+                    foreach($user->skills as $skill){
+                        $teamleader .= '<span class="badge bg-dark m-1">' . $skill->name . '</span>';
+                    }
+                    $teamleader .= '</td>';
+                } else {
+                    $teamleader .= '<td class="align-middle"> # </td>';
+                }
+                if($user->profile != null){
+                    $teamleader .= '<td class="align-middle"><a href="'. route('admin.profiles.show', $user->id) . '" >'. $user->profile->nickname .'</a></td>';
+                }else {
+                    $teamleader .= '<td class="align-middle"> # </td>';
+                }
+                $teamleader .= '<td class="align-middle"> open/close</td>';
+                $teamleader .= '</tr>';
+                $iterator=$iterator+1;
+            }
+            $teamleader .='</tbody>';
+            $teamleader .='</table>';
+
             $status ='ok';
-            return json_encode(array($status, $var));
+
+            return json_encode(array($status, $var, $teamleader));
 
         }elseif($from == 'edit'){
             $modalData="";
@@ -354,7 +411,6 @@ class SkillController extends Controller
                     $var .= '<tr style="height: 60px;">';
                     $var .= '<th scope="row" class="align-middle">' . $iterator .'</th>';
 
-                    //new added
                     $var .= '<td style="text-align: center; vertical-align: middle;">';
                     $var .= '<div class="avatar avatar-md mt-2">';
                     $var .= '<label class="labelexpanded_">';
@@ -377,15 +433,7 @@ class SkillController extends Controller
                     $var .= '</label>';
                     $var .= '</div>';
                     $var .= '</td>';
-                    //new added
 
-
-                    // the olde version
-                    // if($user->checkifAssignedToProject($project)){
-                    //     $var .= '<td style="text-align: center; vertical-align: middle;"><input type="checkbox" id="user-'.$user->id.'" name="assigned_users[]" value="'. $user->id .'"></td>';                
-                    // }else{
-                    //     $var .= '<td style="text-align: center; vertical-align: middle;"><input type="checkbox" id="user-'.$user->id.'" name="assigned_users[]" value="'. $user->id .'" checked ></td>';
-                    // }
                     $var .= '<td class="align-middle"><a href="'. route('admin.users.show', $user->id) .'" > '. $user->name . '</a></td>';
                     if($user->skills->count() >0){
                         $var .= '<td class="align-middle">';
@@ -408,7 +456,69 @@ class SkillController extends Controller
                 $var .='</tbody>';
                 $var .='</table>';
 
-                return json_encode(array($status, $modalData, $var));
+                // the teamleader section 
+                $teamleader = '<table class="table table-striped mt-2">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Select</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Skills</th>
+                        <th scope="col">Profile</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>';
+                $iterator = 1;  
+                foreach ($users as $user){
+                    $teamleader .= '<tr style="height: 60px;">';
+                    $teamleader .= '<th scope="row" class="align-middle">' . $iterator .'</th>';
+                    $teamleader .= '<td style="text-align: center; vertical-align: middle;">';
+                    $teamleader .= '<div class="avatar avatar-md mt-2">';
+                    $teamleader .= '<label class="labelexpanded_teamleader">';
+                    if($user->id==$project->teamleader->id) 
+                    $teamleader .= '<input type="radio" class="m-1" id="' . $user->id .'" name="teamleader_id"  value="'. $user->id .'" checked >';
+                    else{
+                    $teamleader .= '<input type="radio" class="m-1" id="' . $user->id .'" name="teamleader_id"  value="'. $user->id .'" >';
+                    }
+
+                    $teamleader .= '<div class="radio-btns_teamleader rounded-circle border-1">';
+                    if($user->profile && $user->profile->getFirstMediaUrl("profiles")){
+                        $teamleader .= '<img src="'. $user->profile->getFirstMediaUrl("profiles").'" alt="DP"  class="avatar-img  shadow ">';
+                    }elseif($user->getFirstMediaUrl("users")){
+                        $teamleader .= '<img src="'. $user->getMedia("users")[0]->getUrl("thumb").'" alt="DP"  class="avatar-img  shadow ">';
+                    }else{
+                        $teamleader .= '<img src="'. asset("images/avatar.png").'" alt="DP"  class="avatar-img  shadow ">';
+                    }
+                    $teamleader .= '</div>';
+                    $teamleader .= '</input>';
+                    $teamleader .= '</label>';
+                    $teamleader .= '</div>';
+                    $teamleader .= '</td>';
+                    $teamleader .= '<td class="align-middle"><a href="'. route('admin.users.show', $user->id) .'" > '. $user->name . '</a></td>';
+                    if($user->skills->count() >0){
+                        $teamleader .= '<td class="align-middle">';
+                        foreach($user->skills as $skill){
+                            $teamleader .= '<span class="badge bg-dark m-1">' . $skill->name . '</span>';
+                        }
+                        $teamleader .= '</td>';
+                    } else {
+                        $teamleader .= '<td class="align-middle"> # </td>';
+                    }
+                    if($user->profile != null){
+                        $teamleader .= '<td class="align-middle"><a href="'. route('admin.profiles.show', $user->id) . '" >'. $user->profile->nickname .'</a></td>';
+                    }else {
+                        $teamleader .= '<td class="align-middle"> # </td>';
+                    }
+                    $teamleader .= '<td class="align-middle"> open/close</td>';
+                    $teamleader .= '</tr>';
+                    $iterator=$iterator+1;
+                }
+                $teamleader .='</tbody>';
+                $teamleader .='</table>';
+
+
+                return json_encode(array($status, $modalData, $var, $teamleader));
             }else{
                 $var = '<h4 class="text-center mb-5" style="color: #673AB7;">no users appear because there is not skills required for this project please add skills </h4>';
                 return json_encode(array($status, $modalData, $var));

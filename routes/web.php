@@ -42,43 +42,50 @@ Route::middleware(['auth'])->group(function () {
     Route::group(['prefix' => 'admin', 'as' => 'admin.'] ,function () {
         Route::group(['middleware' => 'admin_access'] ,function () {
             
-
+            // clients
+            // because i am need those route beem accessed by the super admin only then i add the condition in a middle ware not in every method inside those roles
             Route::get('clients/getSortedClients', [ClientController::class, 'getSortedClients'])->name('clients.getSortedClients');
             Route::get('clients/getSearchResult', [ClientController::class, 'getSearchResult'])->name('clients.getSearchResult');
             Route::resource('clients', ClientController::class);
             
-
+            // projects [assign users]
             Route::get('projects/{project}/assign/create', [ProjectController::class, 'assignCreate'])->name('projects.assignCreate');
             Route::patch('projects/{project}/assign', [ProjectController::class, 'assignStore'])->name('projects.assignStore');
             
+            // [get users] for [specific projects]
             Route::post('getUsers', GetUsersController::class)->name('getUsers');
 
-            //skills
+            // skills [resource skills] [get projects matched with skills] [get users matched with skills] [search] [store]
             Route::get('skills/getSearchResult', [SkillController::class, 'getSearchResult'])->name('skills.getSearchResult'); 
             Route::get('skills/getSortedSkills', [SkillController::class, 'getSortedSkills'])->name('skills.getSortedSkills'); 
             Route::post('skills/getProjectsWithSkills', [SkillController::class, 'getProjectsWithSkills'])->name('skills.getProjectsWithSkills'); 
             Route::post('skills/getUsersWithSkills', [SkillController::class, 'getUsersWithSkills'])->name('skills.getUsersWithSkills'); 
             Route::resource('skills', SkillController::class); 
             
+            // tasks [create multiple tasks for specific project]
             Route::resource('taskGroups', TaskGroupController::class)->only('create','store')->name('taskGroups.create', 'taskGroups.store');
             
-            //success views - creating Tasks/projects
+            //success views - [creating Tasks/projects]
             Route::get('success_create_project', CreatingProjectStatusesController::class)->name('success_create_project.status');
             Route::get('success_create_tasks', CreatingTasksStatusesController::class)->name('success_create_tasks.status');
         });
         
+        // users - [resource] [search] [sort/by name + role]
         Route::get('users/getSearchResult', [UserController::class, 'getSearchResult'])->name('users.getSearchResult'); 
         Route::get('users/getSortedUsers', [UserController::class, 'getSortedUsers'])->name('users.getSortedUsers'); 
         Route::get('users/getSortedRoles', [UserController::class, 'getSortedRoles'])->name('users.getSortedRoles'); 
         Route::resource('users', UserController::class);
+
+        // profiles - [resource]
         Route::resource('profiles', ProfileController::class);
 
-
+        //projects - [resource] [search] [sort]
         Route::get('projects/getSortedProjects', [ProjectController::class, 'getSortedProjects'])->name('projects.getSortedProjects');
         Route::get('projects/getSearchResult', [ProjectController::class, 'getSearchResult'])->name('projects.getSearchResult');
         Route::resource('projects', ProjectController::class);
 
-        // managing the tasks 
+        // tasks - [resource] [mark task as completed] [accept the task] [remove] [show tasks for specific user in rendered way / ajax response] 
+        // [task chat] [send task message] [mark tasks as readed] [sort] [search]
         Route::get('tasks/getSearchResult',[TaskController::class, 'getSearchResult'])->name('tasks.getSearchResult');
         Route::get('tasks/getSortedTasks',[TaskController::class, 'getSortedTasks'])->name('tasks.getSortedTasks');
         Route::post('tasks/markTaskMessagesAsReaded',[TaskController::class, 'markTaskMessagesAsReaded'])->name('tasks.markTaskMessagesAsReaded');
@@ -90,16 +97,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('tasks/markascompleted',[TaskController::class, 'markascompleted'])->name('tasks.markascompleted');
         Route::resource('tasks', TaskController::class);
 
-        //team manager controller 
+        // teams [resource] [send team message] [mark message as readed]
         Route::post('teams/markMessagesAsReaded',[TeamController::class, 'markMessagesAsReaded'])->name('teams.markMessagesAsReaded');
         Route::post('teams/sendMessage',[TeamController::class, 'sendMessage'])->name('teams.sendMessage');
         Route::resource('teams', TeamController::class)->only('index','show')->name('teams.index', 'teams.show');
         
-        //Task messages manager controller 
-        // Route::post('teams/sendMessage',[TeamController::class, 'sendMessage'])->name('teams.sendMessage');
-        // Route::resource('teams', TeamController::class)->only('index','show')->name('teams.index', 'teams.show');
-
-        //notification
+        //notifications [get notifications] [mark notifications as readed]
         Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::post('notifications/mark_as_read', [NotificationController::class, 'markNotification'])->name('notifications.markNotification');
         
@@ -109,7 +112,7 @@ Route::middleware(['auth'])->group(function () {
         // upload files using file pond
         Route::post('upload', [UploadController::class,'store']);
 
-        
+        // for testing
         Route::get('test', [TestBroadcastController::class,'sendbroadcast']);
     });
 });
