@@ -24,15 +24,17 @@ class UpdateTaskRequest extends FormRequest
     public function rules(): array
     {
         $projects = Project::pluck('id');
-        $project = Project::findOrFail($this->project_id);
-        $projectUsers = $project->users()->pluck('users.id');
+        // $project = Project::findOrFail($this->project_id);
+        // $projectUsers = $project->users()->pluck('users.id');
 
 
         return [
             'title'   => ['required', 'string', 'max:100'],
             'description' => ['required', 'string', 'max:255'],
-            'project_id' => ['required', Rule::in($projects)], 
-            'user_id' => ['required', Rule::in($projectUsers)],
+            // 'project_id' => ['sometimes', Rule::in($projects)], 
+            'project_id' => ['sometimes'], 
+            // 'user_id' => ['required', Rule::in($projectUsers)],
+            'user_id' => ['required'],
             'status' => ['required', 'string'],
         ];
     }

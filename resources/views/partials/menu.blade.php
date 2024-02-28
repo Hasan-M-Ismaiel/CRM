@@ -54,7 +54,7 @@
                 Tasks
             </a>
         </li>
-        @if(Auth::user()->hasRole('admin'))
+        @if(auth()->user()->hasRole('admin') || auth()->user()->teamleaderon->count()>0)
         <li class="nav-item">
             <a class="nav-link" href="{{ route('admin.skills.index') }}">
                 <svg class="nav-icon">

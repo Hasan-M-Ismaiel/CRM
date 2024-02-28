@@ -27,6 +27,7 @@
                         <form id="msformEdit" action='{{ route("admin.projects.update", $project) }}' method="POST">
                             @csrf
                             @method('PATCH')
+                            @if(auth()->user()->hasRole('admin'))
                             <!--project information-->
                             <fieldset class="mt-5">
                                 <div class="form-card border px-3  pb-3 border-success rounded">
@@ -58,6 +59,7 @@
                                     </select>
                                 </div>
                             </fieldset>
+                            @endif
                             <!--skills-->
                             <fieldset class="mt-5">
                                 <div class="form-card border px-3  pb-3 border-success rounded">
@@ -222,6 +224,7 @@
                                     </div>
                                 </div>
                             </fieldset>
+                            @if(auth()->user()->hasRole('admin'))
                             <!--teamleader-->
                             <fieldset class="mt-5">
                                 <div class="form-card border px-3  pb-3 border-success rounded">
@@ -325,12 +328,12 @@
                                         @endif
                                     </div>
                                 </div>
-                                <button id="updateproject" type="submit" class="action-create-button" onclick="showSpinner()">
-                                    <span id="spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                                    Update
-                                </button>
-                                <!-- <input id="updateproject" type="submit" type="button" class="next action-button mt-5" /> -->
                             </fieldset>
+                            @endif
+                            <button id="updateproject" type="submit" class="action-create-button" onclick="showSpinner()">
+                                <span id="spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                Update
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -484,9 +487,9 @@
 
 <script>
     function showSpinner(){
-            $('#spinner').show();
-            $('#updateproject').text('updating...');
-        }
+        $('#spinner').show();
+        $('#updateproject').text('updating...');
+    }
 </script>
 
 @endsection

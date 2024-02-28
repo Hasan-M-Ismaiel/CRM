@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
 
@@ -23,25 +24,12 @@ class TaskPolicy
     public function view(User $user, Task $task): bool
     {
 
-        //if($user->hasRole('admin') || $user->id == $task->project->teamleader_id)
-        if($user->hasRole('admin')){
+        if($user->hasRole('admin') || $user->id == $task->project->teamleader_id){
             return true;
         }
 
-
         return $user->tasks->contains($task);
-        
-        // get the user's tasks 
-        // $userTasks = $user->tasks()->get();
-        // if($userTasks->count()>0){
-        //     // check if the passed project matches the user's project
-        //     foreach($userTasks as $userTask){
-        //         if($userTask->id == $task->id){
-        //             return true;
-        //         }
-        //     }
-        // }
-        // return false;
+
     }
 
     /**
@@ -49,8 +37,21 @@ class TaskPolicy
      */
     public function create(User $user): bool
     {
+        if($user->hasRole('admin')){
+            return true;
+        }
         // if ($user->teamleaderOn()){return true;}
-        return $user->hasRole('admin');
+
+        // check if the user has projects as teamleader
+        $projects = Project::all();
+        foreach($projects as $project){
+            if($project->teamleader->id == $user->id){
+                return true;
+            }
+        }
+
+        return false;
+        // return $user->hasRole('admin') || $user->teamleaderon;
     }
 
     /**
@@ -58,8 +59,7 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
-        // if ($user->id == $task->project->teamleader_id || $user->hasRole('admin')){return true}
-        return $user->hasRole('admin');
+        return $user->id == $task->project->teamleader_id || $user->hasRole('admin');
     }
 
     /**
@@ -67,8 +67,7 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task): bool
     {
-        // if ($user->id == $task->project->teamleader_id || $user->hasRole('admin')){return true}
-        return $user->hasRole('admin');
+        return $user->id == $task->project->teamleader_id || $user->hasRole('admin');
     }
 
     /**
@@ -76,7 +75,7 @@ class TaskPolicy
      */
     public function restore(User $user, Task $task): bool
     {
-        return $user->hasRole('admin');
+        return $user->id == $task->project->teamleader_id || $user->hasRole('admin');
     }
 
     /**
@@ -84,6 +83,6 @@ class TaskPolicy
      */
     public function forceDelete(User $user, Task $task): bool
     {
-        return $user->hasRole('admin');
+        return $user->id == $task->project->teamleader_id || $user->hasRole('admin');
     }
 }

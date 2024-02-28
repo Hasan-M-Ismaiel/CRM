@@ -7,22 +7,21 @@
             <div class="container emp-profile">
                 <div class="row"><!--add icons to this page-->
                     <div class="col-md-4">
-                        <div class="profile-img">
+                        <div class="profile-img position-relative">
+                            <!--user image-->
                             @if($profile && $profile->getFirstMediaUrl("profiles"))
+                            <x-user-badges :user="$profile->user" />
                             <img src='{{ $profile->getFirstMediaUrl("profiles") }}' />
                             @elseif($user->getFirstMediaUrl("users"))
+                            <x-user-badges :user="$profile->user" />
                             <img class="avatar-img" src='{{ $user->getMedia("users")[0]->getUrl("thumb") }}' />
                             @else 
+                            <x-user-badges :user="$profile->user" />
                             <img class="avatar-img" src="{{ asset('images/avatar.png') }}" />
                             @endif
+                            <!--name -->
                             <div class="row file btn btn-lg btn-primary">
-                                <div class="col">{{ $profile->user->name }} | 
-                                    @if($profile->user->hasRole('admin'))
-                                        <strong>Boss</strong>
-                                    @elseif($profile->user->teamleaderon)
-                                        <strong>Team Leader</strong>
-                                    @endif
-                                </div>
+                                {{ $profile->user->name }}  
                             </div>
                         </div>
                     </div>

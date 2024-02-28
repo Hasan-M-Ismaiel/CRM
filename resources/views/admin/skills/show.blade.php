@@ -16,8 +16,8 @@
                             
                             <!--buttons-->
                             <div class=" position-absolute bottom-0 end-0">
-                                @can('project_edit')<a class="btn btn-primary" href="{{ route('admin.skills.edit', $skill) }}" role="button">Edit</a>@endcan
-                                @can('project_edit')
+                                @can('update', $skill)<a class="btn btn-primary" href="{{ route('admin.skills.edit', $skill) }}" role="button">Edit</a>@endcan
+                                @can('delete', $skill)
                                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-trash-fill text-danger mt-2" viewBox="0 0 16 16"
                                     onclick="if (confirm('Are you sure?') == true) {
                                                         document.getElementById('delete-item-{{$skill->id}}').submit();

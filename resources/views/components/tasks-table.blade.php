@@ -22,8 +22,8 @@
                         </svg>
                     </span>
                 </th>
-                <th scope="col">Description</th>
                 <th scope="col">Project</th>
+                <th scope="col">Leader</th>
                 <th scope="col">To User</th>
                 <th scope="col">Start</th>
                 <th scope="col">status</th>
@@ -33,53 +33,109 @@
         <tbody>
             @foreach ($tasks as $task)
                 <tr>
+                    <!--iteration-->
                     @if(auth()->user()->hasRole('admin'))
                     <th scope="row" class="align-middle">{{ $task->id }}</th>
                     @else 
                     <th scope="row" class="align-middle">{{ $loop->iteration }}</th>
                     @endif
+
+                    <!-- task title-->
                     <td class="align-middle">
                         <a href="{{ route('admin.tasks.show', $task->id) }}" 
-                        style="text-decoration: none;">{{ $task->title }}</a>
+                        style="text-decoration: none;">{{ substr($task->title, 0, 10) }}...</a>
                     </td>
-                    <td class="align-middle">
-                        {{ substr($task->description, 0, 15) }}...
-                    </td>
+
+                    <!-- project title-->
                     <td class="align-middle">
                         <a href="{{ route('admin.projects.show', $task->project->id) }}" 
                         style="text-decoration: none;">{{ $task->project->title }}</a>
                     </td>
                     
+                    <!--teamleader-->
+                    <td class="align-middle">
+                        @if($task->project->teamleader)
+                        <div>
+                            @if($task->project->teamleader->profile)
+                                <a href="{{ route('admin.profiles.show', $task->project->teamleader->id) }}" class="position-relative" style="text-decoration: none;">
+                            @else
+                                <a href="{{ route('admin.statuses.notFound') }}" class="position-relative" style="text-decoration: none;">
+                            @endif
+                            <!--image-->
+                            @if($task->project->teamleader->profile && $task->project->teamleader->profile->getFirstMediaUrl("profiles"))
+                            <div class="py-1 px-2">
+                                <div class="avatar avatar-md mt-1">
+                                    <img src='{{ $task->project->teamleader->profile->getFirstMediaUrl("profiles") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                </div>
+                                <x-user-badges :user="$task->project->teamleader" />
+                            </div>
+                            @elseif($task->project->teamleader->getFirstMediaUrl("users"))
+                            <div class="py-1 px-2">
+                                <div class="avatar avatar-md mt-1">
+                                    <img src='{{ $task->project->teamleader->getMedia("users")[0]->getUrl("thumb") }}'alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                </div>
+                                <x-user-badges :user="$task->project->teamleader" />
+                            </div>
+                            @else
+                            <div class="py-1 px-2">
+                                <div class="avatar avatar-md mt-1">
+                                    <img src='{{ asset("images/avatar.png") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                </div>
+                                <x-user-badges :user="$task->project->teamleader" />
+                            </div>
+                            @endif
+                            <span class="badge m-1" style="background: #673AB7;">{{ $task->project->teamleader->name }}</span>
+                            </a>
+                        </div>
+                        @else
+                            #
+                        @endif
+                    </td>
+
+                    <!--to user -->
                     <td class="align-middle">
                         @if($task->user->profile)
-                            <a href="{{ route('admin.profiles.show', $task->user->id) }}" style="text-decoration: none;">
+                            <a href="{{ route('admin.profiles.show', $task->user->id) }}" class="position-relative" style="text-decoration: none;">
                         @else
-                            <a href="{{ route('admin.statuses.notFound') }}" style="text-decoration: none;">
+                            <a href="{{ route('admin.statuses.notFound') }}" class="position-relative" style="text-decoration: none;">
                         @endif
                         <!--image-->
                         @if($task->user->profile && $task->user->profile->getFirstMediaUrl("profiles"))
+                        <div class="p-2">
                         <div class="avatar avatar-md">
                             <img src='{{ $task->user->profile->getFirstMediaUrl("profiles") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
                         </div>
+                        <x-user-badges :user="$task->user" />
+                        </div>
                         @elseif($task->user->getFirstMediaUrl("users"))
+                        <div class="p-2">
                         <div class="avatar avatar-md">
                             <img src='{{ $task->user->getMedia("users")[0]->getUrl("thumb") }}'alt="DP"  class="avatar-img border border-success shadow mb-1">
                         </div>
+                        <x-user-badges :user="$task->user" />
+                        </div>
                         @else
+                        <div class="p-2">
                         <div class="avatar avatar-md">
                             <img src='{{ asset("images/avatar.png") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                        </div>
+                        <x-user-badges :user="$task->user" />
                         </div>
                         @endif
                         <span class="badge m-1" style="background: #673AB7;">{{ $task->user->name }}</span>
                         </a>
                     </td>
 
+                    <!-- created_at -->
                     <td class="align-middle">
                         {{ $task->created_at->diffForHumans() }}
                     </td>
+
+                    <!-- status -->
                     <td class="align-middle">
                         <x-task-status :status="$task->status" />
                     </td>   
+                    <!-- controll buttons -->
                     <td class="align-middle">
                         <div style="display: flex;">
                             <a type="button" 
@@ -87,12 +143,12 @@
                                 href="{{ route('admin.tasks.show', $task->id) }}" 
                                 role="button" 
                                 style="text-decoration: none;">Show</a>
-                            @can('task_edit')
+                            @can('update', $task)
                                 <a type="button" 
                                     class="btn btn-secondary m-1" 
                                     href="{{ route('admin.tasks.edit', $task->id) }}" 
                                     role="button" style="text-decoration: none;">Edit</a>@endcan
-                            @can('task_delete')
+                            @can('delete', $task)
                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-trash-fill text-danger mt-2" viewBox="0 0 16 16"
                                     onclick="if (confirm('Are you sure?') == true) {
                                                         document.getElementById('delete-item-{{$task->id}}').submit();
@@ -120,6 +176,7 @@
     </table>
 </div>
 
+<!--get sorted tasks-->
 <script>
     var toggleNames = false;
     var lockNames = false;

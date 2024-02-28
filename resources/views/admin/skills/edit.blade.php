@@ -34,8 +34,8 @@
                                     <label for="name"><strong> Skill name</strong></label>
                                     <input type="text" name="name" class="form-control" id="name" placeholder="add the name of the skill" value="{{ $skill->name }}">
                                 </div>
+                                <x-forms.update-button />
                             </form>
-                            <x-forms.update-button />
                         </div>
                     </div> 
                 </div>

@@ -2,7 +2,7 @@
 
 @section('content')
  
-<d class="container mb-3">
+<div class="container mb-3">
     <div class="row justify-content-center">
         <!-- Validation Errors -->
         @if ($errors->any())
@@ -27,19 +27,27 @@
                         <form action='{{ route("admin.tasks.update", $task) }}' method="POST">
                             @csrf
                             @method('PATCH')
+                            <!--task title | task description-->
                             <div class="form-card border rounded pb-2 mt-3 border border-success">
+                                <!--small note | Alter basic Task Information:-->
                                 <div class="border px-2 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
                                         <h2 class="fs-title">Alter basic Task Information:</h2>
                                 </div>
+                                <!-- task title-->
                                 <div class="form-group mt-3 mx-3">
                                     <label for="title"><strong>Title</strong></label>
                                     <input type="text" name="title" class="form-control" id="title" placeholder="add the title of the task" value="{{ $task->title }}">
                                 </div>
+                                <!-- task description-->
                                 <div class="form-group mt-4 mx-3">
                                     <label for="description"><strong>Description</strong></label>
                                     <textarea rows="5" cols="50" name="description" class="form-control" id="description" placeholder="task's description here" >{{ $task->description }}</textarea>
                                 </div>
                             </div>
+
+                            <!--appear only for the admin-->
+                            @if(auth()->user()->hasRole('admin'))
+                            <!--change project-->
                             <div class="form-card border rounded pb-2 mt-3 border border-success">
                                 <div class="border px-2 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
                                     <h2 class="fs-title">Select a Project</h2>
@@ -56,7 +64,9 @@
                                     </select>
                                 </div>
                             </div>
-                            
+                            @endif
+
+                            <!--choose user-->
                             <div class="form-card border rounded pb-2 mt-3 border border-success">
                                 <div class="border px-2 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
                                     <h2 class="fs-title">Choose User</h2>
@@ -68,38 +78,40 @@
                                             <strong>Select user:</strong>
                                         </div>
                                         @if ($taskproject->users()->count()>0)
-                                                    <div class="row text-center">
-                                                        @foreach ($project->users as $user)
-                                                            <div class="col-md-6">
-                                                                <div class="avatar avatar-md mt-2">
-                                                                    <label class="labelexpanded_">
-                                                                        <input type="radio" class="m-1" id="{{ $user->id }}" name="user_id" value="{{ $user->id }}" @if($task->user->id==$user->id) checked @endif>
-                                                                            <div class="radio-btns_ rounded-circle border-1">
-                                                                                @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
-                                                                                <img src='{{$user->profile->getFirstMediaUrl("profiles")}}' alt="DP"  class="avatar-img  shadow">
-                                                                                @elseif($user->getFirstMediaUrl("users"))
-                                                                                <img src='{{$user->getMedia("users")[0]->getUrl("thumb")}}' alt="DP"  class="avatar-img  shadow">
-                                                                                @else
-                                                                                <img src='{{asset("images/avatar.png")}}' alt="DP"  class="avatar-img  shadow ">
-                                                                                @endif
-                                                                            </div>
-                                                                        </input>
-                                                                    </label>
+                                        <div class="row text-center">
+                                            @foreach ($taskproject->users as $user)
+                                                <div class="col-md-6">
+                                                    <div class="avatar avatar-md mt-2">
+                                                        <label class="labelexpanded_">
+                                                            <input type="radio" class="m-1" id="{{$user->id }}" name="user_id" value="{{ $user->id }}" @if($task->user->id==$user->id) checked @endif>
+                                                                <div class="radio-btns_ rounded-circle border-1">
+                                                                    @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
+                                                                    <img src='{{$user->profile->getFirstMediaUrl("profiles")}}' alt="DP"  class="avatar-img  shadow">
+                                                                    @elseif($user->getFirstMediaUrl("users"))
+                                                                    <img src='{{$user->getMedia("users")[0]->getUrl("thumb")}}' alt="DP"  class="avatar-img  shadow">
+                                                                    @else
+                                                                    <img src='{{asset("images/avatar.png")}}' alt="DP"  class="avatar-img  shadow ">
+                                                                    @endif
                                                                 </div>
-                                                                <label for="user_id" class="ms-2">{{ $user->name }}</label><br>
-                                                            </div>
-                                                            @if ( $loop->iteration % 2 == 0)
-                                                            </div>
-                                                            <div class="row text-center">
-                                                            @endif
-                                                        @endforeach
+                                                            </input>
+                                                        </label>
                                                     </div>
-                                            @else 
-                                                <a href="{{ route('admin.projects.assignCreate', $task->project->id) }}">assign</a> users to the project first
-                                            @endif
+                                                    <label for="user_id" class="ms-2">{{ $user->name }}</label><br>
+                                                </div>
+                                                @if ($loop->iteration % 2 == 0)
+                                                </div>
+                                                <div class="row text-center">
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                        @else 
+                                            <a href="{{ route('admin.projects.assignCreate', $task->project->id) }}">assign</a> users to the project first
+                                        @endif
                                     </div>
                                 </div>
                             </div>
+
+                            <!--task status-->
                             <div class="leftsided__">
                                 <label  class="labelexpandedd__">
                                     <input type="radio" id="pending" name="status" value="pending" @if($task->status=="pending") checked @endif>   <!--pending-->
@@ -136,6 +148,7 @@
                                 </label>
                             </div>
 
+                            <!--task update button-->
                             <x-forms.update-button />
                         </form>
                     </div>
@@ -143,50 +156,50 @@
             </div>
         </div>
     </div>
-</d iv>
+</div>
 
+<!--checked boxes-->
 <style>
+    .leftsided__{
+        margin-left: 50px;
+        margin-top: 50px;
+    }
 
-.leftsided__{
-    margin-left: 50px;
-    margin-top: 50px;
-}
+    .labelexpandedd__ {
+        font-size: 12px;
+    }
 
-.labelexpandedd__ {
-    font-size: 12px;
-}
+    .labelexpandedd__ > input{
+        display: none;
+    }
 
-.labelexpandedd__ > input{
-    display: none;
-}
-
-.labelexpandedd__ input:checked + .radio-btnsd__ {
-    background-color: #253c6a;
-    color: #fff;
-}
+    .labelexpandedd__ input:checked + .radio-btnsd__ {
+        background-color: #253c6a;
+        color: #fff;
+    }
 
 
-.radio-btnsd__ {
-    width: 57px;
-    height: 59px;
-    border-radius: 15px;
-    position: relative;
-    text-align: center;
-    padding: 15px 20px;
-    box-shadow: 0 1px #c3c3c3;
-    cursor: pointer;
-    background-color: #eaeaea;
-    float: left;
-    margin-right: 15px;
-}
+    .radio-btnsd__ {
+        width: 57px;
+        height: 59px;
+        border-radius: 15px;
+        position: relative;
+        text-align: center;
+        padding: 15px 20px;
+        box-shadow: 0 1px #c3c3c3;
+        cursor: pointer;
+        background-color: #eaeaea;
+        float: left;
+        margin-right: 15px;
+    }
 
-.radio-btnsd__ > input {
-    width: 28px;
-    height: 30px;
-}
-
+    .radio-btnsd__ > input {
+        width: 28px;
+        height: 30px;
+    }
 </style>
 
+<!--radio-->
 <style>
     .labelexpanded_ > input {
         display: none;
@@ -203,6 +216,7 @@
     }
 </style>
 
+<!--ajax change users according to project -->
 <script>
     $('#project_id').on('change', function(){  
 

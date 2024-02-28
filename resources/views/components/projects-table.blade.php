@@ -13,19 +13,22 @@
         <thead>
             <tr>
                 <th scope="col" class="align-middle">#</th>
+                <!--title with sort button-->
                 <th scope="col" class="align-middle"> 
-                        <span class="btn px-1 p-0 m-0 text-light" style="background-color: #303c54;" onclick="getSortedProjects()">
-                            Title
-                            <svg id="arrowkey" xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-arrow-bar-down" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M1 3.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5M8 6a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 12.293V6.5A.5.5 0 0 1 8 6"/>
-                            </svg>
-                        </span>
-                    </th>
+                    <span class="btn px-1 p-0 m-0 text-light" style="background-color: #303c54;" onclick="getSortedProjects()">
+                        Title
+                        <svg id="arrowkey" xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-arrow-bar-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 3.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5M8 6a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 12.293V6.5A.5.5 0 0 1 8 6"/>
+                        </svg>
+                    </span>
+                </th>
                 <th scope="col" class="align-middle">Deadline</th>
                 <th scope="col" class="align-middle">Techniques</th>
                 <th scope="col" class="align-middle">Leader</th>
                 <th scope="col" class="align-middle">Users</th>
-                <th scope="col" class="align-middle">Owner</th>
+                @if(auth()->user()->hasRole('admin'))
+                <!-- <th scope="col" class="align-middle">Owner</th> -->
+                @endif
                 <th scope="col" class="align-middle">Tasks</th>
                 <th scope="col" class="align-middle">Status</th>
                 <th scope="col" class="align-middle">Action</th>
@@ -34,19 +37,23 @@
         <tbody>
             @foreach ($projects as $project)
                 <tr>
+                    <!--iteration-->
                     @if(auth()->user()->hasRole('admin'))
                     <th scope="row" class="align-middle">{{ $project->id }}</th>
                     @else 
                     <th scope="row" class="align-middle">{{ $loop->iteration }}</th>
                     @endif
+                    <!--project title-->
                     <td class="align-middle">
                         <a href="{{ route('admin.projects.show', $project->id) }}" 
                             style="text-decoration: none;" >{{ $project->title }} 
                         </a>
                     </td>
+                    <!--deadline-->
                     <td class="align-middle">
                         {{ $project->deadline }}
                     </td>
+                    <!--project skills-->
                     <td class="align-middle">
                         @if($project->skills()->count() > 0)
                             @foreach ($project->skills as $skill)
@@ -56,28 +63,38 @@
                             #
                         @endif
                     </td>
-                    
+                    <!--teamleader-->
                     <td class="align-middle">
                         @if($project->teamleader)
                         <div>
                             @if($project->teamleader->profile)
-                                <a href="{{ route('admin.profiles.show', $project->teamleader->id) }}" style="text-decoration: none;">
+                                <a href="{{ route('admin.profiles.show', $project->teamleader->id) }}" class="position-relative" style="text-decoration: none;">
                             @else
-                                <a href="{{ route('admin.statuses.notFound') }}" style="text-decoration: none;">
+                                <a href="{{ route('admin.statuses.notFound') }}" class="position-relative" style="text-decoration: none; ">
                             @endif
                             <!--image-->
                             @if($project->teamleader->profile && $project->teamleader->profile->getFirstMediaUrl("profiles"))
-                            <div class="avatar avatar-md mt-1">
-                                <img src='{{ $project->teamleader->profile->getFirstMediaUrl("profiles") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                            <div class="py-1 px-2">
+                                <div class="avatar avatar-md mt-1">
+                                    <img src='{{ $project->teamleader->profile->getFirstMediaUrl("profiles") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                </div>
+                                <x-user-badges :user="$project->teamleader" />
                             </div>
                             @elseif($project->teamleader->getFirstMediaUrl("users"))
-                            <div class="avatar avatar-md mt-1">
-                                <img src='{{ $project->teamleader->getMedia("users")[0]->getUrl("thumb") }}'alt="DP"  class="avatar-img border border-success shadow mb-1">
+                            <div class="py-1 px-2">
+                                <div class="avatar avatar-md mt-1">
+                                    <img src='{{ $project->teamleader->getMedia("users")[0]->getUrl("thumb") }}'alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                </div>
+                                <x-user-badges :user="$project->teamleader" />
                             </div>
                             @else
-                            <div class="avatar avatar-md mt-1">
-                                <img src='{{ asset("images/avatar.png") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                            <div class="py-1 px-2">
+                                <div class="avatar avatar-md mt-1">
+                                    <img src='{{ asset("images/avatar.png") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                </div>
+                                <x-user-badges :user="$project->teamleader" />
                             </div>
+
                             @endif
                             <span class="badge m-1" style="background: #673AB7;">{{ $project->teamleader->name }}</span>
                             </a>
@@ -86,52 +103,67 @@
                             #
                         @endif
                     </td>
-
+                    <!--users-->
                     <td class="align-middle">
                         @if($project->users()->count() > 0)
                             @foreach ($project->users as $user)
-                            <div>
-                                @if($user->profile)
-                                    <a href="{{ route('admin.profiles.show', $user->id) }}" style="text-decoration: none;">
-                                @else
-                                    <a href="{{ route('admin.statuses.notFound') }}" style="text-decoration: none;">
-                                @endif
-                                <!--image-->
-                                @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
-                                <div class="avatar avatar-md mt-1">
-                                    <img src='{{ $user->profile->getFirstMediaUrl("profiles") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                <div>
+                                    @if($user->profile)
+                                        <a href="{{ route('admin.profiles.show', $user->id) }}" class="position-relative" style="text-decoration: none;">
+                                    @else
+                                        <a href="{{ route('admin.statuses.notFound') }}" class="position-relative" style="text-decoration: none;">
+                                    @endif
+                                    <!--image-->
+                                    @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
+                                    <div class="p-2">
+                                        <div class="avatar avatar-md mt-1">
+                                            <img src='{{ $user->profile->getFirstMediaUrl("profiles") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                        </div>
+                                    <x-user-badges :user="$user" />
+                                    </div>
+                                    @elseif($user->getFirstMediaUrl("users"))
+                                    <div class="p-2">
+                                        <div class="avatar avatar-md mt-1">
+                                            <img src='{{ $user->getMedia("users")[0]->getUrl("thumb") }}'alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                        </div>
+                                    <x-user-badges :user="$user" />
+                                    </div>
+                                    @else
+                                    <div class="p-2">
+                                        <div class="avatar avatar-md mt-1">
+                                            <img src='{{ asset("images/avatar.png") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                        </div>
+                                    <x-user-badges :user="$user" />
+                                    </div>
+                                    @endif
+                                    <span class="badge m-1" style="background: #673AB7;">{{ $user->name }}</span>
+                                    </a>
                                 </div>
-                                @elseif($user->getFirstMediaUrl("users"))
-                                <div class="avatar avatar-md mt-1">
-                                    <img src='{{ $user->getMedia("users")[0]->getUrl("thumb") }}'alt="DP"  class="avatar-img border border-success shadow mb-1">
-                                </div>
-                                @else
-                                <div class="avatar avatar-md mt-1">
-                                    <img src='{{ asset("images/avatar.png") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
-                                </div>
-                                @endif
-                                <span class="badge m-1" style="background: #673AB7;">{{ $user->name }}</span>
-                                </a>
-                            </div>
                             @endforeach
                         @else
                             #
                         @endif
                     </td>
-                    <td class="align-middle">
+                    @if(auth()->user()->hasRole('admin'))
+                    <!--client name-->
+                    <!-- <td class="align-middle">
                         {{ $project->client->name }}
-                    </td>
+                    </td> -->
+                    @endif
+                    <!--number of tasks-->
                     <td class="align-middle">
                         {{ $project->tasks->count() }}
                     </td>
+                    <!--status-->
                     <td class="align-middle">
                         <x-project-status :status="$project->status" />
                     </td>
+                    <!--controll buttons-->
                     <td class="align-middle" >
                         <div style="display: flex;">
                             @can('assign_project_to_user')<a type="button" class="btn btn-success m-1" href="{{ route('admin.projects.assignCreate', $project->id) }}" role="button">Assign</a>@endcan
                             <a type="button" class="btn btn-primary m-1" href="{{ route('admin.projects.show', $project->id) }}" role="button">Show</a>
-                            @can('project_edit')<a type="button" class="btn btn-secondary m-1" href="{{ route('admin.projects.edit', $project->id) }}" role="button">Edit</a>@endcan
+                            @can('edit-project',$project)<a type="button" class="btn btn-secondary m-1" href="{{ route('admin.projects.edit', $project->id) }}" role="button">Edit</a>@endcan
                             @can('project_delete')<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-trash-fill text-danger mt-2" viewBox="0 0 16 16"
                                     onclick="if (confirm('Are you sure?') == true) {
                                                         document.getElementById('delete-item-{{$project->id}}').submit();
@@ -155,6 +187,7 @@
     </table>
 </div>
 
+<!--getSortedProjects()-->
 <script>
     var toggleNames = false;
     var lockNames = false;

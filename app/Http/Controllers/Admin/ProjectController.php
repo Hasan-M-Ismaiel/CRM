@@ -190,18 +190,25 @@ class ProjectController extends Controller
     {
         $this->authorize('update', $project);   
         $oldTeamleader = $project->teamleader;
-        $teamleader = User::findOrFail($request->teamleader_id);
+        
+        if($request->teamleader_id != null){
+            $teamleader = User::findOrFail($request->teamleader_id);
+        }
 
-        $project->update([
-            'title'       => $request->validated('title'),
-            'description' => $request->validated('description'),
-            'deadline'    => $request->validated('deadline'),
-            'client_id'   => $request->validated('client_id'),
-            'teamleader_id'   => $request->validated('teamleader_id'),
-        ]);
+        // if the editor was the teamleader
+        if($request->title != null && $request->description != null && $request->deadline != null && $request->client_id != null && $request->teamleader_id != null){
+            $project->update([
+                'title'       => $request->validated('title'),
+                'description' => $request->validated('description'),
+                'deadline'    => $request->validated('deadline'),
+                'client_id'   => $request->validated('client_id'),
+                'teamleader_id'   => $request->validated('teamleader_id'),
+            ]);
+        }
         
         $assignedSkills = $request->input('assigned_skills'); // the ids of the added skills 
         if( $assignedSkills !=null && sizeof($assignedSkills)>0 ){
+            $project->skills()->detach();
             foreach ($assignedSkills as $assignedSkill) {
                 $project->skills()->attach($assignedSkill);
             }
@@ -218,29 +225,53 @@ class ProjectController extends Controller
             }
         }
 
+        if(!$project->users->contains(auth()->user())){
+            $project->users()->attach(auth()->user());
+        }
+
         $assignedUsers = $request->input('assigned_users');
+        //check if the teamleader remove the admin from the project - we prevent that 
+        $assignedUsersModels = User::find($assignedUsers);
+        $adminUser = null;
+        $basicUsers = User::all();
+        foreach($basicUsers as $basicUser){
+            if($basicUser->hasRole('admin')){
+                $adminUser = $basicUser;
+            }
+        }
+
+        if(!$assignedUsersModels->contains($adminUser)){
+            array_push($assignedUsers, $adminUser->id);
+        }
+        
         $sendNotification = new NotificationService($project, $assignedUsers);
         $sendNotification->SendNotificationMessages();
         
-        if(!$project->users->contains($teamleader)){
-            $project->users()->attach($teamleader);
+        if($request->teamleader!=null){
+            if(!$project->users->contains($teamleader)){
+                $project->users()->attach($teamleader);
+            }
+
+            //check if the new teamleader is not the old one [to send the notifications] ||| $teamleader->id != null [because the editor could be the teamleader not the admin]
+            if($teamleader->id != null && $teamleader->id != $oldTeamleader->id){
+                $teamleader->notify(new TeamleaderRoleAssigned($project));
+                $oldTeamleader->notify(new TeamleaderRoleUnAssigned($project));
+            }
+
         }
 
-        //check if the new teamleader is not the old one [to send the notifications]
-        if($teamleader->id != $oldTeamleader->id){
-            $teamleader->notify(new TeamleaderRoleAssigned($project));
-            $oldTeamleader->notify(new TeamleaderRoleUnAssigned($project));
+
+        // if the editor was the teamleader
+        if($request->status != null){
+            if($request->status == 'true') {
+                $project->status = true;  
+            } 
+            elseif ($request->status == 'false') {
+                $project->status = false;  
+            } 
+            $project->save();
         }
-
-
-        if($request->status == 'true') {
-            $project->status = true;  
-        } 
-        elseif ($request->status == 'false') {
-            $project->status = false;  
-        } 
         
-        $project->save();
 
         return redirect()->route('admin.projects.index')->with('message', 'the project has been updated successfully');
     }

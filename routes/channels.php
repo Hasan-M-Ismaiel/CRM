@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Broadcast;
 Broadcast::channel('teams.{project}', function ($user, $projectId) {
     $project= Project::find($projectId);
     foreach($project->users as $projectUser ){
-        if($projectUser->id == $user->id || $user->hasRole('admin')){
+        if($projectUser->id == $user->id || $user->hasRole('admin') || $user->id == $project->teamleader->id){
             return true;
         }
     }
@@ -33,7 +33,7 @@ Broadcast::channel('teams.{project}', function ($user, $projectId) {
 
 Broadcast::channel('tasks.{task}', function ($user, $taskId) {
     $task= Task::find($taskId);
-    if($task->user->id == $user->id || $user->hasRole('admin')){
+    if($task->user->id == $user->id || $user->hasRole('admin') || $user->id == $task->project->teamleader->id){
         return true;
     }
     return false;

@@ -35,19 +35,21 @@
                 <!--buttons-->
                 <td class="align-middle">
                     <div style="display: flex;" class="d-flex">
-                        <a type="button" class="btn btn-primary m-1 d-flex justify-content-center " href="{{ route('admin.skills.show', $skill->id) }}" role="button">Show</a>
-                        <a type="button" class="btn btn-secondary m-1 d-flex justify-content-center " href="{{ route('admin.skills.edit', $skill->id) }}" role="button">Edit</a>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-trash-fill text-danger mt-2" viewBox="0 0 16 16"
-                                onclick="if (confirm('Are you sure?') == true) {
-                                                    document.getElementById('delete-item-{{$skill->id}}').submit();
-                                                    event.preventDefault();
-                                                } else {
-                                                    return;
-                                                }
-                                                ">
+                        @can('view', $skill)<a type="button" class="btn btn-primary m-1 d-flex justify-content-center " href="{{ route('admin.skills.show', $skill->id) }}" role="button">Show</a>@endcan
+                        @can('update', $skill)<a type="button" class="btn btn-secondary m-1 d-flex justify-content-center " href="{{ route('admin.skills.edit', $skill->id) }}" role="button">Edit</a>@endcan
+                        @can('delete', $skill)
+                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-trash-fill text-danger mt-2" viewBox="0 0 16 16"
+                                    onclick="if (confirm('Are you sure?') == true) {
+                                                        document.getElementById('delete-item-{{$skill->id}}').submit();
+                                                        event.preventDefault();
+                                                    } else {
+                                                        return;
+                                                    }
+                                                    ">
                                 <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
-                        </svg>
-                        <!-- for the delete  -->
+                            </svg>
+                        @endcan
+                        <!-- for the delete -->
                         <form id="delete-item-{{$skill->id}}" action="{{ route('admin.skills.destroy', $skill) }}" class="d-none" method="POST">
                             @csrf
                             @method('DELETE')
