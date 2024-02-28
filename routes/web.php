@@ -52,23 +52,26 @@ Route::middleware(['auth'])->group(function () {
             Route::get('projects/{project}/assign/create', [ProjectController::class, 'assignCreate'])->name('projects.assignCreate');
             Route::patch('projects/{project}/assign', [ProjectController::class, 'assignStore'])->name('projects.assignStore');
             
-            // [get users] for [specific projects]
-            Route::post('getUsers', GetUsersController::class)->name('getUsers');
-
-            // skills [resource skills] [get projects matched with skills] [get users matched with skills] [search] [store]
-            Route::get('skills/getSearchResult', [SkillController::class, 'getSearchResult'])->name('skills.getSearchResult'); 
-            Route::get('skills/getSortedSkills', [SkillController::class, 'getSortedSkills'])->name('skills.getSortedSkills'); 
-            Route::post('skills/getProjectsWithSkills', [SkillController::class, 'getProjectsWithSkills'])->name('skills.getProjectsWithSkills'); 
-            Route::post('skills/getUsersWithSkills', [SkillController::class, 'getUsersWithSkills'])->name('skills.getUsersWithSkills'); 
-            Route::resource('skills', SkillController::class); 
-            
-            // tasks [create multiple tasks for specific project]
-            Route::resource('taskGroups', TaskGroupController::class)->only('create','store')->name('taskGroups.create', 'taskGroups.store');
-            
-            //success views - [creating Tasks/projects]
+            //success views - [creating projects]
             Route::get('success_create_project', CreatingProjectStatusesController::class)->name('success_create_project.status');
-            Route::get('success_create_tasks', CreatingTasksStatusesController::class)->name('success_create_tasks.status');
         });
+
+
+        //success views - [creating Tasks]
+        Route::get('success_create_tasks', CreatingTasksStatusesController::class)->name('success_create_tasks.status');
+        
+        // tasks [create multiple tasks for specific project]
+        Route::resource('taskGroups', TaskGroupController::class)->only('create','store')->name('taskGroups.create', 'taskGroups.store');
+        
+        // [get users] for [specific projects]
+        Route::post('getUsers', GetUsersController::class)->name('getUsers');
+        
+        // skills [resource skills] [get projects matched with skills] [get users matched with skills] [search] [store]
+        Route::get('skills/getSearchResult', [SkillController::class, 'getSearchResult'])->name('skills.getSearchResult'); 
+        Route::get('skills/getSortedSkills', [SkillController::class, 'getSortedSkills'])->name('skills.getSortedSkills'); 
+        Route::post('skills/getProjectsWithSkills', [SkillController::class, 'getProjectsWithSkills'])->name('skills.getProjectsWithSkills'); 
+        Route::post('skills/getUsersWithSkills', [SkillController::class, 'getUsersWithSkills'])->name('skills.getUsersWithSkills'); 
+        Route::resource('skills', SkillController::class); 
         
         // users - [resource] [search] [sort/by name + role]
         Route::get('users/getSearchResult', [UserController::class, 'getSearchResult'])->name('users.getSearchResult'); 

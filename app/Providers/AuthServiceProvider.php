@@ -67,9 +67,71 @@ class AuthServiceProvider extends ServiceProvider
         // to authorize the routes to [view the task chat]
         // this should be the teamleader of the project that this task belongs to 
         Gate::define('showTaskChat', function (User $user, Task $task) {
-            if($user->hasRole('admin') || $user->id === $task->user_id ){
+            if($user->hasRole('admin') || $user->id === $task->user_id || $user->id === $task->project->teamleader->id){
                 return true;
             }else{
+                return false;
+            }
+        });
+
+
+        // using in the blade projects-table
+        Gate::define('edit-project', function (User $user, Project $project) {
+            if($user->hasRole('admin') || $project->teamleader->id == $user->id ){
+                return true;
+            }else{
+                return false;
+            }
+        });
+
+        // using in the blade index blade tasks
+        Gate::define('create-task', function (User $user) {
+            
+            if($user->hasRole('admin') ){
+                return true;
+            }
+
+            $projects = Project::all();
+            foreach($projects as $project){
+                if($project->teamleader->id == $user->id){
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        // using in the blade projects-table
+        Gate::define('create-group-tasks', function (User $user, Project $project) {
+            if($user->hasRole('admin') || $project->teamleader->id == $user->id ){
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        // getUsersWithSkills method in the Skill Controller 
+        Gate::define('get-users-with-skills', function (User $user) {
+            if($user->hasRole('admin') || $user->teamleaderon->count()>0 ){
+                return true;
+            }else{
+                return false;
+            }
+        });
+
+        // getSortedSkills method in the Skill Controller 
+        Gate::define('get-sorted-skills', function (User $user) {
+            if($user->hasRole('admin') || $user->teamleaderon->count()>0 ){
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        // getSortedSkills method in the Skill Controller 
+        Gate::define('get-search-result', function (User $user) {
+            if($user->hasRole('admin') || $user->teamleaderon->count()>0 ){
+                return true;
+            } else {
                 return false;
             }
         });

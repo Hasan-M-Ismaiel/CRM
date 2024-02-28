@@ -7,7 +7,6 @@
             <div class="card-create-project pt-4 my-3 mx-5 px-5">
                 <h2 id="heading">Team Chat</h2>
                 <p id="pcreateProject">collaborate with your team mates</p>
-                
                 <div class="card">
                     <div class="row g-0">
                         <div class="col-12">
@@ -21,27 +20,29 @@
                                         {{ $team->name}}
                                     </strong>
                                     @if($team->project->users()->count() > 0)
-                                    <div class="col-9 pt-2  text-right">
+                                    <div class="col-9 pt-2 text-right">
                                         <ul class="list-inline">
                                             <li class="list-inline-item"> 
                                                 @foreach ($team->project->users as $user)
                                                     @if($user->profile)
-                                                    <a href="{{ route('admin.profiles.show', $user->profile->id) }}" style="text-decoration: none;">
+                                                    <a href="{{ route('admin.profiles.show', $user->profile->id) }}" class="position-relative" style="text-decoration: none;">
                                                     @else
-                                                    <a href="{{ route('admin.statuses.notFound') }}" style="text-decoration: none;">
+                                                    <a href="{{ route('admin.statuses.notFound') }}" class="position-relative" style="text-decoration: none;">
                                                     @endif
-
                                                         @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
                                                         <div class="avatar avatar-md">
                                                             <img src='{{$user->profile->getFirstMediaUrl("profiles") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                            <x-badges :user="$user" :project="$team->project" />
                                                         </div>
                                                         @elseif($user->getFirstMediaUrl("users"))
                                                         <div class="avatar avatar-md">
                                                             <img src='{{$user->getMedia("users")[0]->getUrl("thumb") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                            <x-badges :user="$user" :project="$team->project" />
                                                         </div>
                                                         @else
                                                         <div class="avatar avatar-md">
                                                             <img src='{{ asset("images/avatar.png") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                            <x-badges :user="$user" :project="$team->project" />
                                                         </div>
                                                         @endif
                                                     </a>
@@ -50,7 +51,7 @@
                                         </ul>
                                     </div>
                                     @else
-                                    <strong class="col-9 pt-2  text-right">no users assigned yet.</strong>
+                                    <strong class="col-9 pt-2 text-right">no users assigned yet.</strong>
                                     @endif
                                     <!-- <div class="text-muted small border">
                                     <em>Typing...</em>
@@ -120,6 +121,8 @@
         </div>
     </div>
 </div>
+
+<!--send message-->
 <script>
     $('#send').on('click', function(){  
         // get the user image

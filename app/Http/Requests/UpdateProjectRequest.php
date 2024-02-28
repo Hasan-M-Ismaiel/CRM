@@ -27,12 +27,12 @@ class UpdateProjectRequest extends FormRequest
         $users = User::pluck('id');
         $clients = Client::pluck('id');
         return [
-            'title'         => ['required', 'string', 'max:100'],
-            'description'   => ['required', 'string', 'max:255'],
-            'deadline'      => ['required', 'date'],   
-            // 'user_id'       => ['required', Rule::in($users)],
-            'client_id'     => ['required', Rule::in($clients)],
-            'teamleader_id' => "required",
+            'title'         => ['sometimes', 'string', 'max:100'],
+            'description'   => ['sometimes', 'string', 'max:255'],
+            'deadline'      => ['sometimes', 'date'],   
+            // 'user_id'       => ['sometimes', Rule::in($users)],
+            'client_id'     => ['sometimes', Rule::in($clients)],
+            'teamleader_id' => "sometimes",
             "new_skills"    => "array",
             "new_skills.*"  => "required|string|distinct|min:2|unique:skills,name",
         ];

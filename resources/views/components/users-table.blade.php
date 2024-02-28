@@ -38,44 +38,58 @@
                     <!--profile avatar-->
                     <td class="align-middle">
                         @if($user->profile)
-                            <a href="{{ route('admin.profiles.show', $user->id) }}" style="text-decoration: none;">
+                            <a href="{{ route('admin.profiles.show', $user->id) }}" class="position-relative" style="text-decoration: none;">
                         @else
-                            <a href="{{ route('admin.statuses.notFound') }}" style="text-decoration: none;">
+                            <a href="{{ route('admin.statuses.notFound') }}" class="position-relative" style="text-decoration: none;">
                         @endif
                         <!--image-->
                         @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
-                        <div class="avatar avatar-md">
-                            <img src='{{ $user->profile->getFirstMediaUrl("profiles") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                        <div class="p-2">
+                            <div class="avatar avatar-md">
+                                <img src='{{ $user->profile->getFirstMediaUrl("profiles") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                            </div>
+                            <x-user-badges :user="$user" />
                         </div>
                         @elseif($user->getFirstMediaUrl("users"))
-                        <div class="avatar avatar-md">
-                            <img src='{{ $user->getMedia("users")[0]->getUrl("thumb") }}'alt="DP"  class="avatar-img border border-success shadow mb-1">
+                        <div class="p-2">
+                            <div class="avatar avatar-md">
+                                <img src='{{ $user->getMedia("users")[0]->getUrl("thumb") }}'alt="DP"  class="avatar-img border border-success shadow mb-1">
+                            </div>
+                            <x-user-badges :user="$user" />
                         </div>
                         @else
-                        <div class="avatar avatar-md">
-                            <img src='{{ asset("images/avatar.png") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                        <div class="p-2">
+                            <div class="avatar avatar-md">
+                                    <img src='{{ asset("images/avatar.png") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                            </div>
+                            <x-user-badges :user="$user" />
                         </div>
                         @endif
                         </a>
                     </td>
+                    <!--name-->
                     <td  class="align-middle"><a href="{{ route('admin.users.show', $user->id) }}" style="text-decoration: none;" >{{ $user->name }} </a></td>
+                    <!--email-->
                     <td  id="test" class="align-middle">{{ substr($user->email, 0, 15) }}...</td>
+                    <!--role name-->
                     <td class="align-middle">{{ $user->getRoleNames()->get('0') }}</td>
+                    <!--number of assigned tasks-->
                     <td class="align-middle">{{ $user->numberOfAssignedTasks }}</td>
+                    <!--skills-->
                     <td class="align-middle">
-                    @if($user->skills()->count() > 0)
-                        @foreach ($user->skills as $skill)
-                            <span class="badge m-1" style="background: #673AB7;">{{ $skill->name }}</span>
-                        @endforeach
-                    @else
-                        #
-                    @endif
+                        @if($user->skills()->count() > 0)
+                            @foreach ($user->skills as $skill)
+                                <span class="badge m-1" style="background: #673AB7;">{{ $skill->name }}</span>
+                            @endforeach
+                        @else
+                            #
+                        @endif
                     </td>
+                    <!--controll buttons-->
                     <td class="align-middle">
                         <div style="display: flex;">
                             <a type="button" class="btn btn-primary m-1" href="{{ route('admin.users.show', $user->id) }}" role="button">Show</a>
                             <a type="button" class="btn btn-secondary m-1" href="{{ route('admin.users.edit', $user->id) }}" role="button">Edit</a>
-                            
                             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-trash-fill text-danger mt-2" viewBox="0 0 16 16"
                                 onclick="if (confirm('Are you sure?') == true) {
                                                     document.getElementById('delete-item-{{$user->id}}').submit();
@@ -100,6 +114,8 @@
     </table>
 </div>
 
+
+<!--getSortedUsers-->
 <script>
     var toggleNames = false;
     var lockNames = false;

@@ -106,6 +106,25 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<!--radio selection button-->
+<!-- <style>
+    .labelexpanded_ > input {
+        display: none;
+    }
+
+    .labelexpanded_ input:checked + .radio-btns_ {
+        border-style: solid;
+        border-color: #50ef44;
+    }
+
+    .radio-btns_ {
+        cursor: pointer;
+        background-color: #eaeaea;
+    }
+</style> -->
 
 <!--for adding/deleting task cards-->
 <script type="text/javascript">
@@ -162,7 +181,7 @@
     
     $(".bodyflex").on("click", "#DeleteRow", function () {
         $(this).parents("#row").remove();
-    })
+    });
 </script>
 @endsection
 

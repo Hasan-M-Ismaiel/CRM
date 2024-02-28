@@ -1,7 +1,7 @@
 import './bootstrap';
 
 //for the notifications
-Echo.private(`App.Models.User.`+userID)
+Echo.private(`App.Models.User.`+window.userID)
     .notification((notification) => {
     if(notification['notification_type'] == 'TaskAssigned'){
         $("#toast_link_to_notification_target").attr("href",notification['link_to_task']+'?notificationId='+notification['notification_id']);
@@ -50,12 +50,14 @@ Echo.private(`App.Models.User.`+userID)
         window.NumberOfTasks = window.NumberOfTasks - 1 ;
 
     } else if (notification['notification_type'] == 'ProjectAssigned'){
+        alert('sd');
         $("#toast_link_to_notification_target").attr("href",notification['link_to_project']+'?notificationId='+notification['notification_id']);
         $("#toast_image").attr("src",notification['project_manager_image']);
         $("#toast_project_manager_name").html(notification['project_manager_name']);
         $("#toast_title").html(" you are now one of team member for this project ");
         $("#toast_body").html(notification['project_title']);
         $(".toast").toast('show');
+        alert('df');
         //update the number of notification on the screen
         $("#num_of_notification").html(window.NumberOfNotifications + 1);
         window.NumberOfNotifications = window.NumberOfNotifications +1 ;
@@ -68,7 +70,7 @@ Echo.private(`App.Models.User.`+userID)
         //update the number of notification on the screen
         $("#num_of_notification").html(window.NumberOfNotifications + 1);
         window.NumberOfNotifications = window.NumberOfNotifications +1 ;
-    }else if (notification['notification_type'] == 'TaskWaitingNotification'){
+    } else if (notification['notification_type'] == 'TaskWaitingNotification'){
         $("#toast_link_to_notification_target").attr("href",notification['link_to_task']+'?notificationId='+notification['notification_id']);
         $("#toast_image").attr("src",notification['project_manager_image']);
         $("#toast_project_manager_name").html(notification['project_manager_name']);
@@ -79,7 +81,7 @@ Echo.private(`App.Models.User.`+userID)
         //update the number of notification on the screen
         $("#num_of_notification").html(window.NumberOfNotifications + 1);
         window.NumberOfNotifications = window.NumberOfNotifications +1 ;
-    }else if (notification['notification_type'] == 'TeamleaderRoleAssigned'){
+    } else if (notification['notification_type'] == 'TeamleaderRoleAssigned'){
         $("#toast_link_to_notification_target").attr("href",notification['link_to_project']+'?notificationId='+notification['notification_id']);
         $("#toast_image").attr("src",notification['project_manager_image']);
         $("#toast_project_manager_name").html(notification['project_manager_name']);
@@ -89,7 +91,7 @@ Echo.private(`App.Models.User.`+userID)
         //update the number of notification on the screen
         $("#num_of_notification").html(window.NumberOfNotifications + 1);
         window.NumberOfNotifications = window.NumberOfNotifications +1 ;
-    }else if (notification['notification_type'] == 'TeamleaderRoleUnAssigned'){
+    } else if (notification['notification_type'] == 'TeamleaderRoleUnAssigned'){
         $("#toast_image").attr("src",notification['project_manager_image']);
         $("#toast_project_manager_name").html(notification['project_manager_name']);
         $("#toast_title").html(" you are now not the teamleader of this project ");
@@ -113,8 +115,7 @@ window.projectIds.forEach(element => {
         var teamId = e.team_id;
         var userId = e.user_id;
         var message_id = e.message_id;
-        alert(e.message_id);
-
+        // alert(e.message_id);
         var userprofile = e.user_profile_url;
         var numberOfSingle;
 
@@ -238,7 +239,7 @@ window.taskIds.forEach(element => {
 
         // if the sender was the same as the loged in user - add the added message on the right
         if(e.user_id == window.userID){ // is the auth // for user experince you can comment this first line and add the message from the sender side that is faster to render the sender message
-            var newMessageFromHereTask = $('<div class="chat-message-right pb-4"> <div> <img src="'+userimage_task+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime2+'</div> </div> <div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username_task +'</div><div>'+ message_task+ '</div></div><div id="taskmessage-'+taskmessage_id+'"></div></div></div>');
+            var newMessageFromHereTask = $('<div class="chat-message-right pb-4"> <div class="ms-2"> <img src="'+userimage_task+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime2+'</div> </div> <div> <div class="flex-shrink-1  bg-primary text-white rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username_task +'</div><div>'+ message_task+ '</div></div><div id="taskmessage-'+taskmessage_id+'"></div></div></div>');
         }else{
             var newMessageFromHereTask = $('<div class="chat-message-left pb-4"> <div> <img src="'+userimage_task+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime2+'</div> </div> <div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username_task +'</div><div>'+ message_task+ '</div></div><div id="taskmessage-'+taskmessage_id+'"></div></div></div>');
         }

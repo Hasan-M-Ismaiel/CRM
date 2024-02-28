@@ -10,7 +10,7 @@
                 <div class="card-create-project pt-4 my-3 mx-5 px-5">
                   <h2 id="heading">{{ $page }}</h2>
                   <p id="pcreateProject">dashboard to manage all created tasks</p>
-                    @can('project_create')
+                    @can('create-task')
                     <a type="button" class="rounded" href="{{ route('admin.tasks.create') }}" style="text-decoration: none;" role="button"><div  class="action-main-create-button px-5 text-center py-3 rounded">Create New Task</div></a>
                     @endcan
                 </div>

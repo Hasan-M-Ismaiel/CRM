@@ -19,12 +19,16 @@ class SkillController extends Controller
      */
     public function index()
     {
-        $skills = Skill::all();
-
-        return view('admin.skills.index', [
-            'skills' => $skills,
-            'page' => 'Skills List',
-        ]);
+        if(auth()->user()->hasRole('admin') || auth()->user()->teamleaderon->count()>0){
+           
+            $skills = Skill::all();
+    
+            return view('admin.skills.index', [
+                'skills' => $skills,
+                'page' => 'Skills List',
+            ]);
+        }
+        abort(404);
     }
 
     /**
@@ -32,6 +36,8 @@ class SkillController extends Controller
      */
     public function create()
     {
+        $this->authorize('create');
+
         return view('admin.skills.create', [
             'page' => 'Creating skill',
         ]);
@@ -42,6 +48,8 @@ class SkillController extends Controller
      */
     public function store(SkillStoreRequest $request)
     {
+        $this->authorize('create');
+
         $skills = $request->get('names');
 
         //double check for the validation
@@ -70,6 +78,8 @@ class SkillController extends Controller
      */
     public function show(Skill $skill)
     {
+        $this->authorize('view', $skill);
+
         return view('admin.skills.show', [
             'page' => 'Showing skill',
             'skill' => $skill,
@@ -81,9 +91,11 @@ class SkillController extends Controller
      */
     public function edit(Skill $skill)
     {
+        $this->authorize('update', $skill);
+
         return view('admin.skills.edit', [
-            'page'        => 'Editing skill',
-            'skill'       => $skill,
+        'page'  => 'Editing skill',
+        'skill' => $skill,
         ]);
     }
 
@@ -92,6 +104,8 @@ class SkillController extends Controller
      */
     public function update(SkillUpdateRequest $request, Skill $skill)
     {
+        $this->authorize('update', $skill);
+
         $skill->update($request->validated());
 
         return redirect()->route('admin.skills.index')->with('message', 'the skill has been updated successfully');
@@ -102,6 +116,9 @@ class SkillController extends Controller
      */
     public function destroy(Skill $skill)
     {
+
+        $this->authorize('delete', $skill);
+
         $skill->delete();
 
         $skills = Skill::all();
@@ -114,6 +131,8 @@ class SkillController extends Controller
     // this not should be here - it should be in another service class 
     public function getUsersWithSkills ()
     {
+        $this->authorize('get-users-with-skills');
+
         //all skills from database to compare with 
         $Basicskills = Skill::all();
 
@@ -291,9 +310,6 @@ class SkillController extends Controller
                 $var .= '</div>';
                 $var .= '</td>';
                 // new added
-
-
-
 
                 // $var .= '<td style="text-align: center; vertical-align: middle;"><input type="checkbox" id="user-'.$user->id.'" name="assigned_users[]" value="'. $user->id .'"></td>';
                 $var .= '<td class="align-middle"><a href="'. route('admin.users.show', $user->id) .'" > '. $user->name . '</a></td>';
@@ -526,6 +542,7 @@ class SkillController extends Controller
         }
     }
 
+    // this is not used
     public function getProjectsWithSkills ()
     {
         $requiredSkills = request()->skills;
@@ -537,7 +554,7 @@ class SkillController extends Controller
 
     public function getSortedSkills ()
     {
-        // $this->authorize('viewAny', User::class);
+        $this->authorize('get-sorted-skills');
        
         $skills = Skill::orderBy('name')->get();
 
@@ -549,6 +566,8 @@ class SkillController extends Controller
 
     public function getSearchResult ()
     {
+        $this->authorize('get-search-result');
+        
         $queryString = request()->queryString;
 
         //get all the matched users

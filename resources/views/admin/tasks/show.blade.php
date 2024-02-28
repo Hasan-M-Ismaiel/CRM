@@ -42,7 +42,9 @@
                                         @if($task->status=="opened")
                                         <span class="text-muted h6 col">working on</span>
                                         @elseif($task->status=="pending")
-                                        <span class="text-muted h6 col">waiting for <a href="{{ route('admin.tasks.accept',['task_id'=>$task->id]) }}" >accept</a></span>
+                                            @if($task->project->teamleader->id == auth()->user()->id || auth()->user()->hasRole('admin'))
+                                            <span class="text-muted h6 col">waiting for <a href="{{ route('admin.tasks.accept',['task_id'=>$task->id]) }}" >accept</a></span>
+                                            @endif
                                         @elseif($task->status=="closed")
                                         <span class="text-muted h6 col">finished</span>
                                         @endif
@@ -55,7 +57,7 @@
                                             <strong>for user:</strong><span class="badge"><a href="{{ route('admin.users.show', $task->user->id) }}" style="text-decoration: none;" >{{ $task->user->name }}</a></span>
                                             <br>
                                             <!--this is just for the user not for the admin -->
-                                            @if($task->status!="closed")
+                                            @if($task->status=="opened")
                                             @can('markTaskAsCompleted-task', $task)
                                             <div class="text-right" id="disable">
                                                 <a  id="markAsCompleted" class="btn" onclick="markascompleted({{$task->id}})">Mark as completed</a>
@@ -75,9 +77,10 @@
     </div>
 </div>
 
+
+<!--markascompleted-->
 <script>
     function markascompleted(taskId){
-
         if (confirm('Are you sure?') == true) {
             $('#loading').show();
             $.ajax({
@@ -99,7 +102,6 @@
             });
         }
     }
-
 </script>
 @endsection
 

@@ -26,13 +26,23 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    // this is unauthorized because every role can see multiple tasks 
     public function index()
     {
+        
         if(auth()->user()->hasRole('admin')){
             $tasks = Task::with('project', 'user')->get();
         } else {
             $tasks = Task::where('user_id', Auth::user()->id)->get();
+
+            $allTasks = Task::all();
+            foreach($allTasks as $teamleaderTask){
+                if($teamleaderTask->project->teamleader->id == auth()->user()->id){
+                    // for dont show the recordr twice as aleader and as a person has task on the same project
+                    if(!$tasks->contains($teamleaderTask)){
+                        $tasks->add($teamleaderTask);
+                    }
+                }
+            }
         }
 
         return view('admin.tasks.index', [
@@ -60,6 +70,9 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
+        
+        $this->authorize('create', Task::class);
+
         //the authorization is in the form request class
         $assignedUser = User::findOrFail($request->user_id);
 
@@ -173,9 +186,13 @@ class TaskController extends Controller
         // [to do ] - using gate
         // if(auth()->user()->id == $task->project->teamleader_id)
         // $this->authorize('accept-task', $task);
-        $task->update([
-            'status' => "closed",
-        ]);
+        if($task->project->teamleader->id == auth()->user()->id || auth()->user()->hasRole('admin')){
+            $task->update([
+                'status' => "closed",
+            ]);
+        } else {
+            return abort(404);
+        }
 
         return back()->with('message', 'the task status has been updated');
     }
@@ -195,7 +212,7 @@ class TaskController extends Controller
             $projects = $user->projects()->get();
             $projects->map(function (Project $project) use($tasks, $user) {
                 foreach($project->tasks as $task){
-                    if($task->user_id == $user->id){
+                    if($task->user_id == $user->id || $task->project->teamleader->id ==$user->id ){
                         $tasks->add($task);
                     }
                 }
@@ -212,6 +229,8 @@ class TaskController extends Controller
     public function showTaskChat(Task $task)
     {
         $this->authorize('showTaskChat', $task);
+
+        
 
         $users = User::all();
         return view('admin.tasks.showTaskChat', [
@@ -231,7 +250,8 @@ class TaskController extends Controller
         $task = Task::find($taskChat);
         
         //this check is for authorization
-        if($user->id == $task->user_id || auth()->user()->hasRole('admin')){
+        // if($user->id == $task->user_id || auth()->user()->hasRole('admin')){
+        if($user->id == $task->user_id || $user->id == $task->project->teamleader->id || auth()->user()->hasRole('admin')){
             $createdtaskmessage = TaskMessage::create([
                 'task_id' => $task->id,
                 'user_id' => $user->id,
@@ -241,7 +261,8 @@ class TaskController extends Controller
             $createdtaskmessageId = $createdtaskmessage->id;
 
             // if the sender was the admin
-            if($user->hasRole('admin')){
+            // if($user->hasRole('admin')){
+            if($user->id == $task->project->teamleader->id){
                 Taskmessagenotification::create([
                     'user_id' => $task->user->id,
                     'task_id' => $task->id,
@@ -251,16 +272,18 @@ class TaskController extends Controller
             } else {
                 // search for the admin /// in the future you have to alter this because the admin could be muiple teamleaders 
                 // this should be in the future as this :  if($adminuser->hasRole('teamleader') && in the $task->project->users)
-                $adminUser = null;
-                $users = User::all();
-                foreach($users as $admin_user){
-                    if($admin_user->hasRole('admin')){
-                        $adminUser = $admin_user;
-                    }
-                }
-                if($adminUser != null){
+                
+                // $adminUser = null;
+                // $users = User::all();
+                // foreach($users as $admin_user){
+                //     if($admin_user->hasRole('admin')){
+                //         $adminUser = $admin_user;
+                //     }
+                // }
+                $teamleader = $task->project->teamleader;
+                if($teamleader != null){
                     Taskmessagenotification::create([
-                        'user_id' => $adminUser->id,
+                        'user_id' => $teamleader->id,
                         'task_id' => $task->id,
                         'task_message_id' => $createdtaskmessage->id,  
                         'from_user_id' => $user->id,
@@ -269,8 +292,18 @@ class TaskController extends Controller
                     Log::info('error : there is no admins in the database- this error in the task controller - send message');
                     abort('error : there is no admins in the database');
                 }
+                // if($adminUser != null){
+                //     Taskmessagenotification::create([
+                //         'user_id' => $adminUser->id,
+                //         'task_id' => $task->id,
+                //         'task_message_id' => $createdtaskmessage->id,  
+                //         'from_user_id' => $user->id,
+                //     ]);
+                // }else{
+                //     Log::info('error : there is no admins in the database- this error in the task controller - send message');
+                //     abort('error : there is no admins in the database');
+                // }
             }
-
 
             TaskMessageSent::dispatch($task,$user,$message, $createdtaskmessageId);
         }else{
@@ -330,6 +363,9 @@ class TaskController extends Controller
                 }
             }
 
+            // notify the teamleader | the owner of this project 
+            $task->project->teamleader->notify(new TaskWaitingNotification($task));
+
             return back()->with('message', 'the task status has been updated');
 
         } else {
@@ -384,7 +420,7 @@ class TaskController extends Controller
         $user = User::find($authUserId);                // find the user that see the notification
         $task = Task::find($taskId);                    // find the task
 
-        if($user->id == $task->user_id || auth()->user()->hasRole('admin')){
+        if($user->id == $task->user_id || auth()->user()->hasRole('admin') || $user->id == $task->project->teamleader->id){
 
             // get all the records from the "messagenotifications" table that match the user id - notifications that realted to this user in this team  
             $taskMessagenotifications = $task->taskmessagenotifications->where('user_id','=', $authUserId);

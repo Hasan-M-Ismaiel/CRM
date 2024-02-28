@@ -46,13 +46,11 @@
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-        
         <!--for the create project multible steps-->
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css"></script>
-
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -63,7 +61,6 @@
 
         <!--for file pond-->
         <link href="https://unpkg.com/filepond@^4/dist/filepond.css" rel="stylesheet" />
-
 
         <title>Hello, world!</title>
         @vite(['resources/js/app.js', 'resources/css/app.css', 'resources/css/profile.css', 'resources/css/createProject.css', 'resources/sass/app.scss', 'resources/css/editProject.css', 'resources/css/radioButton.styl', 'resources/css/chat.css' ])
@@ -188,6 +185,7 @@
         </div>
 
         <script>
+            
             // user loged in id 
             window.userID = {{ auth()->id() }};
             // number of general notifications 
@@ -205,9 +203,24 @@
             // tasks ids for the loged in user to show in the header section - from what i remember 
             window.taskIds =  {!! auth()->user()->tasks()->where('user_id',auth()->id())->get()->pluck('id') !!};
             // check if the current user is the admin - then the number of ids is all the tasks in the database
-            window.checkIfAdmin = {!! auth()->user()->hasRole('admin') ? 'true' : 'false' ; !!}
+            window.checkIfAdmin = {!! auth()->user()->hasRole('admin') ? 'true' : 'false' ; !!};
+            window.checkIfTeamleader = {!! auth()->user()->teamleaderon->count()>0 ? 'true' : 'false' ; !!};
             if(window.checkIfAdmin){
                 window.taskIds =  {!! App\Models\Task::all()->pluck('id') !!};
+            }
+            if(window.checkIfTeamleader){
+                window.teamleadertaskIds =  <?php  $tasks = App\Models\Task::all(); $teamleaderTasks =collect(); foreach($tasks as $task){if(auth()->user()->id == $task->project->teamleader->id){$teamleaderTasks->push($task);} } if($teamleaderTasks->count()>0){ echo  $teamleaderTasks->pluck('id');} else {echo 'none';} ?>;
+                window.taskIdstemp = window.taskIds.concat(window.teamleadertaskIds);
+                //remove the duplication from the array 
+                let unique = [];
+                window.taskIdstemp.forEach(element => {
+                    if (!unique.includes(element)) {
+                        unique.push(element);
+                    }
+                });
+                window.taskIds=unique ;
+                // alert(window.taskIds);
+                // alert(window.userID);
             }
         </script>
 

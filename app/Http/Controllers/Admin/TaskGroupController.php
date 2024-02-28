@@ -18,6 +18,7 @@ class TaskGroupController extends Controller
     {
         $id = request()->projectId;
         $project = Project::find($id);
+        $this->authorize('create-group-tasks', $project);
         $users = $project->users()->get();
         return view('admin.taskGroups.create', [
             'users' => $users,
@@ -31,7 +32,11 @@ class TaskGroupController extends Controller
      */
     public function store(TaskGroupsStoreRequest $request)
     {
+        
         $project = Project::find($request->project);
+
+        $this->authorize('create-group-tasks', $project);
+
         $user_ids = $request->input('user_ids');
         $titles = $request->input('titles'); 
         $descriptions = $request->input('descriptions');

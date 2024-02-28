@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Project;
 use Illuminate\Http\Request;
 
 class CreatingTasksStatusesController extends Controller
@@ -12,6 +13,13 @@ class CreatingTasksStatusesController extends Controller
     public function __invoke(Request $request)
     {
         $project = $request->project;
-        return  view('admin.success_create_tasks',['project'=>$project]);
+
+        $project_ = Project::find($project);
+
+        if($project_->teamleader->id == auth()->user()->id || auth()->user()->hasRole('admin')){
+            return  view('admin.success_create_tasks',['project'=>$project]);
+        } else {
+            abort(404);
+        }
     }
 }
