@@ -155,13 +155,17 @@ window.projectIds.forEach(element => {
         var currentTime = time1.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
 
         if(e.user_id == window.userID){ // is the auth // for user experince you can comment this first line and add the message from the sender side that is faster to render the sender message
-            var newMessageFromHere = $('<div class="chat-message-right pb-4"> <div> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime+'</div> </div><div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div><div> '+ message+ '</div></div><div id="'+message_id+'"></div></div></div>');
+            var newMessageFromHere = $('<div class="chat-message-right pb-4"> <div class="ms-2"> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime+'</div> </div><div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div><div> '+ message+ '</div></div><div id="'+message_id+'"></div></div></div>');
         }else{
             var newMessageFromHere = $('<div class="chat-message-left pb-4"> <div> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime+'</div> </div><div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div><div> '+ message+ '</div></div><div id="'+message_id+'"></div></div></div>');
         }
 
         //append the message to UI
         $('#parentmessages').append(newMessageFromHere);
+
+        // for the scroll bar to be down
+        var messageBodyT = document.querySelector('#parentmessages');
+        messageBodyT.scrollTop = messageBodyT.scrollHeight - messageBodyT.clientHeight;
     })
     // listen if the users read the messages of this conversation
     .listen('MessageReaded',(e)=>{
@@ -246,6 +250,8 @@ window.taskIds.forEach(element => {
 
         //append the message to UI
         $('#parenttaskmessages').append(newMessageFromHereTask);
+
+        // for the scroll bar to be down
         var messageBody = document.querySelector('#parenttaskmessages');
         messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
     })

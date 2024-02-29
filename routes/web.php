@@ -102,6 +102,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('tasks', TaskController::class);
 
         // teams [resource] [send team message] [mark message as readed]
+        Route::get('teams/loadMoreMessages',[TeamController::class, 'loadMoreMessages'])->name('teams.loadMoreMessages');
         Route::post('teams/markMessagesAsReaded',[TeamController::class, 'markMessagesAsReaded'])->name('teams.markMessagesAsReaded');
         Route::post('teams/sendMessage',[TeamController::class, 'sendMessage'])->name('teams.sendMessage');
         Route::resource('teams', TeamController::class)->only('index','show')->name('teams.index', 'teams.show');

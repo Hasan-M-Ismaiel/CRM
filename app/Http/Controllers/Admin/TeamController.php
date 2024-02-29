@@ -46,9 +46,13 @@ class TeamController extends Controller
     {
         $this->authorize('view', $team);
 
+        $messages = Message::where('team_id', $team->id)->latest()->orderBy('id', 'ASC')->paginate(10);
+        $teamMessages = $messages->reverse()->values();
+
         // users that read the message
         return view('admin.teams.show', [
             'team' => $team,
+            'messages' =>$teamMessages,
         ]);
     }
 
@@ -88,6 +92,50 @@ class TeamController extends Controller
             //unauthorized
             abort(403);
         }
+
+    }
+
+    // load more old messages
+    public function loadMoreMessages()
+    {
+        $start = request()->input('start');
+        $team_id = request()->input('team_id');
+
+
+        $messages = Message::where('team_id', $team_id)
+                        ->latest()
+                        ->offset($start)
+                        ->limit(10)
+                        ->with('user')
+                        ->get();
+
+        $teamMessages = $messages->reverse()->values();
+
+        $userIds =$teamMessages->pluck('user_id');
+        $repeatedUserIds= collect();
+        foreach($userIds as $userId){
+            $user_= User::find($userId);
+            $repeatedUserIds->push($user_);
+        }
+
+        $images  = collect();
+        foreach($repeatedUserIds as $repeatedUserId){
+            if($repeatedUserId->profile && $repeatedUserId->profile->getFirstMediaUrl("profiles")){
+                $image= $repeatedUserId->profile->getFirstMediaUrl("profiles");
+                $images->push($image); 
+            } elseif($repeatedUserId->getFirstMediaUrl("users")){
+                $image= $repeatedUserId->getMedia("users")[0]->getUrl("thumb");
+                $images->push($image); 
+            }else{
+                $image= asset("images/avatar.png");
+                $images->push($image); 
+            }
+        }
+
+        return response()->json([
+            'data' => $teamMessages,
+            'dataImages' => $images,
+        ]);
 
     }
 
