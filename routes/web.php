@@ -93,6 +93,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('tasks/getSortedTasks',[TaskController::class, 'getSortedTasks'])->name('tasks.getSortedTasks');
         Route::post('tasks/markTaskMessagesAsReaded',[TaskController::class, 'markTaskMessagesAsReaded'])->name('tasks.markTaskMessagesAsReaded');
         Route::post('tasks/sendTaskMessage',[TaskController::class, 'sendTaskMessage'])->name('tasks.sendTaskMessage');
+        Route::get('tasks/loadMoreMessages',[TaskController::class, 'loadMoreMessages'])->name('tasks.loadMoreMessages');
         Route::get('tasks/showTaskChat/{task}',[TaskController::class, 'showTaskChat'])->name('tasks.showTaskChat');
         Route::get('tasks/showTasks',[TaskController::class, 'showTasks'])->name('tasks.showTasks');
         Route::post('tasks/remove',[TaskController::class, 'remove'])->name('tasks.remove');

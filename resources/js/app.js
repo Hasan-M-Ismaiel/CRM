@@ -246,6 +246,8 @@ window.taskIds.forEach(element => {
 
         //append the message to UI
         $('#parenttaskmessages').append(newMessageFromHereTask);
+        var messageBody = document.querySelector('#parenttaskmessages');
+        messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
     })
 
     // listen if the users read the messages of this conversation
