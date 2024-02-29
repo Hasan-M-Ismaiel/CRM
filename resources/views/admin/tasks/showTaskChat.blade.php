@@ -88,8 +88,6 @@
                             </div>
                             <!--content-->
                             <div class="position-relative">
-                                
-
                                 <!--new-->
                                 <div class="col-md-12">
                                     <div class="text-center">
@@ -100,7 +98,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <!--chat messages-->
                                 <div class="chat-messages p-4" id="parenttaskmessages" class="bg-image" 
                                         style="background-image: url('https://mdbootstrap.com/img/Photos/Others/images/76.jpg'); height: 100vh">
@@ -152,7 +149,6 @@
                                         @endforeach
                                     @endif
                                 </div>
-                                
                                 <!--place to sent-->
                                 <div class="flex-grow-0 py-3 px-4 border-top" style="background-image: linear-gradient(to left, rgba(255,0,0,0), #303c54);">
                                     <div class="input-group">
@@ -258,6 +254,9 @@
 
                             html += '<div class="chat-message-right pb-4"> <div class="ms-2"> <img src="'+data.dataImages[i]+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+inTime+'</div> </div> <div> <div class="flex-shrink-1  bg-primary text-white rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+data.data[i].user.name +'</div><div>'+ data.data[i].message+ '</div></div><div id="taskmessage-'+data.data[i].id+'"></div></div></div>';
                         }else{
+                            // alert(data.dataImages[1]);
+                            let date = new Date(data.data[i].created_at);
+                            var inTime = date.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
                             html += '<div class="chat-message-left pb-4"> <div> <img src="'+data.dataImages[i]+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+inTime+'</div> </div> <div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+data.data[i].user.name+'</div><div>'+ data.data[i].message+ '</div></div><div id="taskmessage-'+data.data[i].id+'"></div></div></div>';
                         }
                     }
@@ -273,5 +272,4 @@
         });
     }
 </script>
-
 @endsection
