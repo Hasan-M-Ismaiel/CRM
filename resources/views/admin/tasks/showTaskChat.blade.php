@@ -88,11 +88,24 @@
                             </div>
                             <!--content-->
                             <div class="position-relative">
+                                
+
+                                <!--new-->
+                                <div class="col-md-12">
+                                    <div class="text-center">
+                                        <div class="ajax_load" style="display: none">
+                                            <div class="spinner-grow text-success spinner-grow-md" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!--chat messages-->
                                 <div class="chat-messages p-4" id="parenttaskmessages" class="bg-image" 
                                         style="background-image: url('https://mdbootstrap.com/img/Photos/Others/images/76.jpg'); height: 100vh">
                                     @if($task->user && $task->taskmessages != null)
-                                        @foreach($task->taskmessages as $message)
+                                        @foreach($messages as $message)
                                             @if($message->user->id == auth()->user()->id)
                                             <!--sender-->
                                             <div class="chat-message-right pb-4">
@@ -113,8 +126,7 @@
                                                 </div>
 
                                                 <div>
-                                                    <!--name and message-->
-
+                                            <!--name and message-->
                                             @if($message->user->id == auth()->user()->id)
                                                 <div class="flex-shrink-1 bg-primary text-white rounded py-2 px-3 ml-3">
                                             @else
@@ -140,6 +152,7 @@
                                         @endforeach
                                     @endif
                                 </div>
+                                
                                 <!--place to sent-->
                                 <div class="flex-grow-0 py-3 px-4 border-top" style="background-image: linear-gradient(to left, rgba(255,0,0,0), #303c54);">
                                     <div class="input-group">
@@ -158,6 +171,8 @@
 
 <!--send message-->
 <script>
+    var messageBody = document.querySelector('#parenttaskmessages');
+    messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
     $('#send').on('click', function(){  
         
         // get the user image
@@ -194,11 +209,69 @@
                 task_id: '{{$task->id}}', // the task_id
             },
             success: function(output){
+                var messageBody = document.querySelector('#parenttaskmessages');
+                messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
+
                 // var newMessageFromHere = $('<div class="chat-message-right pb-4"> <div> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime+'</div> </div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div> '+ message+ '</div></div>');
                 // $('#parentmessages').append(newMessageFromHere);
             }
         });
     });
+</script>
+
+<!--get the oldest messages-->
+<script>
+    $(document).ready(function() {
+        var start = 10;
+        $('#parenttaskmessages').scroll(function() {
+            if ($(parenttaskmessages).scrollTop() == 0 ) {
+                loadData(start);
+                start = start + 10;
+            }
+        });
+    });
+
+    function loadData(start) {
+        //var start = 10;
+        alert('top');
+        $.ajax({
+            url: "{{ route('admin.tasks.loadMoreMessages') }}",
+            method: "GET",
+            data: {
+                start: start,
+                task_id: '{{$task->id}}'
+            },
+            dataType: "json",
+            beforeSend: function() {
+                $('.ajax_load').show();
+            },
+            success: function(data) {
+                if (data.data.length > 0) {
+                    alert(data.data[0].id)
+                    var html = '';
+                    for (var i = 0; i < data.data.length; i++) {
+                        // alert(data.data[0].user.name)
+                        if(data.data[i].user_id == window.userID){//userimage_task
+                            // alert(data.dataImages[1]);
+                            let date = new Date(data.data[i].created_at);
+                            var inTime = date.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
+
+                            html += '<div class="chat-message-right pb-4"> <div class="ms-2"> <img src="'+data.dataImages[i]+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+inTime+'</div> </div> <div> <div class="flex-shrink-1  bg-primary text-white rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+data.data[i].user.name +'</div><div>'+ data.data[i].message+ '</div></div><div id="taskmessage-'+data.data[i].id+'"></div></div></div>';
+                        }else{
+                            html += '<div class="chat-message-left pb-4"> <div> <img src="'+data.dataImages[i]+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+inTime+'</div> </div> <div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+data.data[i].user.name+'</div><div>'+ data.data[i].message+ '</div></div><div id="taskmessage-'+data.data[i].id+'"></div></div></div>';
+                        }
+                    }
+                    alert('after');
+                    //append data with fade in effect
+                    $('#parenttaskmessages').prepend(html);
+                    $('.ajax_load').hide();
+                } else {
+                    $('.ajax_load').show().html('No More Data Available');
+                    // $('.ajax_load').attr('disabled', true);
+                }
+            }
+        });
+    }
 </script>
 
 @endsection

@@ -16,7 +16,9 @@ use App\Notifications\TaskAssigned;
 use App\Notifications\TaskUnAssigned;
 use App\Notifications\TaskWaitingNotification;
 use App\Services\RenderTasksTableService;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 use function PHPUnit\Framework\throwException;
@@ -230,13 +232,93 @@ class TaskController extends Controller
     {
         $this->authorize('showTaskChat', $task);
 
-        
+        // $taskMessages = $task->taskmessages->take(-10);
+
+        $messages = TaskMessage::where('task_id', $task->id)->latest()->orderBy('id', 'ASC')->paginate(10);
+        $taskMessages = $messages->reverse()->values();
+        // dd($taskMessages);
 
         $users = User::all();
         return view('admin.tasks.showTaskChat', [
             'task' => $task,
             'users' => $users,
+            'messages' => $taskMessages,
         ]);
+    }
+
+    public function loadMoreMessages()
+    {
+        $start = request()->input('start');
+        $task_id = request()->input('task_id');
+
+
+        $messages = TaskMessage::where('task_id', $task_id)
+                        ->latest()
+                        // ->orderBy('id', 'ASC')
+                        ->offset($start)
+                        ->limit(10)
+                        ->with('user')
+                        ->get();
+
+        $taskMessages = $messages->reverse()->values();
+
+        $userIds =$taskMessages->pluck('user_id');
+        $repeatedUserIds= collect();
+        foreach($userIds as $userId){
+            $user_= User::find($userId);
+            $repeatedUserIds->push($user_);
+        }
+
+        $images  = collect();
+        foreach($repeatedUserIds as $repeatedUserId){
+            if($repeatedUserId->profile && $repeatedUserId->profile->getFirstMediaUrl("profiles")){
+                $image= $repeatedUserId->profile->getFirstMediaUrl("profiles");
+                $images->push($image); 
+            } elseif($repeatedUserId->getFirstMediaUrl("users")){
+                $image= $repeatedUserId->getMedia("users")[0]->getUrl("thumb");
+                $images->push($image); 
+            }else{
+                $image= asset("images/avatar.png");
+                $images->push($image); 
+            }
+        }
+
+        // dd($images);
+
+        // $taskmessagesSenders = User::find($userIds);
+        // dd($taskmessagesSenders);
+
+        // $userIds = DB::table('task_messages')
+        //     ->select('user_id')
+        //     ->where('task_id', $task_id)
+        //     ->get();
+        // // dd($userIds->pluck('user_id'));
+        // $s = $userIds->pluck('user_id');
+        // $taskmessagesSenders = User::find($s);
+        // dd($taskmessagesSenders);
+
+        // dd($taskMessages);
+        // $data = Post::orderBy('id', 'ASC')
+        //     ->offset($start)
+        //     ->limit(10)
+        //     ->get();
+
+        // get the image url for the user 
+        // if ($user->profile && $user->profile->getFirstMediaUrl("profiles")){
+        // $userImageRoute = $user->profile->getFirstMediaUrl("profiles");
+        // } elseif ($user->getFirstMediaUrl("users")) {
+        // $userImageRoute = $user->getMedia("users")->first()->getUrl("thumb");
+        // }else{
+        // $userImageRoute = asset('images/avatar.png');
+        // } 
+
+
+        return response()->json([
+            'data' => $taskMessages,
+            'dataImages' => $images,
+            // 'next' => $start + 10
+        ]);
+
     }
 
     // authorized by the own of this task chat and the admin role [here should be the team leader of the project that this task belongs to ] 
