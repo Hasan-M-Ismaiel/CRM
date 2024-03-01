@@ -141,6 +141,7 @@
                             <fieldset>
                                 <div class="form-card">
                                     <div class="card border border-success rounded p-4">
+                                        <!--add users-->
                                         <div class="row">
                                             <div class="col-7">
                                                 <h2 class="fs-title">Add User:</h2>
@@ -203,6 +204,25 @@
                                         <div id="teamleaderTable">
                                         </div>
                                     </div>
+                                    <!--adding teamleader-->
+                                    <div class=" card border border-success rounded mt-3 p-4">
+                                        <div class="row">
+                                            <div class="col-7">
+                                                <h2 class="fs-title">Add Name for the Team:</h2>
+                                            </div>
+                                            <div class="col-5">
+                                                <h2 class="steps">optional</h2>
+                                            </div>
+                                        </div>
+                                        <!-- <x-users-matched-table :users="$users"  /> -->
+                                        <div>
+                                            <div class="form-group mt-3">
+                                                <label for="teamname"><strong>Team Name</strong></label>
+                                                <input type="text" name="teamname" class="form-control" id="teamname" placeholder="add the name for the team" value="{{ old('teamname') }}">
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                                 <input id="createproject" type="submit" type="button" class="next action-button" />
                                 <!-- <button type="submit" class="btn btn-primary mt-5">Create</button> -->

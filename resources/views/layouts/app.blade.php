@@ -66,7 +66,8 @@
         @vite(['resources/js/app.js', 'resources/css/app.css', 'resources/css/profile.css', 'resources/css/createProject.css', 'resources/sass/app.scss', 'resources/css/editProject.css', 'resources/css/radioButton.styl', 'resources/css/chat.css' ])
 
     </head>
-    <body style onload="loadteams();">
+    <body style onload="loadteams();" class="area">
+    
         @include('partials.menu')
         <div class="wrapper d-flex flex-column min-vh-100 bg-light">
             @include('partials.header')

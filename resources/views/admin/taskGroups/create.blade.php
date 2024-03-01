@@ -62,14 +62,52 @@
                                                         </div>
                                                         <!--input button-->
                                                         <div class="form-group mt-4">
-                                                            <label for="user_id"><strong>Users</strong></label>
-                                                            <select name="user_ids[]" id="project_id" class="form-control">
+                                                            <div id="content-user" class="mt-3">
+                                                                <div class="mb-3"><strong>Select user:</strong></div>
+                                                                @if($project->users->count()>0)
+                                                                    <div class="row text-center">
+                                                                    @foreach ($project->users as $user)
+                                                                        <div class="col-md-6">
+                                                                            <div class="avatar avatar-md mt-2">
+                                                                                <label class="labelexpanded_">
+                                                                                    <input type="radio" class="m-1" id="{{$user->id}}" name="user_ids[]" value="{{$user->id}}">
+                                                                                        <div class="radio-btns_ rounded-circle border-1">
+                                                                                            @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
+                                                                                            <img src="{{$user->profile->getFirstMediaUrl('profiles')}}" alt="DP"  class="avatar-img  shadow ">
+                                                                                            @elseif($user->getFirstMediaUrl("users"))
+                                                                                            <img src="{{$user->getMedia('users')[0]->getUrl('thumb')}}" alt="DP"  class="avatar-img  shadow ">
+                                                                                            @else
+                                                                                            <img src="{{asset('images/avatar.png')}}" alt="DP"  class="avatar-img  shadow ">
+                                                                                            @endif
+                                                                                        </div>
+                                                                                    </input>
+                                                                                </label>
+                                                                            </div>
+                                                                            <label for="user_ids[]" class="ms-2"> {{$user->name}} </label><br>
+                                                                        </div>
+                                                                        @if ($loop->iteration % 2 == 0)
+                                                                        </div>
+                                                                        <div class="row text-center">
+                                                                        @endif
+                                                                    @endforeach
+                                                                    </div>
+                                                                @else
+                                                                    <a href="' . route('admin.projects.assignCreate', $project->id) . '">assign</a> users to the project first 
+                                                                @endif
+                                                            </div>
+
+
+                                                            <!-- <select name="user_ids[]" id="project_id" class="form-control">
                                                                 <option value="" selected>Choose User ...</option>
                                                                 @foreach ( $users as $user )
                                                                     <option value="{{$user->id}}" >{{ $user->name }}</option>
                                                                 @endforeach
-                                                            </select>
+                                                            </select> -->
+
+
                                                         </div>
+
+
                                                         <!--input button-->
                                                         <div class="mt-3">
                                                             <div class="row">
@@ -110,7 +148,7 @@
 </div>
 
 <!--radio selection button-->
-<!-- <style>
+<style>
     .labelexpanded_ > input {
         display: none;
     }
@@ -124,7 +162,7 @@
         cursor: pointer;
         background-color: #eaeaea;
     }
-</style> -->
+</style>
 
 <!--for adding/deleting task cards-->
 <script type="text/javascript">

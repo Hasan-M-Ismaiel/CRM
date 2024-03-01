@@ -35,6 +35,7 @@ class UpdateProjectRequest extends FormRequest
             'teamleader_id' => "sometimes",
             "new_skills"    => "array",
             "new_skills.*"  => "required|string|distinct|min:2|unique:skills,name",
+            'name' =>'string',
         ];
     }
 }
