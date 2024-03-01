@@ -295,6 +295,23 @@
                                         </table>
                                     </div>
                                 </div>
+                                <div class=" card border border-success rounded mt-3 p-4">
+                                        <div class="row">
+                                            <div class="col-7">
+                                                <h2 class="fs-title">Alter the Name for the Team:</h2>
+                                            </div>
+                                            <div class="col-5">
+                                                <h2 class="steps">optional</h2>
+                                            </div>
+                                        </div>
+                                        <!-- <x-users-matched-table :users="$users"  /> -->
+                                        <div>
+                                            <div class="form-group mt-5">
+                                                <label for="teamname"><strong>Team Name</strong></label>
+                                                <input type="text" name="teamname" class="form-control" id="teamname" placeholder="add the name for the team" value="{{$project->team->name}}">
+                                            </div>
+                                        </div>
+                                    </div>
                             </fieldset>
                             <!--update status and click submit button-->
                             <fieldset class="mt-5">

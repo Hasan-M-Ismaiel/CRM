@@ -70,12 +70,21 @@ class ProjectController extends Controller
             // if( $assignedUsers !=null && sizeof($assignedUsers)>0){
             $project = Project::create($request->validated());
 
-            //create the team Group that belongs to this project 
-            $team = Team::create([
-                // here we should add field as user_id - refer to the teamleader - but it is fine becasue you can get the teamleader [$team->project->teamleader]
-                'project_id' => $project->id,
-                'name' => 'team-'.$project->id,   // this is by default
-            ]);
+            if(request()->input('teamname')){
+                //create the team Group that belongs to this project 
+                $team = Team::create([
+                    // here we should add field as user_id - refer to the teamleader - but it is fine becasue you can get the teamleader [$team->project->teamleader]
+                    'project_id' => $project->id,
+                    'name' => request()->input('teamname'),   
+                ]);
+            }else{
+                 //create the team Group that belongs to this project 
+                 $team = Team::create([
+                    // here we should add field as user_id - refer to the teamleader - but it is fine becasue you can get the teamleader [$team->project->teamleader]
+                    'project_id' => $project->id,
+                    'name' => 'team-'.$project->id,   // this is by default
+                ]);
+            }
 
             // if ($request->hasFile('image')) {
             //     $team->addMediaFromRequest('image')->toMediaCollection('teams');
@@ -197,6 +206,11 @@ class ProjectController extends Controller
 
         // if the editor was the teamleader
         if($request->title != null && $request->description != null && $request->deadline != null && $request->client_id != null && $request->teamleader_id != null){
+            if(request()->input('teamname')){
+                $projectTeam = $project->team;
+                $projectTeam->name=request()->input('teamname');
+                $projectTeam->save();
+            }
             $project->update([
                 'title'       => $request->validated('title'),
                 'description' => $request->validated('description'),

@@ -36,6 +36,7 @@ class ProjectRequest extends FormRequest
             "new_skills"    => "array",
             "new_skills.*"  => "required|string|distinct|min:2|unique:skills,name", //least 2 characters
             "teamleader_id" => "required",
+            "name" => "string",
             //check those
             // "assigned_users"    => "required|array",
             // "assigned_users.*"  => "required|string|distinct|min:2", //least 2 characters
