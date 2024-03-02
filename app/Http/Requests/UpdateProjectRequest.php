@@ -29,7 +29,7 @@ class UpdateProjectRequest extends FormRequest
         return [
             'title'         => ['sometimes', 'string', 'max:100'],
             'description'   => ['sometimes', 'string', 'max:255'],
-            'deadline'      => ['sometimes', 'date'],   
+            'deadline'      => 'sometimes|date|after:now',   
             // 'user_id'       => ['sometimes', Rule::in($users)],
             'client_id'     => ['sometimes', Rule::in($clients)],
             'teamleader_id' => "sometimes",

@@ -58,6 +58,25 @@ class TaskWaitingNotification extends Notification implements ShouldBroadcast, S
         ];
     }
 
+    /**
+     * Get the mail representation of the notification.
+     */
+    public function toMail(object $notifiable): MailMessage
+    {
+
+        $url = url('/admin/tasks/'.$this->task->id);
+
+        return (new MailMessage)
+                    ->greeting('Hello!')
+                    ->line('the Task - '. $this->task->title .' - from project -'. $this->task->project->title .'- is waiting you to finish it out!')
+                    ->line('it was taken by the user:'. $this->task->user->name )
+                    ->line('by mark the task as completed, the task owner will be notifyed automatically')
+                    ->line('please view is the task to check if it was done correctly and make it as completed.')
+                    ->lineIf($this->task->title, "starts at: {$this->task->created_at}")
+                    // ->line("deadline at: {$this->task->created_at}")
+                    ->action('View Task', $url)
+                    ->line('The Time is running !');
+    }
 
     public function toBroadcast(object $notifiable): BroadcastMessage
     {
@@ -84,26 +103,6 @@ class TaskWaitingNotification extends Notification implements ShouldBroadcast, S
             'project_manager_image' => $image,               //comment it - because the message will be recived by the admin    //
             'link_to_task' => $linkeToTask,
         ]);
-    }
-
-    /**
-     * Get the mail representation of the notification.
-     */
-    public function toMail(object $notifiable): MailMessage
-    {
-
-        $url = url('/admin/tasks/'.$this->task->id);
-
-        return (new MailMessage)
-                    ->greeting('Hello!')
-                    ->line('the Task - '. $this->task->title .' - from project -'. $this->task->project->title .'- is waiting you to finish it out!')
-                    ->line('it was taken by the user:'. $this->task->user->name )
-                    ->line('by mark the task as completed, the task owner will be notifyed automatically')
-                    ->line('please view is the task to check if it was done correctly and make it as completed.')
-                    ->lineIf($this->task->title, "starts at: {$this->task->created_at}")
-                    // ->line("deadline at: {$this->task->created_at}")
-                    ->action('View Task', $url)
-                    ->line('The Time is running !');
     }
 
 }

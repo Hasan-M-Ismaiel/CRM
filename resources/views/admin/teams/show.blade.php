@@ -13,7 +13,7 @@
                             <!--the header-->
                             <div class="py-2 px-4 border-bottom d-none d-lg-block text-white" style="background-image: linear-gradient(to left,#303c54 , #303c54);">
                                 <div class="row ">
-                                    <div class="col-1 ">
+                                    <div class="col-1 text-center pt-2">
                                         <img src="{{ asset('images/team.jpg') }}" class="rounded-circle mr-1" alt="Sharon Lessman" width="40" height="40">
                                     </div>
                                     <strong class="col-2  text-center p-3">
@@ -57,7 +57,7 @@
                             </div>
                             <!--content-->
                             <div class="position-relative">
-                                <!--new-->
+                                <!--older messages-->
                                 <div class="col-md-12">
                                     <div class="text-center">
                                         <div class="ajax_load" style="display: none">
@@ -69,7 +69,7 @@
                                 </div>
                                 <!--chat messages-->
                                 <div class="chat-messages p-4" id="parentmessages"class="bg-image" 
-                                        style="background-image: url('https://mdbootstrap.com/img/Photos/Others/images/76.jpg'); height: 100vh">
+                                        style="background-image:url('{{asset('assets/brand/teamwork.jpg')}}'); height: 100vh">
                                     @if($team->project->users()->count() > 0)
                                         @foreach($messages as $message)
                                             <!-- the full message-->
@@ -89,7 +89,7 @@
                                                     @else 
                                                     <img src="{{ asset('images/avatar.png') }}" class="rounded-circle mr-1 border border-success" width="40" height="40" />
                                                     @endif
-                                                    <div class="text-muted small text-nowrap mt-2">{{$message->created_at->format('g:i a')}}</div>
+                                                    <div class="text-white small text-nowrap mt-2">{{$message->created_at->format('g:i a')}}</div>
                                                 </div>
                                                 
                                                 <div>
@@ -192,7 +192,7 @@
 
     function loadData(start) {
         //var start = 10;
-        alert('top');
+        // alert('top');
         $.ajax({
             url: "{{ route('admin.teams.loadMoreMessages') }}",
             method: "GET",
@@ -206,7 +206,7 @@
             },
             success: function(data) {
                 if (data.data.length > 0) {
-                    alert(data.data[0].id)
+                    // alert(data.data[0].id)
                     var html = '';
                     for (var i = 0; i < data.data.length; i++) {
                         // alert(data.data[0].user.name)
@@ -214,19 +214,19 @@
                             var dateTeam = new Date(data.data[i].created_at);
                             var inTimeTeam = dateTeam.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
                             
-                            alert(data.data[i].created_at);
-                            alert(inTimeTeam);
-                            html += '<div class="chat-message-right pb-4"> <div class="ms-2"> <img src="'+data.dataImages[i]+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+inTimeTeam+'</div> </div> <div> <div class="flex-shrink-1  bg-primary text-white rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+data.data[i].user.name +'</div><div>'+ data.data[i].message+ '</div></div><div id="taskmessage-'+data.data[i].id+'"></div></div></div>';
+                            // alert(data.data[i].created_at);
+                            // alert(inTimeTeam);
+                            html += '<div class="chat-message-right pb-4"> <div class="ms-2"> <img src="'+data.dataImages[i]+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-white small text-nowrap mt-2">'+inTimeTeam+'</div> </div> <div> <div class="flex-shrink-1  bg-primary text-white rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+data.data[i].user.name +'</div><div>'+ data.data[i].message+ '</div></div><div id="taskmessage-'+data.data[i].id+'"></div></div></div>';
                         }else{
                             var dateTeam = new Date(data.data[i].created_at);
                             var inTimeTeam = dateTeam.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
                             
-                            alert(data.data[i].created_at);
-                            alert(inTimeTeam);
-                            html += '<div class="chat-message-left pb-4"> <div> <img src="'+data.dataImages[i]+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+inTimeTeam+'</div> </div> <div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+data.data[i].user.name+'</div><div>'+ data.data[i].message+ '</div></div><div id="taskmessage-'+data.data[i].id+'"></div></div></div>';
+                            // alert(data.data[i].created_at);
+                            // alert(inTimeTeam);
+                            html += '<div class="chat-message-left pb-4"> <div> <img src="'+data.dataImages[i]+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-white small text-nowrap mt-2">'+inTimeTeam+'</div> </div> <div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+data.data[i].user.name+'</div><div>'+ data.data[i].message+ '</div></div><div id="taskmessage-'+data.data[i].id+'"></div></div></div>';
                         }
                     }
-                    alert('after');
+                    // alert('after');
                     //append data with fade in effect
                     $('#parentmessages').prepend(html);
                     $('.ajax_load').hide();

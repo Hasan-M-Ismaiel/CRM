@@ -3,7 +3,6 @@
 namespace App\Notifications;
 
 use App\Models\Project;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -12,27 +11,31 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 
-class ProjectUnAssigned extends Notification implements ShouldBroadcast, ShouldQueue
+class TaskDeletedNotification extends Notification implements ShouldBroadcast, ShouldQueue
 {
     use Queueable;
 
-    protected $project;
+    protected $taskTitle;
+    protected $taskProject;
     /**
      * Create a new notification instance.
      */
-    public function __construct(Project $project)
+    public function __construct(String $taskTitle, Project $taskProject)
     {
-        $this->project = $project;
+        $this->taskTitle = $taskTitle;
+        $this->taskProject = $taskProject;
     }
+
 
     public function viaConnections(): array
     {
         return [
-            'database' => 'database',
             'mail' => 'database',
+            'database' => 'database',
             'broadcast' => 'sync',
         ];
     }
+
 
     /**
      * Get the notification's delivery channels.
@@ -50,23 +53,28 @@ class ProjectUnAssigned extends Notification implements ShouldBroadcast, ShouldQ
     public function toDatabase(object $notifiable)
     {
         return [
-            'project_id' => $this->project->id,
-            'project_title' => $this->project->title,
+            'task_title' => $this->taskTitle,
+            'task_project_title' => $this->taskProject->title,
+            'task_project_id' => $this->taskProject->id,
         ];
     }
 
-    
+
+    /**
+     * Get the mail representation of the notification.
+     */
     public function toMail(object $notifiable): MailMessage
     {
-        $projectTitle = $this->project->title;
-        $unassignTime = Carbon::now();
+        $taskTitle = $this->taskTitle;
+        $projectTitle = $this->taskProject->title;
+        $url = url('/admin/projects/'.$this->taskProject->id);
         return (new MailMessage)
                     ->greeting('Hello!')
-                    ->line("Now you are out of this project's team: {$projectTitle}.")
-                    ->line("at:{$unassignTime->toDateTimeString()}")
-                    ->line('Wait for another projects to be in!');
+                    ->line("the task that assined to you , have been deleted : {$taskTitle}")
+                    ->line("from the project : {$projectTitle}")
+                    ->line('be a ware what is happening!')
+                    ->line("check the project here : {$url}");
     }
-
 
     public function toBroadcast(object $notifiable): BroadcastMessage
     {
@@ -81,12 +89,15 @@ class ProjectUnAssigned extends Notification implements ShouldBroadcast, ShouldQ
             $image =  asset('images/avatar.png');
         }
 
+        $linkeToProject = route('admin.projects.show', $this->taskProject->id);
+
         return new BroadcastMessage([
-            'notification_type' => 'ProjectUnAssigned',
+            'notification_type' => 'TaskDeleted',
             'notification_id' => $notifiable->unreadNotifications()->latest()->first()->id,
-            'project_title' => $this->project->title,
+            'task_title' => $this->taskTitle,
             'project_manager_name' => Auth::user()->name,
             'project_manager_image' => $image,
+            'link_to_project' => $linkeToProject,
         ]);
     }
 }

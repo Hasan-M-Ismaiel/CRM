@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
+use App\Models\Project;
+use App\Models\Skill;
+use App\Models\Task;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -23,6 +28,45 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $users = User::all();
+        $numberofClosedTasks = array();
+        $usersIds = array();
+
+        foreach ($users as $user){
+            array_push($numberofClosedTasks, $user->numberOfClosedTasks);
+            array_push($usersIds, $user->id);
+        }
+
+        $topFourUsers=collect();
+
+        for($i=0; $i<4 ; $i++){
+            $maxs = array_keys($numberofClosedTasks, max($numberofClosedTasks));
+            $bestUser = User::find($usersIds[$maxs[0]]);
+
+            $topFourUsers->push($bestUser);
+            // those to remove the previouse element from the array
+            unset($numberofClosedTasks[$maxs[0]]);
+            unset($usersIds[$maxs[0]]);
+        }
+        
+        $taskCompletePercentage =  Task::taskCompletePercentage();
+        $projectCompletePercentage =  Project::projectCompletePercentage();
+
+
+        $users = User::all();
+        $projects = Project::all();
+        $skills = Skill::all();
+        $clients = Client::all();
+        $tasks = Task::all();
+        return view('home', [
+            'users' => $users,
+            'projects' => $projects,
+            'skills' => $skills,
+            'clients' => $clients,
+            'tasks' => $tasks,
+            'topFourUsers' => $topFourUsers,
+            'taskCompletePercentage' => round($taskCompletePercentage) ,
+            'projectCompletePercentage' => round($projectCompletePercentage) ,
+        ]);
     }
 }

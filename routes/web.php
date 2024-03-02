@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\StatusMessagesController;
 use App\Http\Controllers\Admin\TaskGroupController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\TeamManagerController;
+use App\Http\Controllers\Admin\TodoController;
 use App\Http\Controllers\Admin\UploadController;
 use App\Http\Controllers\CreatingProjectStatusesController;
 use App\Http\Controllers\CreatingTasksStatusesController;
@@ -55,6 +56,11 @@ Route::middleware(['auth'])->group(function () {
             //success views - [creating projects]
             Route::get('success_create_project', CreatingProjectStatusesController::class)->name('success_create_project.status');
         });
+
+
+        // get the to do list for the user
+        Route::post('todos/remove', [TodoController::class,'remove'])->name('todos.remove');
+        Route::post('todos/updateToDos', [TodoController::class,'updateToDos'])->name('todos.updateToDos');
 
 
         //success views - [creating Tasks]

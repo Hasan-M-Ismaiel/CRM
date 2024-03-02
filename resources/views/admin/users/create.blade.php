@@ -131,6 +131,7 @@
     </div>
 </div>
 
+<!--adder for new skills-->
 <script type="text/javascript">
     $("#rowAdder").click(function () {
         newRowAdd =

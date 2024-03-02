@@ -109,6 +109,11 @@ class User extends Authenticatable implements HasMedia
         return $this->hasMany(Project::class, 'teamleader_id');
     }
 
+    public function todos()
+    {
+        return $this->hasMany(Todo::class);
+    }
+
     protected function numberOfAssignedProjects(): Attribute
     {
         $numeberOfAssignedProjects = $this->projects()->count();

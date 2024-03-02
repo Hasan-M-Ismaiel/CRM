@@ -56,6 +56,20 @@ class TaskUnAssigned extends Notification implements ShouldBroadcast, ShouldQueu
         ];
     }
 
+    public function toMail(object $notifiable): MailMessage
+    {
+        $taskTitle = $this->task->title;
+        $projectTitle = $this->task->project->title;
+        $url = url('/admin/projects/'.$this->task->project->id);
+        $unassignTime = Carbon::now();
+        return (new MailMessage)
+                    ->greeting('Hello!')
+                    ->line("The task: {$taskTitle} was removed from your  duties.")
+                    ->line("in the project: {$projectTitle} at:{$unassignTime->toDateTimeString()}")
+                    ->action('View Project', $url)
+                    ->line('Wait for another task in this project soon!');
+    }
+
     public function toBroadcast(object $notifiable): BroadcastMessage
     {
         sleep(10);
@@ -81,19 +95,5 @@ class TaskUnAssigned extends Notification implements ShouldBroadcast, ShouldQueu
             'project_manager_image' => $image,
             'link_to_task' => $linkeToProject,
         ]);
-    }
-    
-    public function toMail(object $notifiable): MailMessage
-    {
-        $taskTitle = $this->task->title;
-        $projectTitle = $this->task->project->title;
-        $url = url('/admin/projects/'.$this->task->project->id);
-        $unassignTime = Carbon::now();
-        return (new MailMessage)
-                    ->greeting('Hello!')
-                    ->line("The task: {$taskTitle} was removed from your  duties.")
-                    ->line("in the project: {$projectTitle} at:{$unassignTime->toDateTimeString()}")
-                    ->action('View Project', $url)
-                    ->line('Wait for another task in this project soon!');
     }
 }

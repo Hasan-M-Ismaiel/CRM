@@ -219,10 +219,24 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        $this->authorize('delete');
+        $this->authorize('delete', $user);
 
+        // $user->todos()->delete();
+        // $user->projects()->detach();
+        // $user->skills()->detach();
+
+        // foreach($user->tasks as $task){
+        //     $task->update([
+        //         'user_id' => null
+        //     ]);
+        // }
+        
         $user->delete();
-        return redirect()->route('admin.users.index')->with('message','the user has been deleted successfully');
+        if($user->tasks->count()>0){
+            return redirect()->route('admin.users.index')->with('message','the user has been deleted successfully But now, there are tasks without user, please assign users');
+        }else{
+            return redirect()->route('admin.users.index')->with('message','the user has been deleted successfully with out any effected tasks');
+        }
     }
 
     public function getSortedUsers ()
