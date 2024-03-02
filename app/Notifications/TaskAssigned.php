@@ -65,6 +65,21 @@ class TaskAssigned extends Notification implements ShouldBroadcast, ShouldQueue
         ];
     }
 
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        $url = url('/admin/tasks/'.$this->task->id);
+
+        return (new MailMessage)
+                    ->greeting('Hello!')
+                    ->line('New task is waiting to complete!')
+                    ->line($this->task->title)
+                    ->lineIf($this->task->title, "starts at: {$this->task->created_at}")
+                    ->line("deadline at: {$this->task->created_at}")
+                    ->action('View Task', $url)
+                    ->line('The Time is running !');
+    }
+
     public function toBroadcast(object $notifiable): BroadcastMessage
     {
         sleep(10);
@@ -89,26 +104,5 @@ class TaskAssigned extends Notification implements ShouldBroadcast, ShouldQueue
             'project_manager_image' => $image,
             'link_to_task' => $linkeToTask,
         ]);
-    }
-
-    // public function broadcastOn(): Channel
-    // {
-    //     dd('hit broadcastOn');
-    //     return new PrivateChannel('App.Models.User.'. $this->notifiable->id);
-    // }
-
-
-    public function toMail(object $notifiable): MailMessage
-    {
-        $url = url('/admin/tasks/'.$this->task->id);
-
-        return (new MailMessage)
-                    ->greeting('Hello!')
-                    ->line('New task is waiting to complete!')
-                    ->line($this->task->title)
-                    ->lineIf($this->task->title, "starts at: {$this->task->created_at}")
-                    ->line("deadline at: {$this->task->created_at}")
-                    ->action('View Task', $url)
-                    ->line('The Time is running !');
     }
 }

@@ -12,19 +12,18 @@
                                 <div class="card">
                                     <div class="card-body cardParentEditClass">
                                         @can('task_edit')
-                                        <div class="x-project-card row">
-                                            <div><a class="x-task-card text-secondary btn p-0" style="text-decoration: none;" href="{{ route('admin.projects.edit', $project) }}">Edit</a></div>
-                                            <div><a class="x-task-card text-secondary btn p-0" style="text-decoration: none;"  onclick="if (confirm('Are you sure?') == true) {
-                                                                                                                                    document.getElementById('delete-item-{{$project->id}}').submit();
-                                                                                                                                    event.preventDefault();
-                                                                                                                                    } else {
-                                                                                                                                        return;
-                                                                                                                                    }">Delete</a></div>
-                                            <div><a class="x-task-card text-secondary btn p-0" style="text-decoration: none;" href="{{ route('admin.taskGroups.create', ['projectId'=> $project->id]) }}">Add Tasks</a></div>
-                                            <div><a class="x-task-card text-secondary btn p-0" style="text-decoration: none;" href="{{ route('admin.projects.assignCreate', $project->id) }}">Assign Users</a></div>
-                                        </div>
+                                            <div class="x-project-card row">
+                                                <div><a class="x-task-card text-secondary btn p-0" style="text-decoration: none;" href="{{ route('admin.projects.edit', $project) }}">Edit</a></div>
+                                                <div><a class="x-task-card text-secondary btn p-0" style="text-decoration: none;"  onclick="if (confirm('Are you sure?') == true) {
+                                                                                                                                        document.getElementById('delete-item-{{$project->id}}').submit();
+                                                                                                                                        event.preventDefault();
+                                                                                                                                        } else {
+                                                                                                                                            return;
+                                                                                                                                        }">Delete</a></div>
+                                                <div><a class="x-task-card text-secondary btn p-0" style="text-decoration: none;" href="{{ route('admin.taskGroups.create', ['projectId'=> $project->id]) }}">Add Tasks</a></div>
+                                                <div><a class="x-task-card text-secondary btn p-0" style="text-decoration: none;" href="{{ route('admin.projects.assignCreate', $project->id) }}">Assign Users</a></div>
+                                            </div>
                                         @endcan
-
                                         <!--this for the deletion-->
                                         <form id="delete-item-{{$project->id}}" action="{{ route('admin.projects.destroy', $project->id) }}" class="d-none" method="POST">
                                             @csrf
@@ -35,12 +34,24 @@
                                         <x-project-status :status="$project->status" />
                                         <span class="border-start border-3 border-primary ps-2 "> deadLine: {{ $project->deadline }}</span>
                                         @can('client_show')
-                                        <br><strong>owner:</strong> <a href="{{ route('admin.clients.show', $project->client->id) }}" style="text-decoration: none;">{{ $project->client->name }} </a>@endcan
+                                            <br><strong>owner:</strong> 
+                                            <a href="{{ route('admin.clients.show', $project->client->id) }}" style="text-decoration: none;">{{ $project->client->name }} </a>
+                                        @endcan
                                         <br><span class="text-muted h6 col">Created at <time>{{ $project->created_at->diffForHumans() }}</time></span>
                                         <br>
                                         <br>
                                         <span># of tasks <span id="number_of_tasks" class="badge bg-danger">{{ $project->tasks->count()}}</span></span>
+                                        
                                         <hr class="shadow-sm mb-1">
+                                        
+                                        <!--progress bar-->
+                                        <div class="progress blue">
+                                            <div class="progress-bar" style="width:{{$project->projectCompletePercent}}%; background:#1a4966;">
+                                                <div class="progress-value">{{$project->projectCompletePercent}}%</div>
+                                            </div>
+                                        </div>
+
+                                        <!--description | skills | users -->
                                         <p class="card-text my-2">
                                             <!--description-->
                                             <div class="container ">
@@ -142,6 +153,7 @@
                                             </div>
                                         </p>
                                     </div>
+                                    <!--tasks-->
                                     <div class="ms-2">
                                         @if($project->tasks->count()>0)
                                             @foreach($project->tasks as $task)
@@ -197,13 +209,13 @@
                                                 </div>
                                             @endforeach
                                         @else
-                                        <div class="card border-secondary mb-3 shadow-lg p-3 mb-5 bg-body rounded" style="max-width: 18rem;">
-                                            <div class="card-header">Tasks</div>
-                                            <div class="card-body text-secondary">
-                                                <h5 class="card-title">There is no tasks</h5>
-                                                @can('task_create')<p class="card-text">click <a href="{{ route('admin.taskGroups.create', ['projectId'=> $project->id]) }}">here</a> to add new tasks.</p>@endcan
+                                            <div class="card border-secondary mb-3 shadow-lg p-3 mb-5 bg-body rounded" style="max-width: 18rem;">
+                                                <div class="card-header">Tasks</div>
+                                                <div class="card-body text-secondary">
+                                                    <h5 class="card-title">There is no tasks</h5>
+                                                    @can('task_create')<p class="card-text">click <a href="{{ route('admin.taskGroups.create', ['projectId'=> $project->id]) }}">here</a> to add new tasks.</p>@endcan
+                                                </div>
                                             </div>
-                                        </div>
                                         @endif
                                     </div>
                                 </div>
@@ -215,6 +227,9 @@
         </div>
     </div>
 </div>
+
+
+<!--delete task | mark task as accepted-->
 <script>
     function deleteTask(taskId){
         numberOfTasks = {!! $project->tasks->count() !!};

@@ -31,12 +31,12 @@
                             <!--project information-->
                             <fieldset class="mt-5">
                                 <div class="form-card border px-3  pb-3 border-success rounded">
-                                    <div class="row border px-2 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
+                                    <div class="row px-2 pb-2 pt-3 rounded" >
                                         <div class="col-7">
                                             <h2 class="fs-title">Project Information:</h2>
                                         </div>
                                         <div class="col-5">
-                                            <h2 class="steps">Step 1 - 5</h2>
+                                            <h2 class="steps">Step 1 - 6</h2>
                                         </div>
                                     </div>
                                     <label class="fieldlabels mt-3" for="title">Title:</label>
@@ -63,12 +63,12 @@
                             <!--skills-->
                             <fieldset class="mt-5">
                                 <div class="form-card border px-3  pb-3 border-success rounded">
-                                    <div class="row border px-2 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
+                                    <div class="row px-2 pb-2 pt-3 rounded">
                                         <div class="col-7">
                                             <h2 class="fs-title">Alter required Skills:</h2>
                                         </div>
                                         <div class="col-5">
-                                            <h2 class="steps">Step 2 - 5</h2>
+                                            <h2 class="steps">Step 2 - 6</h2>
                                         </div>
                                     </div>
                                     <div class="row mt-4">
@@ -119,9 +119,9 @@
                                                                         </div>
                                                                     </div> -->
                                                                     <div id="newinput"></div>   <!--the added one-->
-                                                                    <button id="rowAdder" type="button" class="btn btn-dark">
+                                                                    <button id="rowAdder" type="button" class="btn btn-dark" data-bs-toggle="tooltip" data-bs-placement="top" title="add more skills">
                                                                         <span class="bi bi-plus-square-dotted">
-                                                                        </span> ADD
+                                                                        </span>
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -138,24 +138,24 @@
                             <!--users-->
                             <fieldset class="mt-5">
                                 <div class="form-card border px-3  pb-3 border-success rounded">
-                                    <div class="row border px-2 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
+                                    <div class="row px-2 pb-2 pt-3 rounded">
                                         <div class="col-7">
                                             <h2 class="fs-title">Alter Users:</h2>
                                         </div>
                                         <div class="col-5">
-                                            <h2 class="steps">Step 3 - 5</h2>
+                                            <h2 class="steps">Step 3 - 6</h2>
                                         </div>
                                     </div>
                                     <div id="usersTable" class="mt-4">
                                         <table class="table table-striped mt-2">
                                             <thead>
                                                 <tr>
-                                                    <th scope="col">#</th>
-                                                    <th scope="col">Select</th>
-                                                    <th scope="col">Name</th>
-                                                    <th scope="col">Skills</th>
-                                                    <th scope="col">Profile</th>
-                                                    <th scope="col">Status</th>
+                                                    <th scope="col" id="pcreateProject">#</th>
+                                                    <th scope="col" id="pcreateProject">Select</th>
+                                                    <th scope="col" id="pcreateProject">Name</th>
+                                                    <th scope="col" id="pcreateProject">Skills</th>
+                                                    <th scope="col" id="pcreateProject">Profile</th>
+                                                    <th scope="col" id="pcreateProject">Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -228,24 +228,24 @@
                             <!--teamleader-->
                             <fieldset class="mt-5">
                                 <div class="form-card border px-3  pb-3 border-success rounded">
-                                    <div class="row border px-2 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
+                                    <div class="row px-2 pb-2 pt-3 rounded">
                                         <div class="col-7">
                                             <h2 class="fs-title">Alter the teamleader:</h2>
                                         </div>
                                         <div class="col-5">
-                                            <h2 class="steps">Step 4 - 5</h2>
+                                            <h2 class="steps">Step 4 - 6</h2>
                                         </div>
                                     </div>
                                     <div id="teamleaderTable" class="mt-4">
                                         <table class="table table-striped mt-2">
                                             <thead>
                                                 <tr>
-                                                    <th scope="col">#</th>
-                                                    <th scope="col">Select</th>
-                                                    <th scope="col">Name</th>
-                                                    <th scope="col">Skills</th>
-                                                    <th scope="col">Profile</th>
-                                                    <th scope="col">Status</th>
+                                                    <th scope="col" id="pcreateProject">#</th>
+                                                    <th scope="col" id="pcreateProject">Select</th>
+                                                    <th scope="col" id="pcreateProject">Name</th>
+                                                    <th scope="col" id="pcreateProject">Skills</th>
+                                                    <th scope="col" id="pcreateProject">Profile</th>
+                                                    <th scope="col" id="pcreateProject">Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -296,32 +296,32 @@
                                     </div>
                                 </div>
                                 <div class=" card border border-success rounded mt-3 p-4">
-                                        <div class="row">
-                                            <div class="col-7">
-                                                <h2 class="fs-title">Alter the Name for the Team:</h2>
-                                            </div>
-                                            <div class="col-5">
-                                                <h2 class="steps">optional</h2>
-                                            </div>
+                                    <div class="row">
+                                        <div class="col-7">
+                                            <h2 class="fs-title">Alter the Name for the Team:</h2>
                                         </div>
-                                        <!-- <x-users-matched-table :users="$users"  /> -->
-                                        <div>
-                                            <div class="form-group mt-5">
-                                                <label for="teamname"><strong>Team Name</strong></label>
-                                                <input type="text" name="teamname" class="form-control" id="teamname" placeholder="add the name for the team" value="{{$project->team->name}}">
-                                            </div>
+                                        <div class="col-5">
+                                            <h2 class="steps">Step 5 - 6 | optional</h2>
                                         </div>
                                     </div>
+                                    <!-- <x-users-matched-table :users="$users"  /> -->
+                                    <div>
+                                        <div class="form-group mt-5">
+                                            <label for="teamname"><strong>Team Name</strong></label>
+                                            <input type="text" name="teamname" class="form-control" id="teamname" placeholder="add the name for the team" value="{{$project->team->name}}">
+                                        </div>
+                                    </div>
+                                </div>
                             </fieldset>
                             <!--update status and click submit button-->
                             <fieldset class="mt-5">
                                 <div class="form-card border px-3  pb-5 border-success rounded">
-                                    <div class="row border px-2 pb-3 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);" >
+                                    <div class="row px-2 pb-3 pt-3 rounded"  >
                                         <div class="col-7">
                                             <h2 class="fs-title">Alter project status:</h2>
                                         </div>
                                         <div class="col-5">
-                                            <h2 class="steps">Step 5 - 5</h2>
+                                            <h2 class="steps">Step 6 - 6</h2>
                                         </div>
                                     </div>
                                     <!--radio button [project status]-->
@@ -425,9 +425,10 @@
         newRowAdd =
             '<div id="row" class="row"> <div class="col-md-2">' +
             '<div class="input-group-prepend pt-1">' +
-            '<button class="btn btn-danger" id="DeleteRow" type="button">' +
-            '<i class="bi bi-trash"></i> Delete</button> </div></div>' +
-            '<div class="col-md-10"><input name="new_skills[]" type="text" class="form-control m-input new_skills"> </div> </div>';
+            '<button class="btn btn-danger mt-1 text-center" id="DeleteRow" type="button">' +
+            '<i class="bi bi-trash"></i>'+ 
+            '</button></div></div>' +
+            '<div class="col-md-10"><input name="new_skills[]" type="text" class="form-control m-input new_skills rounded"> </div> </div>';
 
         $('#newinput').append(newRowAdd);
     });
@@ -436,6 +437,7 @@
     })
 </script>
 
+<!--get users-->
 <script>
     $('#getUsers').on('click', function(){  
         var assigned_skills = [];
@@ -502,6 +504,7 @@
     });
 </script>
 
+<!--show spinner-->
 <script>
     function showSpinner(){
         $('#spinner').show();

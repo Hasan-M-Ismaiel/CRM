@@ -54,6 +54,19 @@ class TeamleaderRoleAssigned extends Notification implements ShouldBroadcast, Sh
         ];
     }
 
+   
+    public function toMail(object $notifiable): MailMessage
+    {
+        $projectTitle = $this->project->title;
+        $url = url('/admin/projects/'.$this->project->id);
+        return (new MailMessage)
+                    ->greeting('Hello!')
+                    ->line("You are now the team leader of this project : {$projectTitle}")
+                    ->line("at:{$this->project->created_at}")
+                    ->action('View Project', $url)
+                    ->line('you are now responsible for creating tasks and make this project be greate!');
+    }
+
     public function toBroadcast(object $notifiable): BroadcastMessage
     {
         sleep(10);
@@ -79,15 +92,4 @@ class TeamleaderRoleAssigned extends Notification implements ShouldBroadcast, Sh
         ]);
     }
 
-    public function toMail(object $notifiable): MailMessage
-    {
-        $projectTitle = $this->project->title;
-        $url = url('/admin/projects/'.$this->project->id);
-        return (new MailMessage)
-                    ->greeting('Hello!')
-                    ->line("You are now the team leader of this project : {$projectTitle}")
-                    ->line("at:{$this->project->created_at}")
-                    ->action('View Project', $url)
-                    ->line('you are now responsible for creating tasks and make this project be greate!');
-    }
 }

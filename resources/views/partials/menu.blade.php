@@ -2,11 +2,11 @@
     <!-- brand name and logo-->
     <div class="sidebar-brand d-none d-md-flex">
         {{ config('app.name') }}    
-        <svg class="sidebar-brand-full" width="118" height="46" alt="CoreUI Logo">
-            <use xlink:href="{{ asset('assets/brand/coreui.svg#full') }}"></use>
+        <svg class="sidebar-brand-full" width="118" height="46" alt="TeamWork Logo">
+            <use xlink:href="{{ asset('assets/brand/TeamWork.svg') }}"></use>
         </svg>
-        <svg class="sidebar-brand-narrow" width="46" height="46" alt="CoreUI Logo">
-        <use xlink:href="{{ asset('assets/brand/coreui.svg#signet') }}"></use>
+        <svg class="sidebar-brand-narrow" width="46" height="46" alt="TeamWork Logo">
+        <use xlink:href="{{ asset('assets/brand/TeamWork.svg') }}"></use>
         </svg>
     </div>
 

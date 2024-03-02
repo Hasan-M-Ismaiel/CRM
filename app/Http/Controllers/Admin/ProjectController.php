@@ -12,6 +12,7 @@ use App\Models\Skill;
 use App\Models\Team;
 use App\Models\User;
 use App\Notifications\ProjectAssigned;
+use App\Notifications\ProjectDeletedNotification;
 use App\Notifications\TeamleaderRoleAssigned;
 use App\Notifications\TeamleaderRoleUnAssigned;
 use App\Services\MatcherUserProjectSkillsService;
@@ -204,22 +205,26 @@ class ProjectController extends Controller
             $teamleader = User::findOrFail($request->teamleader_id);
         }
 
-        // if the editor was the teamleader
-        if($request->title != null && $request->description != null && $request->deadline != null && $request->client_id != null && $request->teamleader_id != null){
-            if(request()->input('teamname')){
-                $projectTeam = $project->team;
-                $projectTeam->name=request()->input('teamname');
-                $projectTeam->save();
+        if($project->numberOfUnFinishedTasks == 0){
+            // if the editor was the teamleader
+            if($request->title != null && $request->description != null && $request->deadline != null && $request->client_id != null && $request->teamleader_id != null){
+                if(request()->input('teamname')){
+                    $projectTeam = $project->team;
+                    $projectTeam->name=request()->input('teamname');
+                    $projectTeam->save();
+                }
+
+                $project->update([
+                    'title'       => $request->validated('title'),
+                    'description' => $request->validated('description'),
+                    'deadline'    => $request->validated('deadline'),
+                    'client_id'   => $request->validated('client_id'),
+                    'teamleader_id'   => $request->validated('teamleader_id'),
+                ]);
             }
-            $project->update([
-                'title'       => $request->validated('title'),
-                'description' => $request->validated('description'),
-                'deadline'    => $request->validated('deadline'),
-                'client_id'   => $request->validated('client_id'),
-                'teamleader_id'   => $request->validated('teamleader_id'),
-            ]);
+        }else{
+            return redirect()->back()->with('message', 'there are tasks not finished yet.');
         }
-        
         $assignedSkills = $request->input('assigned_skills'); // the ids of the added skills 
         if( $assignedSkills !=null && sizeof($assignedSkills)>0 ){
             $project->skills()->detach();
@@ -297,7 +302,17 @@ class ProjectController extends Controller
     {
         $this->authorize('delete', $project);
 
+        $projectTitle = $project->title;
+        $projectUsers =  $project->users;
+    
+        //$project->skills()->detach();
+        //$project->users()->detach();
+        
         $project->delete();
+        //to notify the users those are in the project
+        // foreach($projectUsers as $user){
+        //     $user->notify(new ProjectDeletedNotification($projectTitle));
+        // }
         return redirect()->route('admin.projects.index')->with('message','the project has been deleted successfully');
     }
 

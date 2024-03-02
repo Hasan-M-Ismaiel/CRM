@@ -13,6 +13,7 @@ use App\Models\TaskMessage;
 use App\Models\Taskmessagenotification;
 use App\Models\User;
 use App\Notifications\TaskAssigned;
+use App\Notifications\TaskDeletedNotification;
 use App\Notifications\TaskUnAssigned;
 use App\Notifications\TaskWaitingNotification;
 use App\Services\RenderTasksTableService;
@@ -163,7 +164,14 @@ class TaskController extends Controller
     {
         $this->authorize('delete', $task);
 
+        $taskUser = $task->user;
+        $taskProject = $task->project;
+        $taskTitle = $task->title;
+
         $task->delete();
+
+        // $taskUser->notify(new TaskDeletedNotification($taskTitle, $taskProject));
+        
         return redirect()->route('admin.tasks.index')->with('message','the task has been deleted successfully');
 
     }
@@ -401,7 +409,7 @@ class TaskController extends Controller
     {
         if($tasks != null && $tasks->count()>0){
             foreach($tasks as $task){
-                $taskItems .= '<a id="task-'.$task->id.'" href="'.route('admin.tasks.showTaskChat', $task).'" style="text-decoration: none;" class="" onclick="markasreadtask('.$task->id.','. auth()->user()->id .','. $task->taskmessagenotifications->where('user_id', auth()->user()->id)->count().')">';
+                $taskItems .= '<a id="task-'.$task->id.'" href="'.route('admin.tasks.showTaskChat', $task).'" style="text-decoration: none;"  onclick="markasreadtask('.$task->id.','. auth()->user()->id .','. $task->taskmessagenotifications->where('user_id', auth()->user()->id)->count().')">';
                 $taskItems .= '<div class="row">';
                 $taskItems .= '<div class="col-4 text-right ">';
                 $taskItems .= '<img alt="DP" class="rounded-circle img-fluid" width="45" height="40" src="'. asset('images/taskChat.png') .'">';

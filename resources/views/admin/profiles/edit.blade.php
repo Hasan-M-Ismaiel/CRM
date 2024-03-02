@@ -160,28 +160,16 @@
                                         <input id="image" name="image" class="form-control" type="file">  
                                     </div>
                                     <br>
-                                    <br>
-                                    <br>
                                     <!--image-->
                                     <!-- select avatar -->
                                     <div class="col-md-12">
-                                        <div class="row">
-                                            <div class="col-11 text-right">
-                                                <strong>Or</strong>
-                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
-                                                    <strong>Select Avatar</strong>
-                                                </button>
-                                            </div>
-                                            <div class="col-1 text-left">
-                                                @if(Auth::user()->profile && Auth::user()->profile->getFirstMediaUrl("profiles"))
-                                                    <div  class="avatar avatar-md" data-bs-toggle="modal" data-bs-target="#myModal"><img class="avatar-img" id="image_thumb" src='{{ Auth::user()->profile->getFirstMediaUrl("profiles") }}' alt="user@email.com" /></div>
-                                                @elseif(Auth::user()->getFirstMediaUrl("users"))
-                                                    <div  class="avatar avatar-md" data-bs-toggle="modal" data-bs-target="#myModal"><img class="avatar-img" id="image_thumb" src='{{ Auth::user()->getMedia("users")[0]->getUrl("thumb") }}' alt="user@email.com" /></div>
-                                                @else 
-                                                    <div  class="avatar avatar-md" data-bs-toggle="modal" data-bs-target="#myModal"><img class="avatar-img" id="image_thumb" src="{{ asset('images/avatar.png') }}" alt="user@email.com"></div>
-                                                @endif
-                                            </div>
-                                        </div>
+                                        @if(Auth::user()->profile && Auth::user()->profile->getFirstMediaUrl("profiles"))
+                                            <div  class="avatar avatar-md" data-bs-toggle="modal" data-bs-target="#myModal"><img class="avatar-img" id="image_thumb" src='{{ Auth::user()->profile->getFirstMediaUrl("profiles") }}' alt="" /></div>
+                                        @elseif(Auth::user()->getFirstMediaUrl("users"))
+                                            <div  class="avatar avatar-md" data-bs-toggle="modal" data-bs-target="#myModal"><img class="avatar-img" id="image_thumb" src='{{ Auth::user()->getMedia("users")[0]->getUrl("thumb") }}' alt="" /></div>
+                                        @else 
+                                            <div  class="avatar avatar-md" data-bs-toggle="modal" data-bs-target="#myModal"><img class="avatar-img" id="image_thumb" src="{{ asset('images/avatar.png') }}" alt=""></div>
+                                        @endif
                                     </div>
                                     
                                     <!-- The Modal -->

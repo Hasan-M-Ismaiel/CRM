@@ -31,13 +31,13 @@
                             <table class="table table-striped border mt-2">
                                 <thead>
                                     <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Profile</th>
-                                        <th scope="col">Name</th>
-                                        <th scope="col">Email</th>
-                                        <th scope="col">Role</th>
-                                        <th scope="col">profission</th>
-                                        <th scope="col">Assign/De-assign</th>
+                                        <th scope="col" id="pcreateProject">#</th>
+                                        <th scope="col" id="pcreateProject">Profile</th>
+                                        <th scope="col" id="pcreateProject">Name</th>
+                                        <th scope="col" id="pcreateProject">Email</th>
+                                        <th scope="col" id="pcreateProject">Role</th>
+                                        <th scope="col" id="pcreateProject">profission</th>
+                                        <th scope="col" id="pcreateProject">Assign/De-assign</th>
                                     </tr>
                                 </thead>
                                 <tbody>

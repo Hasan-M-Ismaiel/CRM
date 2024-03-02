@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('skillables', function (Blueprint $table) {
             $table->id();
-            $table->integer('skill_id');
+            $table->integer('skill_id')->constrained()->onDelete('cascade');;
             $table->integer('skillable_id');
             $table->string('skillable_type');
             $table->timestamps();

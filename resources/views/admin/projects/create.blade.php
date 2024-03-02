@@ -349,6 +349,7 @@
     });
 </script>
 
+<!--row adder-->
 <script type="text/javascript">
     $("#rowAdder").click(function () {
         newRowAdd =

@@ -92,6 +92,7 @@ Echo.private(`App.Models.User.`+window.userID)
         $("#num_of_notification").html(window.NumberOfNotifications + 1);
         window.NumberOfNotifications = window.NumberOfNotifications +1 ;
     } else if (notification['notification_type'] == 'TeamleaderRoleUnAssigned'){
+        $("#toast_link_to_notification_target").attr("href",notification['link_to_project']+'?notificationId='+notification['notification_id']);
         $("#toast_image").attr("src",notification['project_manager_image']);
         $("#toast_project_manager_name").html(notification['project_manager_name']);
         $("#toast_title").html(" you are now not the teamleader of this project ");
@@ -100,6 +101,35 @@ Echo.private(`App.Models.User.`+window.userID)
         //update the number of notification on the screen
         $("#num_of_notification").html(window.NumberOfNotifications + 1);
         window.NumberOfNotifications = window.NumberOfNotifications +1 ;
+    } else if (notification['notification_type'] == 'ProjectDeleted'){
+        $("#toast_image").attr("src",notification['project_manager_image']);
+        $("#toast_project_manager_name").html(notification['project_manager_name']);
+        $("#toast_title").html("this project has been deleted");
+        $("#toast_body").html(notification['project_title']);
+        $(".toast").toast('show');
+
+        //update the number of notification on the screen
+        $("#num_of_notification").html(window.NumberOfNotifications + 1);
+        window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
+
+        //update the number of tasks on the screen
+        $("#num_of_tasks").html(window.NumberOfTasks + 1);
+        window.NumberOfTasks = window.NumberOfTasks + 1 ;
+    } else if (notification['notification_type'] == 'TaskDeleted'){
+        $("#toast_link_to_notification_target").attr("href",notification['link_to_task']+'?notificationId='+notification['notification_id']);
+        $("#toast_image").attr("src",notification['project_manager_image']);
+        $("#toast_project_manager_name").html(notification['project_manager_name']);
+        $("#toast_title").html("this task:" + notification['project_title'] +'has been deleted');
+        $("#toast_body").html("from this project:" + notification['project_title']);
+        $(".toast").toast('show');
+
+        //update the number of notification on the screen
+        $("#num_of_notification").html(window.NumberOfNotifications + 1);
+        window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
+
+        //update the number of tasks on the screen
+        $("#num_of_tasks").html(window.NumberOfTasks + 1);
+        window.NumberOfTasks = window.NumberOfTasks + 1 ;
     }
 });
 
@@ -155,9 +185,9 @@ window.projectIds.forEach(element => {
         var currentTime = time1.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
 
         if(e.user_id == window.userID){ // is the auth // for user experince you can comment this first line and add the message from the sender side that is faster to render the sender message
-            var newMessageFromHere = $('<div class="chat-message-right pb-4"> <div class="ms-2"> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime+'</div> </div><div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div><div> '+ message+ '</div></div><div id="'+message_id+'"></div></div></div>');
+            var newMessageFromHere = $('<div class="chat-message-right pb-4"> <div class="ms-2"> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-white small text-nowrap mt-2">'+currentTime+'</div> </div><div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div><div> '+ message+ '</div></div><div id="'+message_id+'"></div></div></div>');
         }else{
-            var newMessageFromHere = $('<div class="chat-message-left pb-4"> <div> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime+'</div> </div><div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div><div> '+ message+ '</div></div><div id="'+message_id+'"></div></div></div>');
+            var newMessageFromHere = $('<div class="chat-message-left pb-4"> <div> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-white small text-nowrap mt-2">'+currentTime+'</div> </div><div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div><div> '+ message+ '</div></div><div id="'+message_id+'"></div></div></div>');
         }
 
         //append the message to UI
@@ -243,9 +273,9 @@ window.taskIds.forEach(element => {
 
         // if the sender was the same as the loged in user - add the added message on the right
         if(e.user_id == window.userID){ // is the auth // for user experince you can comment this first line and add the message from the sender side that is faster to render the sender message
-            var newMessageFromHereTask = $('<div class="chat-message-right pb-4"> <div class="ms-2"> <img src="'+userimage_task+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime2+'</div> </div> <div> <div class="flex-shrink-1  bg-primary text-white rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username_task +'</div><div>'+ message_task+ '</div></div><div id="taskmessage-'+taskmessage_id+'"></div></div></div>');
+            var newMessageFromHereTask = $('<div class="chat-message-right pb-4"> <div class="ms-2"> <img src="'+userimage_task+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-white small text-nowrap mt-2">'+currentTime2+'</div> </div> <div> <div class="flex-shrink-1  bg-primary text-white rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username_task +'</div><div>'+ message_task+ '</div></div><div id="taskmessage-'+taskmessage_id+'"></div></div></div>');
         }else{
-            var newMessageFromHereTask = $('<div class="chat-message-left pb-4"> <div> <img src="'+userimage_task+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-muted small text-nowrap mt-2">'+currentTime2+'</div> </div> <div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username_task +'</div><div>'+ message_task+ '</div></div><div id="taskmessage-'+taskmessage_id+'"></div></div></div>');
+            var newMessageFromHereTask = $('<div class="chat-message-left pb-4"> <div> <img src="'+userimage_task+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-white small text-nowrap mt-2">'+currentTime2+'</div> </div> <div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username_task +'</div><div>'+ message_task+ '</div></div><div id="taskmessage-'+taskmessage_id+'"></div></div></div>');
         }
 
         //append the message to UI

@@ -55,6 +55,16 @@ class TeamleaderRoleUnAssigned extends Notification implements ShouldBroadcast, 
         ];
     }
 
+    public function toMail(object $notifiable): MailMessage
+    {
+        $projectTitle = $this->project->title;
+        $unassignTime = Carbon::now();
+        return (new MailMessage)
+                    ->greeting('Hello!')
+                    ->line("Now you are not the teamleader of this project's team: {$projectTitle}.")
+                    ->line("at:{$unassignTime->toDateTimeString()}");
+    }
+
     public function toBroadcast(object $notifiable): BroadcastMessage
     {
         sleep(10);
@@ -75,16 +85,7 @@ class TeamleaderRoleUnAssigned extends Notification implements ShouldBroadcast, 
             'project_title' => $this->project->title,
             'project_manager_name' => Auth::user()->name,
             'project_manager_image' => $image,
+            'linke_to_project' => $linkeToProject,
         ]);
-    }
-
-    public function toMail(object $notifiable): MailMessage
-    {
-        $projectTitle = $this->project->title;
-        $unassignTime = Carbon::now();
-        return (new MailMessage)
-                    ->greeting('Hello!')
-                    ->line("Now you are not the teamleader of this project's team: {$projectTitle}.")
-                    ->line("at:{$unassignTime->toDateTimeString()}");
     }
 }

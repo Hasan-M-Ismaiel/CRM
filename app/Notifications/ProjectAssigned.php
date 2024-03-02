@@ -54,6 +54,19 @@ class ProjectAssigned extends Notification implements ShouldBroadcast, ShouldQue
         ];
     }
 
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        $projectTitle = $this->project->title;
+        $url = url('/admin/projects/'.$this->project->id);
+        return (new MailMessage)
+                    ->greeting('Hello!')
+                    ->line("You are now one of the team member of this project : {$projectTitle}")
+                    ->line("at:{$this->project->created_at}")
+                    ->action('View Project', $url)
+                    ->line('Wait for tasks in this project soon!');
+    }
+
     public function toBroadcast(object $notifiable): BroadcastMessage
     {
         sleep(10);
@@ -77,17 +90,5 @@ class ProjectAssigned extends Notification implements ShouldBroadcast, ShouldQue
             'project_manager_image' => $image,
             'link_to_project' => $linkeToProject,
         ]);
-    }
-
-    public function toMail(object $notifiable): MailMessage
-    {
-        $projectTitle = $this->project->title;
-        $url = url('/admin/projects/'.$this->project->id);
-        return (new MailMessage)
-                    ->greeting('Hello!')
-                    ->line("You are now one of the team member of this project : {$projectTitle}")
-                    ->line("at:{$this->project->created_at}")
-                    ->action('View Project', $url)
-                    ->line('Wait for tasks in this project soon!');
     }
 }

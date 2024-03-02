@@ -31,7 +31,7 @@ class ProjectRequest extends FormRequest
         return [
             'title'   => ['required', 'string', 'max:100'],
             'description' => ['required', 'string', 'max:255'],
-            'deadline' => ['required', 'date'],   
+            'deadline' => 'required|date|after:now',   
             'client_id' => ['required', Rule::in($clients)],
             "new_skills"    => "array",
             "new_skills.*"  => "required|string|distinct|min:2|unique:skills,name", //least 2 characters

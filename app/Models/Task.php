@@ -49,4 +49,22 @@ class Task extends Model
 
     }
 
+    static function numberOfCompletedTasks()
+    {
+        return Task::where('status','==' ,'closed')->count();
+    }
+
+    static function numberOfTotalTasks()
+    {
+        return Task::all()->count();
+                                                                
+    }
+
+    static function taskCompletePercentage()
+    {
+
+        return $taskCompletePercentage = (Task::numberOfCompletedTasks()*100)/Task::numberOfTotalTasks();
+                                                                
+    }
+
 }

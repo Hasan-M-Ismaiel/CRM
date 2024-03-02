@@ -1,21 +1,54 @@
 <header class="header header-sticky mb-4">
     <div class="container-fluid">
+
+        <!--side menu icon-->
         <button class="header-toggler px-md-0 me-md-3" type="button" onclick="coreui.Sidebar.getInstance(document.querySelector('#sidebar')).toggle()">
             <svg class="icon icon-lg">
                 <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-menu') }}"></use>
             </svg>
-        </button><a class="header-brand d-md-none" href="#">
+        </button>
+
+        <!--logo-->
+        <a class="header-brand d-md-none" href="#">
             <svg width="118" height="46" alt="CoreUI Logo">
                 <use xlink:href="{{ asset('assets/brand/coreui.svg#full') }}"></use>
-            </svg></a>
+            </svg>
+        </a>
+
+        <!--pages links left-->
         <ul class="header-nav d-none d-md-flex">
+            @can('user_access')<li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Dashboard</a></li>@endcan
             @can('user_access')<li class="nav-item"><a class="nav-link" href="{{ route('admin.users.index') }}">Users</a></li>@endcan
             @can('user_access')<li class="nav-item"><a class="nav-link" href="{{ route('admin.clients.index') }}">Clients</a></li>@endcan
             @can('user_access')<li class="nav-item"><a class="nav-link" href="{{ route('admin.projects.index') }}">Projects</a></li>@endcan
             @can('user_access')<li class="nav-item"><a class="nav-link" href="{{ route('admin.tasks.index') }}">Tasks</a></li>@endcan
             @can('user_access')<li class="nav-item"><a class="nav-link" href="{{ route('admin.skills.index') }}">Skills</a></li>@endcan
         </ul>
+        <!--pages links icons right-->
         <ul class="header-nav ms-auto">
+            <!--create project-->
+            @can('create', App\Models\Project::class)
+            <li class="nav-item">
+                <a class="nav-link iconClass" href="{{ route('admin.projects.create') }}" data-bs-toggle="tooltip" data-bs-placement="top" title="add new project">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-box" viewBox="0 0 16 16">
+                        <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5 8 5.961 14.154 3.5zM15 4.239l-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/>
+                    </svg>
+                </a>
+            </li>
+            @endcan 
+            <!--create task-->
+            @can('create', App\Models\Task::class)
+            <li class="nav-item">
+                <a class="nav-link iconClass" href="{{ route('admin.tasks.create') }}" data-bs-toggle="tooltip" data-bs-placement="top" title="add new task">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-clipboard-plus" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 7a.5.5 0 0 1 .5.5V9H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V10H6a.5.5 0 0 1 0-1h1.5V7.5A.5.5 0 0 1 8 7"/>
+                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/>
+                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/>
+                    </svg>
+                </a>
+            </li>
+            @endcan 
+            <!--# of notifications-->
             <li class="nav-item">
                 <a class="nav-link iconClass" href="{{ route('admin.notifications.index') }}">
                     @if(auth()->user()->unreadNotifications->count()==0)
@@ -32,7 +65,7 @@
                     @endif
                 </a>
             </li>
-
+            <!--# of tasks-->
             <li class="nav-item">
                 <a class="nav-link iconClass" href="{{ route('admin.tasks.index') }}">
                     @if(auth()->user()->numberOfOpenedTasks==0)
@@ -48,21 +81,11 @@
                     @endif
                 </a>
             </li>
-
-            <!--chat-->
-            <!-- <li class="nav-item">
-                <a class="nav-link chatParentClass" href="#">
-                    <svg width="25" height="25">
-                        <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-chat-bubble') }}"></use>
-                    </svg>
-                    <em id = "num_of_messages" class="badge bg-danger text-white px-2 rounded-4">1</em>
-                </a>
-            </li> -->
         </ul>
         <ul class="header-nav ms-3">
             <li class="nav-item dropdown">
                 <!--image-->
-                <a class="nav-link py-0 imageParentClass" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                <a class="nav-link py-0 imageParentClass" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" data-bs-toggle="tooltip" data-bs-placement="top" title="{{auth()->user()->name}}">
                     @if(Auth::user()->profile && Auth::user()->profile->getFirstMediaUrl("profiles"))
                         <div class="avatar avatar-md">
                             <img class="avatar-img border border-success shadow mb-1" src='{{ Auth::user()->profile->getFirstMediaUrl("profiles") }}' alt="user@email.com" />

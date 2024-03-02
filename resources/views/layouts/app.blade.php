@@ -62,6 +62,11 @@
         <!--for file pond-->
         <link href="https://unpkg.com/filepond@^4/dist/filepond.css" rel="stylesheet" />
 
+        <!--for the calender-->
+        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+    	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	
+
         <title>Hello, world!</title>
         @vite(['resources/js/app.js', 'resources/css/app.css', 'resources/css/profile.css', 'resources/css/createProject.css', 'resources/sass/app.scss', 'resources/css/editProject.css', 'resources/css/radioButton.styl', 'resources/css/chat.css' ])
 
@@ -185,6 +190,7 @@
             </div>
         </div>
 
+        <!--js variables-->
         <script>
             
             // user loged in id 

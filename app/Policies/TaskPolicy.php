@@ -37,18 +37,17 @@ class TaskPolicy
      */
     public function create(User $user): bool
     {
-        if($user->hasRole('admin')){
+        if($user->hasRole('admin') || $user->teamleaderon()->count()>0){
             return true;
         }
-        // if ($user->teamleaderOn()){return true;}
 
         // check if the user has projects as teamleader
-        $projects = Project::all();
-        foreach($projects as $project){
-            if($project->teamleader->id == $user->id){
-                return true;
-            }
-        }
+        // $projects = Project::all();
+        // foreach($projects as $project){
+        //     if($project->teamleader->id == $user->id){
+        //         return true;
+        //     }
+        // }
 
         return false;
         // return $user->hasRole('admin') || $user->teamleaderon;

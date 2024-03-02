@@ -119,11 +119,12 @@ class SkillController extends Controller
 
         $this->authorize('delete', $skill);
 
+        dd($skill);
         $skill->delete();
 
         $skills = Skill::all();
         if ($skills == null){
-            return redirect()->route('admin.skills.create')->with('message','the database does not have any skills please add atleast one');
+            return redirect()->route('admin.skills.create')->with('message','the database does not have any skills please add at least one');
         }
         return redirect()->route('admin.skills.index')->with('message','the skill has been deleted successfully');
     }

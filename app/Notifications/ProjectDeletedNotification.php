@@ -2,8 +2,6 @@
 
 namespace App\Notifications;
 
-use App\Models\Project;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -12,24 +10,24 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 
-class ProjectUnAssigned extends Notification implements ShouldBroadcast, ShouldQueue
+class ProjectDeletedNotification extends Notification implements ShouldBroadcast, ShouldQueue
 {
     use Queueable;
 
-    protected $project;
+    protected $projectTitle;
     /**
      * Create a new notification instance.
      */
-    public function __construct(Project $project)
+    public function __construct(String $projectTitle)
     {
-        $this->project = $project;
+        $this->projectTitle = $projectTitle;
     }
 
     public function viaConnections(): array
     {
         return [
-            'database' => 'database',
             'mail' => 'database',
+            'database' => 'database',
             'broadcast' => 'sync',
         ];
     }
@@ -50,23 +48,21 @@ class ProjectUnAssigned extends Notification implements ShouldBroadcast, ShouldQ
     public function toDatabase(object $notifiable)
     {
         return [
-            'project_id' => $this->project->id,
-            'project_title' => $this->project->title,
+            'project_title' => $this->projectTitle,
         ];
     }
 
-    
+    /**
+     * Get the mail representation of the notification.
+     */
     public function toMail(object $notifiable): MailMessage
     {
-        $projectTitle = $this->project->title;
-        $unassignTime = Carbon::now();
+        $projectTitle = $this->projectTitle;
         return (new MailMessage)
                     ->greeting('Hello!')
-                    ->line("Now you are out of this project's team: {$projectTitle}.")
-                    ->line("at:{$unassignTime->toDateTimeString()}")
-                    ->line('Wait for another projects to be in!');
+                    ->line("the project that you are a member in it, have been deleted : {$projectTitle}")
+                    ->line('be a ware what is happening!');
     }
-
 
     public function toBroadcast(object $notifiable): BroadcastMessage
     {
@@ -82,9 +78,9 @@ class ProjectUnAssigned extends Notification implements ShouldBroadcast, ShouldQ
         }
 
         return new BroadcastMessage([
-            'notification_type' => 'ProjectUnAssigned',
-            'notification_id' => $notifiable->unreadNotifications()->latest()->first()->id,
-            'project_title' => $this->project->title,
+            'notification_type' => 'ProjectDeleted',
+            //'notification_id' => $notifiable->unreadNotifications()->latest()->first()->id,  // we dont need that because we will not go to project page 
+            'project_title' => $this->projectTitle,
             'project_manager_name' => Auth::user()->name,
             'project_manager_image' => $image,
         ]);

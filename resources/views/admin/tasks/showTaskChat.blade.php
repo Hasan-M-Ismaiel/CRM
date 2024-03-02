@@ -16,18 +16,18 @@
                                     <div class="col-1 text-center pt-2">
                                         <img src="{{ asset('images/taskChat.png') }}" class="rounded-circle mr-1" alt="Sharon Lessman" width="40" height="40">
                                     </div>
-                                    <strong class="col-6 text-white  text-center p-3" style="color: #673AB7;">
+                                    <strong class="col-7 text-white  text-center p-3" style="color: #673AB7;">
                                         {{ $task->title}} | {{$task->project->title}}
                                     </strong>
                                     @if($task->user)
-                                        <div class="col-4 pt-2  text-right">
+                                        <div class="col-3 pt-2  text-right">
                                             <ul class="list-inline">
                                                 <li class="list-inline-item"> 
                                                     @foreach($users as $user)
                                                         <!-- if($user->hasRole('admin')) -->
                                                         @if($user->id == $task->project->teamleader->id)
                                                             @if($user->profile)
-                                                                <a href="{{ route('admin.profiles.show', $user->id) }}" style="text-decoration: none;">
+                                                                <a href="{{ route('admin.profiles.show', $user->id) }}" style="text-decoration: none;" data-bs-toggle="tooltip" data-bs-placement="top" title="{{$user->name}}">
                                                             @else
                                                                 <a href="{{ route('admin.statuses.notFound') }}" style="text-decoration: none;">
                                                             @endif
@@ -53,9 +53,9 @@
                                                             </a>
                                                         @elseif($task->user->id == $user->id)
                                                             @if($user->profile)
-                                                                <a href="{{ route('admin.profiles.show', $user->profile->id) }}" class="position-relative" style="text-decoration: none;">
+                                                                <a href="{{ route('admin.profiles.show', $user->profile->id) }}" class="position-relative" style="text-decoration: none;" data-bs-toggle="tooltip" data-bs-placement="top" title="{{$task->user->name}}">
                                                             @else
-                                                                <a href="{{ route('admin.statuses.notFound') }}" class="position-relative" style="text-decoration: none;">
+                                                                <a href="{{ route('admin.statuses.notFound') }}" class="position-relative" style="text-decoration: none;" >
                                                             @endif
                                                             
                                                             <!--badges for the user-->
@@ -82,7 +82,7 @@
                                             </ul>
                                         </div>
                                     @else
-                                        <strong class="col-4 pt-2 text-white  text-right">no users assigned yet.</strong>
+                                        <strong class="col-3 pt-2 text-white  text-right">no users assigned yet.</strong>
                                     @endif
                                 </div>
                             </div>
@@ -100,7 +100,7 @@
                                 </div>
                                 <!--chat messages-->
                                 <div class="chat-messages p-4" id="parenttaskmessages" class="bg-image" 
-                                        style="background-image: url('https://mdbootstrap.com/img/Photos/Others/images/76.jpg'); height: 100vh">
+                                        style="background-image:url('{{asset('assets/brand/teamwork.jpg')}}'); height: 100vh">
                                     @if($task->user && $task->taskmessages != null)
                                         @foreach($messages as $message)
                                             @if($message->user->id == auth()->user()->id)
@@ -119,7 +119,7 @@
                                                     @else 
                                                     <img src="{{ asset('images/avatar.png') }}" class="rounded-circle mr-1 border border-success" width="40" height="40" />
                                                     @endif
-                                                    <div class="text-muted small text-nowrap mt-2">{{$message->created_at->format('g:i a')}}</div>
+                                                    <div class="text-white small text-nowrap mt-2">{{$message->created_at->format('g:i a')}}</div>
                                                 </div>
 
                                                 <div>

@@ -10,7 +10,7 @@ class NotificationController extends Controller
 
     public function index ()
     {
-        $notifications = auth()->user()->unreadNotifications()->paginate(15);
+        $notifications = auth()->user()->unreadNotifications()->get();
 
         return view('admin.notifications.index', [
             'notifications' => $notifications,

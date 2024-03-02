@@ -111,6 +111,5 @@
   }
 </script>
 
-{{ $notifications->links() }}
 @endsection
 
