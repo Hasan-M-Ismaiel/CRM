@@ -54,8 +54,8 @@ class TaskDeletedNotification extends Notification implements ShouldBroadcast, S
     {
         return [
             'task_title' => $this->taskTitle,
-            'task_project_title' => $this->taskProject->title,
-            'task_project_id' => $this->taskProject->id,
+            'project_title' => $this->taskProject->title,
+            'project_id' => $this->taskProject->id,
         ];
     }
 
@@ -95,6 +95,7 @@ class TaskDeletedNotification extends Notification implements ShouldBroadcast, S
             'notification_type' => 'TaskDeleted',
             'notification_id' => $notifiable->unreadNotifications()->latest()->first()->id,
             'task_title' => $this->taskTitle,
+            'project_title' => $this->taskProject->title,
             'project_manager_name' => Auth::user()->name,
             'project_manager_image' => $image,
             'link_to_project' => $linkeToProject,

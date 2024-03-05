@@ -9,9 +9,7 @@
                     <!--image-->
                     <img id="toast_image" src="" class="rounded-circle me-2" alt="image" width="40" height="40">
                     <!--grating-->
-                    <span>Hello {{Auth::user()->name}}, </span> 
-                    <strong class="me-auto" id="toast_title"></strong>
-                    <small class="text-muted" id="toast_body"></small>  
+                    <strong id="toast_title" class="me-auto">Hello {{Auth::user()->name}},</strong>
                     <button href="" type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
                 <!--the content-->

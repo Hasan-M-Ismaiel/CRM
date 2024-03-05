@@ -25,8 +25,8 @@ class RenderProjectsTableService{
         $var = '<table class="table table-striped mt-2  border border-1" style="height: 100px;">
         <thead>
             <tr>
-                <th scope="col" class="align-middle">#</th>
-                <th scope="col" class="align-middle"> 
+                <th scope="col" class="align-middle" id="pcreateProject">#</th>
+                <th scope="col" class="align-middle" id="pcreateProject"> 
                         <span class="btn px-1 p-0 m-0 text-light" style="background-color: #303c54;" onclick="getSortedProjects()">
                             Title
                             <svg id="arrowkey" xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-arrow-bar-down" viewBox="0 0 16 16">
@@ -34,14 +34,13 @@ class RenderProjectsTableService{
                             </svg>
                         </span>
                     </th>
-                <th scope="col" class="align-middle">Deadline</th>
-                <th scope="col" class="align-middle">Techniques</th>
-                <th scope="col" class="align-middle">Leader</th>
-                <th scope="col" class="align-middle">Users</th>
-                <th scope="col" class="align-middle">Owner</th>
-                <th scope="col" class="align-middle">Tasks</th>
-                <th scope="col" class="align-middle">Status</th>
-                <th scope="col" class="align-middle">Action</th>
+                <th scope="col" class="align-middle" id="pcreateProject">Deadline</th>
+                <th scope="col" class="align-middle" id="pcreateProject">Leader</th>
+                <th scope="col" class="align-middle" id="pcreateProject">Techniques</th>
+                <th scope="col" class="align-middle" id="pcreateProject">Users</th>
+                <th scope="col" class="align-middle" id="pcreateProject">Tasks</th>
+                <th scope="col" class="align-middle" id="pcreateProject">Status</th>
+                <th scope="col" class="align-middle" id="pcreateProject">Action</th>
             </tr>
         </thead>
         <tbody>';
@@ -65,16 +64,7 @@ class RenderProjectsTableService{
             $var .= $project->deadline;
             $var .= '</td>';
 
-            //skills
-            $var .= '<td class="align-middle">';
-            if($project->skills()->count() > 0){
-                foreach ($project->skills as $skill){
-                    $var .= '<span class="badge m-1" style="background: #673AB7;">'.$skill->name.'</span>';
-                }
-            }else{
-                $var .= '#';
-            }
-            $var .= '</td>';
+            
                 
             // teamleader
             $var .= '<td class="align-middle">';
@@ -82,13 +72,13 @@ class RenderProjectsTableService{
                 $var .='<div>';
                 if($project->teamleader->profile)
                     if($project->teamleader->profile){
-                        $var .='<a href="'. route('admin.profiles.show', $project->teamleader).'" class="position-relative" style="text-decoration: none;">';
+                        $var .='<a href="'. route('admin.profiles.show', $project->teamleader).'" class="position-relative" style="text-decoration: none;" data-bs-toggle="tooltip" data-bs-placement="top" title="'. $project->teamleader->name.'">';
                     }else{
-                        $var .='<a href="'.route('admin.statuses.notFound') .'" class="position-relative" style="text-decoration: none;">';
+                        $var .='<a href="'.route('admin.statuses.notFound') .'" class="position-relative" style="text-decoration: none;" data-bs-toggle="tooltip" data-bs-placement="top" title="'.$project->teamleader->name.'">';
                     }
 
                     if($project->teamleader->profile && $project->teamleader->profile->getFirstMediaUrl("profiles")){
-                        $var .= ' <div class="py-1 px-2">';
+                        $var .= '<div class="py-1 px-2">';
                         $var .= '<div class="avatar avatar-md mt-1">';
                         $var .= '<img src="'. $project->teamleader->profile->getFirstMediaUrl("profiles").'" alt="DP"  class="  rounded-circle img-fluid  border border-success shadow mb-1" width="35" height="35">';
                         $var .= '</div>';
@@ -112,64 +102,74 @@ class RenderProjectsTableService{
                                     </div>';
                             }else{
                             }
-                        $var .= '</div>';
-                    }elseif($project->teamleader->getFirstMediaUrl("users")){
-                        $var .= ' <div class="py-1 px-2">';
-                        $var .= '<div class="avatar avatar-md mt-1">';
-                        $var .= '<img src="'. $project->teamleader->getMedia("users")[0]->getUrl("thumb").'" alt="DP"  class="  rounded-circle img-fluid border border-success shadow mb-1" width="35" height="35">';
-                        $var .= '</div>';
-                        if($project->teamleader->hasRole('admin') && $project->teamleader->teamleaderon->count()>0){
-                            $var .= '<div class="position-absolute top-0 start-0">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark-star-fill text-warning" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd" d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5M8.16 4.1a.178.178 0 0 0-.32 0l-.634 1.285a.18.18 0 0 1-.134.098l-1.42.206a.178.178 0 0 0-.098.303L6.58 6.993c.042.041.061.1.051.158L6.39 8.565a.178.178 0 0 0 .258.187l1.27-.668a.18.18 0 0 1 .165 0l1.27.668a.178.178 0 0 0 .257-.187L9.368 7.15a.18.18 0 0 1 .05-.158l1.028-1.001a.178.178 0 0 0-.098-.303l-1.42-.206a.18.18 0 0 1-.134-.098z"/>
-                                        </svg>
-                                    </div>';
-                            }elseif(!$project->teamleader->hasRole('admin') && $project->teamleader->teamleaderon->count()>0){
-                            $var .= '<div class="position-absolute top-0 start-0">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-c-circle-fill" viewBox="0 0 16 16">
-                                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0ZM8.146 4.992c.961 0 1.641.633 1.729 1.512h1.295v-.088c-.094-1.518-1.348-2.572-3.03-2.572-2.068 0-3.269 1.377-3.269 3.638v1.073c0 2.267 1.178 3.603 3.27 3.603 1.675 0 2.93-1.02 3.029-2.467v-.093H9.875c-.088.832-.75 1.418-1.729 1.418-1.224 0-1.927-.891-1.927-2.461v-1.06c0-1.583.715-2.503 1.927-2.503Z"/>
-                                        </svg>
-                                    </div>';
-                            } elseif($project->teamleader->hasRole('admin') && $project->teamleader->teamleaderon->count()==0){
-                            $var .= '<div class="position-absolute top-0 start-0">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-c-circle-fill" viewBox="0 0 16 16">
-                                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0ZM8.146 4.992c.961 0 1.641.633 1.729 1.512h1.295v-.088c-.094-1.518-1.348-2.572-3.03-2.572-2.068 0-3.269 1.377-3.269 3.638v1.073c0 2.267 1.178 3.603 3.27 3.603 1.675 0 2.93-1.02 3.029-2.467v-.093H9.875c-.088.832-.75 1.418-1.729 1.418-1.224 0-1.927-.891-1.927-2.461v-1.06c0-1.583.715-2.503 1.927-2.503Z"/>
-                                        </svg>
-                                    </div>';
-                            }else{
-                            }
-                        $var .= '</div>';
-                    }else{
-                        $var .= ' <div class="py-1 px-2">';
-                        $var .= '<div class="avatar avatar-md mt-1">';
-                        $var .= '<img src="'. asset("images/avatar.png").'" alt="DP"  class="  rounded-circle img-fluid border border-success shadow mb-1" width="35" height="35">';
-                        $var .= '</div>';
-                        if($project->teamleader->hasRole('admin') && $project->teamleader->teamleaderon->count()>0){
-                            $var .= '<div class="position-absolute top-0 start-0">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark-star-fill text-warning" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd" d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5M8.16 4.1a.178.178 0 0 0-.32 0l-.634 1.285a.18.18 0 0 1-.134.098l-1.42.206a.178.178 0 0 0-.098.303L6.58 6.993c.042.041.061.1.051.158L6.39 8.565a.178.178 0 0 0 .258.187l1.27-.668a.18.18 0 0 1 .165 0l1.27.668a.178.178 0 0 0 .257-.187L9.368 7.15a.18.18 0 0 1 .05-.158l1.028-1.001a.178.178 0 0 0-.098-.303l-1.42-.206a.18.18 0 0 1-.134-.098z"/>
-                                        </svg>
-                                    </div>';
-                            }elseif(!$project->teamleader->hasRole('admin') && $project->teamleader->teamleaderon->count()>0){
-                            $var .= '<div class="position-absolute top-0 start-0">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-c-circle-fill" viewBox="0 0 16 16">
-                                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0ZM8.146 4.992c.961 0 1.641.633 1.729 1.512h1.295v-.088c-.094-1.518-1.348-2.572-3.03-2.572-2.068 0-3.269 1.377-3.269 3.638v1.073c0 2.267 1.178 3.603 3.27 3.603 1.675 0 2.93-1.02 3.029-2.467v-.093H9.875c-.088.832-.75 1.418-1.729 1.418-1.224 0-1.927-.891-1.927-2.461v-1.06c0-1.583.715-2.503 1.927-2.503Z"/>
-                                        </svg>
-                                    </div>';
-                            } elseif($project->teamleader->hasRole('admin') && $project->teamleader->teamleaderon->count()==0){
-                            $var .= '<div class="position-absolute top-0 start-0">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-c-circle-fill" viewBox="0 0 16 16">
-                                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0ZM8.146 4.992c.961 0 1.641.633 1.729 1.512h1.295v-.088c-.094-1.518-1.348-2.572-3.03-2.572-2.068 0-3.269 1.377-3.269 3.638v1.073c0 2.267 1.178 3.603 3.27 3.603 1.675 0 2.93-1.02 3.029-2.467v-.093H9.875c-.088.832-.75 1.418-1.729 1.418-1.224 0-1.927-.891-1.927-2.461v-1.06c0-1.583.715-2.503 1.927-2.503Z"/>
-                                        </svg>
-                                    </div>';
-                            }else{
-                            }
-                        $var .= '</div>';
-                    }
-                    $var .='<span class="badge m-1" style="background: #673AB7;">'. $project->teamleader->name .'</span>';
+                            $var .= '</div>';
+                        }elseif($project->teamleader->getFirstMediaUrl("users")){
+                            $var .= ' <div class="py-1 px-2">';
+                            $var .= '<div class="avatar avatar-md mt-1">';
+                            $var .= '<img src="'. $project->teamleader->getMedia("users")[0]->getUrl("thumb").'" alt="DP"  class="  rounded-circle img-fluid border border-success shadow mb-1" width="35" height="35">';
+                            $var .= '</div>';
+                            if($project->teamleader->hasRole('admin') && $project->teamleader->teamleaderon->count()>0){
+                                $var .= '<div class="position-absolute top-0 start-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark-star-fill text-warning" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5M8.16 4.1a.178.178 0 0 0-.32 0l-.634 1.285a.18.18 0 0 1-.134.098l-1.42.206a.178.178 0 0 0-.098.303L6.58 6.993c.042.041.061.1.051.158L6.39 8.565a.178.178 0 0 0 .258.187l1.27-.668a.18.18 0 0 1 .165 0l1.27.668a.178.178 0 0 0 .257-.187L9.368 7.15a.18.18 0 0 1 .05-.158l1.028-1.001a.178.178 0 0 0-.098-.303l-1.42-.206a.18.18 0 0 1-.134-.098z"/>
+                                            </svg>
+                                        </div>';
+                                }elseif(!$project->teamleader->hasRole('admin') && $project->teamleader->teamleaderon->count()>0){
+                                $var .= '<div class="position-absolute top-0 start-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-c-circle-fill" viewBox="0 0 16 16">
+                                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0ZM8.146 4.992c.961 0 1.641.633 1.729 1.512h1.295v-.088c-.094-1.518-1.348-2.572-3.03-2.572-2.068 0-3.269 1.377-3.269 3.638v1.073c0 2.267 1.178 3.603 3.27 3.603 1.675 0 2.93-1.02 3.029-2.467v-.093H9.875c-.088.832-.75 1.418-1.729 1.418-1.224 0-1.927-.891-1.927-2.461v-1.06c0-1.583.715-2.503 1.927-2.503Z"/>
+                                            </svg>
+                                        </div>';
+                                } elseif($project->teamleader->hasRole('admin') && $project->teamleader->teamleaderon->count()==0){
+                                $var .= '<div class="position-absolute top-0 start-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-c-circle-fill" viewBox="0 0 16 16">
+                                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0ZM8.146 4.992c.961 0 1.641.633 1.729 1.512h1.295v-.088c-.094-1.518-1.348-2.572-3.03-2.572-2.068 0-3.269 1.377-3.269 3.638v1.073c0 2.267 1.178 3.603 3.27 3.603 1.675 0 2.93-1.02 3.029-2.467v-.093H9.875c-.088.832-.75 1.418-1.729 1.418-1.224 0-1.927-.891-1.927-2.461v-1.06c0-1.583.715-2.503 1.927-2.503Z"/>
+                                            </svg>
+                                        </div>';
+                                }else{
+                                }
+                            $var .= '</div>';
+                        }else{
+                            $var .= ' <div class="py-1 px-2">';
+                            $var .= '<div class="avatar avatar-md mt-1">';
+                            $var .= '<img src="'. asset("images/avatar.png").'" alt="DP"  class="  rounded-circle img-fluid border border-success shadow mb-1" width="35" height="35">';
+                            $var .= '</div>';
+                            if($project->teamleader->hasRole('admin') && $project->teamleader->teamleaderon->count()>0){
+                                $var .= '<div class="position-absolute top-0 start-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark-star-fill text-warning" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5M8.16 4.1a.178.178 0 0 0-.32 0l-.634 1.285a.18.18 0 0 1-.134.098l-1.42.206a.178.178 0 0 0-.098.303L6.58 6.993c.042.041.061.1.051.158L6.39 8.565a.178.178 0 0 0 .258.187l1.27-.668a.18.18 0 0 1 .165 0l1.27.668a.178.178 0 0 0 .257-.187L9.368 7.15a.18.18 0 0 1 .05-.158l1.028-1.001a.178.178 0 0 0-.098-.303l-1.42-.206a.18.18 0 0 1-.134-.098z"/>
+                                            </svg>
+                                        </div>';
+                                }elseif(!$project->teamleader->hasRole('admin') && $project->teamleader->teamleaderon->count()>0){
+                                $var .= '<div class="position-absolute top-0 start-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-c-circle-fill" viewBox="0 0 16 16">
+                                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0ZM8.146 4.992c.961 0 1.641.633 1.729 1.512h1.295v-.088c-.094-1.518-1.348-2.572-3.03-2.572-2.068 0-3.269 1.377-3.269 3.638v1.073c0 2.267 1.178 3.603 3.27 3.603 1.675 0 2.93-1.02 3.029-2.467v-.093H9.875c-.088.832-.75 1.418-1.729 1.418-1.224 0-1.927-.891-1.927-2.461v-1.06c0-1.583.715-2.503 1.927-2.503Z"/>
+                                            </svg>
+                                        </div>';
+                                } elseif($project->teamleader->hasRole('admin') && $project->teamleader->teamleaderon->count()==0){
+                                $var .= '<div class="position-absolute top-0 start-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-c-circle-fill" viewBox="0 0 16 16">
+                                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0ZM8.146 4.992c.961 0 1.641.633 1.729 1.512h1.295v-.088c-.094-1.518-1.348-2.572-3.03-2.572-2.068 0-3.269 1.377-3.269 3.638v1.073c0 2.267 1.178 3.603 3.27 3.603 1.675 0 2.93-1.02 3.029-2.467v-.093H9.875c-.088.832-.75 1.418-1.729 1.418-1.224 0-1.927-.891-1.927-2.461v-1.06c0-1.583.715-2.503 1.927-2.503Z"/>
+                                            </svg>
+                                        </div>';
+                                }else{
+                                }
+                            $var .= '</div>';
+                        }
                     $var .='</a>';
                     $var .='</div>';
                 } else {
+                $var .= '#';
+            }
+            $var .= '</td>';
+
+            //skills
+            $var .= '<td class="align-middle">';
+            if($project->skills()->count() > 0){
+                foreach ($project->skills as $skill){
+                    $var .= '<span class="badge m-1" style="background: #673AB7;">'.$skill->name.'</span>';
+                }
+            }else{
                 $var .= '#';
             }
             $var .= '</td>';
@@ -180,9 +180,9 @@ class RenderProjectsTableService{
                 foreach ($project->users as $user){
                     $var .='<div>';
                     if($user->profile){
-                        $var .='<a href="'. route('admin.profiles.show', $user->id).'" class="position-relative" style="text-decoration: none;">';
+                        $var .='<a href="'. route('admin.profiles.show', $user->id).'" class="position-relative" style="text-decoration: none;" data-bs-toggle="tooltip" data-bs-placement="top" title="'.$user->name.'">';
                     }else{
-                        $var .='<a href="'.route('admin.statuses.notFound') .'" class="position-relative" style="text-decoration: none;">';
+                        $var .='<a href="'.route('admin.statuses.notFound') .'" class="position-relative" style="text-decoration: none;" data-bs-toggle="tooltip" data-bs-placement="top" title="'.$user->name.'">';
                     }
 
                     if($user->profile && $user->profile->getFirstMediaUrl("profiles")){
@@ -265,7 +265,6 @@ class RenderProjectsTableService{
                             }
                         $var .= '</div>';
                     }
-                    $var .='<span class="badge m-1" style="background: #673AB7;">'. $user->name .'</span>';
                     $var .='</a>';
                     $var .='</div>';
                 }
@@ -274,8 +273,7 @@ class RenderProjectsTableService{
             }
             $var .= '</td>';
 
-            $var .= '<td class="align-middle">'.$project->client->name.'</td>';
-            $var .= '<td class="align-middle">'. $project->tasks->count().'</td>';
+            $var .= '<td class="align-middle"><span class="badge m-1" style="background: #673AB7;">'. $project->tasks->count().'</span></td>';
             $var .= '<td class="align-middle">';
             if($project->status){
             $var .= '<span>
@@ -293,17 +291,34 @@ class RenderProjectsTableService{
             }
             $var .= '</td>';
 
+
+            //buttons
             $var .= '<td class="align-middle">';
             $var .= '<div style="display: flex;">';
             if(auth()->user()->hasRole('admin')){
-                $var .= '<a type="button" class="btn btn-success m-1" href="'. route('admin.projects.assignCreate', $project->id).' " role="button">Assign</a>';
+                $var .= '<a type="button" class="m-1" href="'. route('admin.projects.assignCreate', $project->id).' " data-bs-toggle="tooltip" data-bs-placement="top" title="assign user">';
+                $var .='<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-add" viewBox="0 0 16 16">
+                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+                            <path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
+                        </svg></a>';
             }
-            $var .= '<a type="button" class="btn btn-primary m-1" href="'. route('admin.projects.show', $project->id).'" role="button">Show</a>';
+            $var .= '<a type="button" class="m-1" href="'. route('admin.projects.show', $project->id).'" data-bs-toggle="tooltip" data-bs-placement="top" title="show">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                        </svg>
+                    </a>';
             if(auth()->user()->hasRole('admin')){  
-                $var .= '<a type="button" class="btn btn-secondary m-1" href="'.route('admin.projects.edit', $project->id) .'" role="button">Edit</a>';
+                $var .= '<a type="button" class="m-1" href="'.route('admin.projects.edit', $project->id) .'" data-bs-toggle="tooltip" data-bs-placement="top" title="edit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                        </svg>
+                    </a>';
             }
             if(auth()->user()->hasRole('admin')){  
-                $var .='<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-trash-fill text-danger mt-2" viewBox="0 0 16 16"';
+                $var .= '<a type="button" class="m-1" data-bs-toggle="tooltip" data-bs-placement="top" title="delete" data-bs-toggle="tooltip" data-bs-placement="top" title="delete">';
+                $var .= '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash-fill text-danger" viewBox="0 0 16 16"';
             
                 $var .= 'onclick="if (confirm('."'Are you sure?'".') == true) {';
                 $var .= 'document.getElementById('."'delete-item-".$project->id."').submit();";
@@ -311,8 +326,9 @@ class RenderProjectsTableService{
                 $var .= '} else {';
                 $var .= 'return;';
                 $var .= '}">';
-                $var .= '<path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>';
-                $var .= '</svg>';
+                $var .= ' <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                    </svg>';
+                $var .= '</a>';
 
 
                 $var .= '<form id="delete-item-'.$project->id.'" action="'. route('admin.projects.destroy', $project).'" class="d-none" method="POST">';

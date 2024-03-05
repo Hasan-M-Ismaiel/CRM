@@ -40,6 +40,7 @@ class TaskGroupController extends Controller
         $user_ids = $request->input('user_ids');
         $titles = $request->input('titles'); 
         $descriptions = $request->input('descriptions');
+        $deadlines = $request->input('deadlines');
         $statuses =array();
 
         // check if the titles array is not empty
@@ -63,7 +64,14 @@ class TaskGroupController extends Controller
             }
         }
 
-        if(sizeof($user_ids)>0 && sizeof($titles)>0 && sizeof($descriptions)>0 ){
+        // check if the deadlines array is not empty
+        foreach($deadlines as $deadline){
+            if($deadline==null){
+                return redirect()->back()->with('message', 'there is an error in the deadlines, please try again');
+            }
+        }
+
+        if(sizeof($user_ids)>0 && sizeof($titles)>0 && sizeof($descriptions)>0 && sizeof($deadlines)>0 ){
             $counter = 1;
             foreach ($user_ids as $user_id) {
                 $stingCounter = (string)$counter;
@@ -76,6 +84,7 @@ class TaskGroupController extends Controller
                 $task = Task::create([
                     'title' => $titles[$counter],
                     'description' => $descriptions[$counter],
+                    'deadline' => $deadlines[$counter],
                     'project_id' => $project->id,
                     'user_id' => $user_ids[$counter],
                     'status' => "opened",

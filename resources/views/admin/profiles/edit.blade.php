@@ -28,6 +28,7 @@
                             <form class="" action='{{ route("admin.profiles.update", $profile) }}' method="POST">
                                 @csrf
                                 @method('PATCH')
+                                <!--basic information-->
                                 <div class="row border-bottom p-4 rounded mx-3 my-2 ">
                                     <div class="col-md-6">
                                         <label for="nickname"><strong>Nickname</strong></label>
@@ -62,6 +63,7 @@
                                     </div>
                                 </div>
                                 
+                                <!--location-->
                                 <div class="row border-bottom p-4 rounded mx-3 my-2 ">
                                     <div class="col-md-6">
                                         <label for="city"><strong>City</strong></label>
@@ -71,7 +73,7 @@
                                         <label for="country"><strong>Country</strong></label>
                                         <input type="text" name="country" class="form-control" id="country" placeholder="add the country of the profile" value="{{ $profile->country }}">
                                     </div>
-                                    <div class="col-md-12">
+                                    <div class="col-md-6 mt-1">
                                         <label for="postal_code"><strong>Postal</strong></label>
                                         <input type="text" name="postal_code" class="form-control" id="postal_code" placeholder="add the postal of the profile" value="{{ $profile->postal_code }}">
                                     </div>
@@ -149,7 +151,14 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!--descripe your self / profession-->
                                 <div class="row border-bottom p-4 rounded mx-3 my-2 ">
+                                    <!--profession-->
+                                    <div class="col-md-12">
+                                        <label for="profession"><strong>Profession</strong></label>
+                                        <input type="text" name="profession" class="form-control" id="profession" placeholder="add the profession of the profile" value="{{ $profile->profession }}">
+                                    </div>
+                                    <!--descripe your self-->
                                     <div class="col-md-12">
                                         <label for="description"><strong>Descripe your self</strong></label>
                                         <textarea id="description" name="description" class="form-control" aria-label="With textarea">{{$profile->description}}</textarea>

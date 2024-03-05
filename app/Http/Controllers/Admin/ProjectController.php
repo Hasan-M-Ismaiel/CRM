@@ -30,10 +30,10 @@ class ProjectController extends Controller
     public function index()
     {
         if(auth()->user()->hasRole('admin')){
-            $projects = Project::all();
+            $projects = Project::with('users','tasks')->get();;
         } else {
             $user = Auth::user();
-            $projects = $user->Projects()->get();
+            $projects = $user->Projects()->with('users','tasks')->get();
         }
         return view('admin.projects.index', [
             'projects' => $projects,
@@ -198,33 +198,63 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project)
     {
-        $this->authorize('update', $project);   
+        $this->authorize('update', $project); 
+
         $oldTeamleader = $project->teamleader;
         
         if($request->teamleader_id != null){
             $teamleader = User::findOrFail($request->teamleader_id);
         }
 
-        if($project->numberOfUnFinishedTasks == 0){
-            // if the editor was the teamleader
-            if($request->title != null && $request->description != null && $request->deadline != null && $request->client_id != null && $request->teamleader_id != null){
+        // true = close 
+        if($request->status == 'true') {
+             // number of opened tasks and pending tasks == 0 
+            if($project->numberOfUnFinishedTasks == 0){
+                // if all the field is presented
+                if($request->title != null && $request->description != null && $request->deadline != null && $request->client_id != null && $request->teamleader_id != null){
+                    // if the team name was given  
+                    if(request()->input('teamname')){
+                        $projectTeam = $project->team;
+                        $projectTeam->name=request()->input('teamname');
+                        $projectTeam->save();
+                    }
+                    
+                    $project->update([
+                        'title'           => $request->validated('title'),
+                        'description'     => $request->validated('description'),
+                        'deadline'        => $request->validated('deadline'),
+                        'client_id'       => $request->validated('client_id'),
+                        'teamleader_id'   => $request->validated('teamleader_id'),
+                    ]);
+
+                    $project->status = true; 
+                    $projectTeam->save();
+                }
+            } else {
+            return redirect()->back()->with('message', 'there are tasks not finished yet.');
+            }
+        // false = open
+        }elseif ($request->status == 'false') {
+             // if the editor was the teamleader
+             if($request->title != null && $request->description != null && $request->deadline != null && $request->client_id != null && $request->teamleader_id != null){
                 if(request()->input('teamname')){
                     $projectTeam = $project->team;
                     $projectTeam->name=request()->input('teamname');
                     $projectTeam->save();
                 }
-
+                
                 $project->update([
-                    'title'       => $request->validated('title'),
-                    'description' => $request->validated('description'),
-                    'deadline'    => $request->validated('deadline'),
-                    'client_id'   => $request->validated('client_id'),
+                    'title'           => $request->validated('title'),
+                    'description'     => $request->validated('description'),
+                    'deadline'        => $request->validated('deadline'),
+                    'client_id'       => $request->validated('client_id'),
                     'teamleader_id'   => $request->validated('teamleader_id'),
                 ]);
+                $project->status = false; 
+                $projectTeam->save();
             }
-        }else{
-            return redirect()->back()->with('message', 'there are tasks not finished yet.');
-        }
+        } 
+    
         $assignedSkills = $request->input('assigned_skills'); // the ids of the added skills 
         if( $assignedSkills !=null && sizeof($assignedSkills)>0 ){
             $project->skills()->detach();
@@ -233,6 +263,7 @@ class ProjectController extends Controller
             }
         } 
 
+        // add new skills to the project
         $new_skills = $request->input('new_skills');
         if( $new_skills !=null && sizeof($new_skills)>0 ){
             //creating the new skill and attach it to the new user
@@ -244,6 +275,7 @@ class ProjectController extends Controller
             }
         }
 
+        // if the auth user is not in the project team then add it
         if(!$project->users->contains(auth()->user())){
             $project->users()->attach(auth()->user());
         }
@@ -266,7 +298,7 @@ class ProjectController extends Controller
         $sendNotification = new NotificationService($project, $assignedUsers);
         $sendNotification->SendNotificationMessages();
         
-        if($request->teamleader!=null){
+        if($request->teamleader_id !=null){
             if(!$project->users->contains($teamleader)){
                 $project->users()->attach($teamleader);
             }
@@ -279,17 +311,7 @@ class ProjectController extends Controller
 
         }
 
-
-        // if the editor was the teamleader
-        if($request->status != null){
-            if($request->status == 'true') {
-                $project->status = true;  
-            } 
-            elseif ($request->status == 'false') {
-                $project->status = false;  
-            } 
-            $project->save();
-        }
+                
         
 
         return redirect()->route('admin.projects.index')->with('message', 'the project has been updated successfully');
@@ -305,14 +327,14 @@ class ProjectController extends Controller
         $projectTitle = $project->title;
         $projectUsers =  $project->users;
     
-        //$project->skills()->detach();
-        //$project->users()->detach();
+        $project->skills()->detach();
+        $project->users()->detach();
         
         $project->delete();
         //to notify the users those are in the project
-        // foreach($projectUsers as $user){
-        //     $user->notify(new ProjectDeletedNotification($projectTitle));
-        // }
+        foreach($projectUsers as $user){
+            $user->notify(new ProjectDeletedNotification($projectTitle));
+        }
         return redirect()->route('admin.projects.index')->with('message','the project has been deleted successfully');
     }
 

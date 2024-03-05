@@ -92,13 +92,13 @@
                                             <strong># of assigned projects:</strong> <span class="badge m-1" style="background: #673AB7;">{{ $user->numberOfAssignedProjects }}</span>
                                             <br /><strong># of assigned tasks:</strong><span class="badge m-1" style="background: #673AB7;"> {{ $user->numberOfAssignedTasks }}</span>
                                             <br /><strong># of finished tasks:</strong><span class="badge m-1" style="background: #673AB7;"> {{ $user->numberOfClosedTasks }}</span>
-                                            <br /><strong># of completed projects:</strong><span class="badge m-1" style="background: #673AB7;"> {{ $user->numberOfCompletededProjects }}</span>
+                                            <br /><strong># of completed projects:</strong><span class="badge m-1" style="background: #673AB7;"> {{ $user->numberOfCompletedProjects }}</span>
                                         </p>
                                         
                                     </div>
                                     <div class="m-4 position-relative">
                                         @if($user->profile)
-                                            <a class="btn btn-primary" href="{{ route('admin.profiles.show', $user->id) }}" data-bs-toggle="tooltip" data-bs-placement="top" title="show">
+                                            <a class="btn btn-primary" href="{{ route('admin.profiles.show', $user->id) }}" data-bs-toggle="tooltip" data-bs-placement="top" title="show profile">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
                                                     <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
                                                     <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>

@@ -174,7 +174,7 @@
                                                                             @elseif($user->getFirstMediaUrl("users"))
                                                                             <img src='{{$user->getMedia("users")[0]->getUrl("thumb")}}' alt="DP"  class="avatar-img  shadow">
                                                                             @else
-                                                                            <img src='{{asset("images/avatar.png")}}' alt="DP"  class="avatar-img  shadow ">
+                                                                            <img src='{{asset("images/avatar.png")}}' alt="DP"  class="avatar-img  shadow">
                                                                             @endif
                                                                         </div>
                                                                     </input>
@@ -192,7 +192,7 @@
                                                                             @elseif($user->getFirstMediaUrl("users"))
                                                                             <img src='{{$user->getMedia("users")[0]->getUrl("thumb")}}' alt="DP"  class="avatar-img  shadow">
                                                                             @else
-                                                                            <img src='{{asset("images/avatar.png")}}' alt="DP"  class="avatar-img  shadow ">
+                                                                            <img src='{{asset("images/avatar.png")}}' alt="DP"  class="avatar-img  shadow">
                                                                             @endif
                                                                         </div>
                                                                     </input>

@@ -60,6 +60,13 @@
                                                             <label for="description"><strong>Description</strong></label>
                                                             <input type="textarea" name="descriptions[]" class="form-control" id="description" placeholder="task's description here"  value="{{ old('description') }}">
                                                         </div>
+
+                                                        <!--deadline-->
+                                                        <div class="form-group mt-4">
+                                                            <label for="description"><strong>Deadline</strong></label>
+                                                            <input type="date" name="deadlines[]" class="form-control" id="deadline" placeholder="task's deadline here"  value="{{ old('deadline') }}">
+                                                        </div>
+
                                                         <!--input button-->
                                                         <div class="form-group mt-4">
                                                             <div id="content-user" class="mt-3">
@@ -186,6 +193,10 @@
                         +'<div class="form-group mt-4">'
                             +'<label for="description"><strong>Description</strong></label>'
                             +'<input type="textarea" name="descriptions[]" class="form-control" id="description" placeholder="tasks description here">'
+                        +'</div>'
+                        +'<div class="form-group mt-4">'
+                            +'<label for="deadline"><strong>Deadline</strong></label>'
+                            +'<input type="date" name="deadlines[]" class="form-control" id="deadline" placeholder="tasks deadline here">'
                         +'</div>'
                         +'<div class="form-group mt-4">'
                             +'<label for="user_id"><strong>Users</strong></label>'

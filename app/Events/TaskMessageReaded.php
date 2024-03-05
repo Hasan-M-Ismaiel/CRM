@@ -59,11 +59,11 @@ class TaskMessageReaded implements ShouldBroadcast
         }
 
         return [
-            'task_id'   => $this->task->id,                                         // task id that contain the messages that have been seen by the user ^
-            'user_id'   => $this->user->id,                                         // the user id who see the messages
-            'user_name' => $this->user->name,                                       // user name who see the messages
-            'user_image_url' => $userImageRoute,                                    // user image to show in the reciver section 
-            'taskmessages_id' => $this->readedTaskMessages,                         // the ids of the readed messages in the task
+            'task_id'           => $this->task->id,                                         // task id that contain the messages that have been seen by the user ^
+            'user_id'           => $this->user->id,                                         // the user id who see the messages
+            'user_name'         => $this->user->name,                                       // user name who see the messages
+            'user_image_url'    => $userImageRoute,                                         // user image to show in the reciver section 
+            'taskmessages_id'   => $this->readedTaskMessages,                               // the ids of the readed messages in the task
             // 'number_of_unreaded_messages' => $this->numberOfUnreadedMessages,    
         ];
     }

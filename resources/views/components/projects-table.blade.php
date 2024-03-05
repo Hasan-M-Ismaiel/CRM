@@ -196,7 +196,7 @@
                             </a>
                             @endcan
                             @can('project_delete')
-                            <a type="button" class="m-1" href="" data-bs-toggle="tooltip" data-bs-placement="top" title="delete project">
+                            <a type="button" class="m-1" data-bs-toggle="tooltip" data-bs-placement="top" title="delete project">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash-fill text-danger" viewBox="0 0 16 16"
                                     onclick="if (confirm('Deleting project will cause deleting all tasks and chats! Are you sure?') == true) {
                                                         document.getElementById('delete-item-{{$project->id}}').submit();

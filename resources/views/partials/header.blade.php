@@ -11,18 +11,18 @@
         <!--logo-->
         <a class="header-brand d-md-none" href="#">
             <svg width="118" height="46" alt="CoreUI Logo">
-                <use xlink:href="{{ asset('assets/brand/coreui.svg#full') }}"></use>
+                <use xlink:href="{{ asset('assets/brand/TeamWorkOKWhite.svg#full') }}"></use>
             </svg>
         </a>
 
         <!--pages links left-->
         <ul class="header-nav d-none d-md-flex">
-            @can('user_access')<li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Dashboard</a></li>@endcan
+            <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Dashboard</a></li>
             @can('user_access')<li class="nav-item"><a class="nav-link" href="{{ route('admin.users.index') }}">Users</a></li>@endcan
             @can('user_access')<li class="nav-item"><a class="nav-link" href="{{ route('admin.clients.index') }}">Clients</a></li>@endcan
-            @can('user_access')<li class="nav-item"><a class="nav-link" href="{{ route('admin.projects.index') }}">Projects</a></li>@endcan
-            @can('user_access')<li class="nav-item"><a class="nav-link" href="{{ route('admin.tasks.index') }}">Tasks</a></li>@endcan
-            @can('user_access')<li class="nav-item"><a class="nav-link" href="{{ route('admin.skills.index') }}">Skills</a></li>@endcan
+           <li class="nav-item"><a class="nav-link" href="{{ route('admin.projects.index') }}">Projects</a></li>
+           <li class="nav-item"><a class="nav-link" href="{{ route('admin.tasks.index') }}">Tasks</a></li>
+            @can('create', App\Models\Skill::class)<li class="nav-item"><a class="nav-link" href="{{ route('admin.skills.index') }}">Skills</a></li>@endcan
         </ul>
         <!--pages links icons right-->
         <ul class="header-nav ms-auto">
@@ -88,7 +88,7 @@
                 <a class="nav-link py-0 imageParentClass" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" data-bs-toggle="tooltip" data-bs-placement="top" title="{{auth()->user()->name}}">
                     @if(Auth::user()->profile && Auth::user()->profile->getFirstMediaUrl("profiles"))
                         <div class="avatar avatar-md">
-                            <img class="avatar-img border border-success shadow mb-1" src='{{ Auth::user()->profile->getFirstMediaUrl("profiles") }}' alt="user@email.com" />
+                            <img class="avatar-img border border-success shadow mb-1" src='{{ Auth::user()->profile->getFirstMediaUrl("profiles") }}' alt="" />
                         </div>
                         <span class="ms-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">
@@ -96,14 +96,14 @@
                             </svg>
                         </span>
                     @elseif(Auth::user()->getFirstMediaUrl("users"))
-                        <div class="avatar avatar-md"><img class="avatar-img border border-success shadow mb-1" src='{{ Auth::user()->getMedia("users")[0]->getUrl("thumb") }}' alt="user@email.com" /></div>
+                        <div class="avatar avatar-md"><img class="avatar-img border border-success shadow mb-1" src='{{ Auth::user()->getMedia("users")[0]->getUrl("thumb") }}' alt="" /></div>
                         <span class="ms-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">
                                 <circle cx="8" cy="8" r="8"/>
                             </svg>
                         </span>
                     @else 
-                        <div class="avatar avatar-md"><img class="avatar-img border border-success shadow mb-1" src="{{ asset('images/avatar.png') }}" alt="user@email.com"></div>
+                        <div class="avatar avatar-md"><img class="avatar-img border border-success shadow mb-1" src="{{ asset('images/avatar.png') }}" alt=""></div>
                         <span class="ms-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="#3cf10e" class="bi bi-circle-fill" viewBox="0 0 16 16">
                                 <circle cx="8" cy="8" r="8"/>
@@ -122,15 +122,18 @@
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-bell') }}"></use>
                         </svg> Updates<span class="badge badge-sm bg-info ms-2">42</span>
                     </a>
-                    <a class="dropdown-item text-muted" style="pointer-events: none; cursor: default;" href="#">
+                    <!-- <a class="dropdown-item text-muted" style="pointer-events: none; cursor: default;" href="#">
                         <svg class="icon me-2">
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-envelope-open') }}"></use>
                         </svg> Messages<span class="badge badge-sm bg-success ms-2">42</span>
-                    </a>
+                    </a> -->
+
+                    <!--tasks-->
                     <a class="dropdown-item" href="{{ route('admin.tasks.index') }}">
                         <svg class="icon me-2">
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-task') }}"></use>
-                        </svg> Tasks<span class="badge badge-sm bg-danger ms-2">
+                        </svg> Tasks
+                        <span id="headerTasksDropdown" class="badge badge-sm bg-danger ms-2">
                             @if(auth()->user()->hasRole('admin'))
                             <?php $tasks = App\Models\Task::all();$tasks->count();?>
                             {{$tasks->count()}}
@@ -142,27 +145,38 @@
                     <div class="dropdown-header bg-light py-2">
                         <div class="fw-semibold">Settings</div>
                     </div>
+                    <!--account-->
                     <a class="dropdown-item" href="{{ route('admin.users.show', Auth::user()) }}">
                         <svg class="icon me-2">
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-user') }}"></use>
-                        </svg> Account</a>
+                        </svg> Account
+                    </a>
+                    <!--profile-->
                     <a class="dropdown-item" href="{{ route('admin.profiles.show', Auth::user()) }}">
                         <svg class="icon me-2">
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-user') }}"></use>
-                        </svg> Profile</a>
+                        </svg> Profile
+                    </a>
                     <a class="dropdown-item text-muted" style="pointer-events: none; cursor: default;" href="#">
                         <svg class="icon me-2">
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-settings') }}"></use>
-                        </svg> Settings</a>
+                        </svg> Settings
+                    </a>
                     <a class="dropdown-item text-muted" style="pointer-events: none; cursor: default;" href="#">
                         <svg class="icon me-2">
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-credit-card') }}"></use>
-                        </svg> Payments<span class="badge badge-sm bg-secondary ms-2">42</span>
+                        </svg> Payments<span class="badge badge-sm bg-secondary ms-2">
+                            10
+                        </span>
                     </a>
+                    <!--projects-->
                     <a class="dropdown-item" href="{{ route('admin.projects.index') }}">
                         <svg class="icon me-2">
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-file') }}"></use>
-                        </svg> Projects<span class="badge badge-sm bg-primary ms-2">42</span>
+                        </svg> Projects
+                        <span id="headerProjectsDropdown" class="badge badge-sm bg-primary ms-2">
+                            {{auth()->user()->projects()->count()}}
+                        </span>
                     </a>
                     <div class="dropdown-divider text-muted" style="pointer-events: none; cursor: default;"></div>
                     <a class="dropdown-item text-muted" style="pointer-events: none; cursor: default;" href="#">
@@ -170,6 +184,7 @@
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-lock-locked') }}"></use>
                         </svg> Lock Account
                     </a>
+                    <!--logout-->
                     <a class="dropdown-item" href="{{ route('logout') }}"
                                                     onclick="event.preventDefault();
                                                     document.getElementById('logout-form').submit();">

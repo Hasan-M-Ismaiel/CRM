@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
+            <div class="card position-relative">
                 <div class="page-content page-container" id="page-content">
                     <div class="padding">
                         <div class="row">
@@ -18,7 +18,7 @@
                                 @endif
                                     <div class="x-task-card">
                                         <div>@can('task_edit')<a class="text-secondary btn" style="text-decoration: none;" href="{{ route('admin.tasks.edit', $task) }}">Edit</a>@endcan</div>
-                                        <div> @can('task_delete')<a class="text-secondary btn" style="text-decoration: none;" href="#" onclick="if (confirm('Are you sure?') == true) {
+                                        <div> @can('task_delete')<a class="text-secondary btn" style="text-decoration: none;" href="#" onclick="if (confirm('There could be messages in the task chat! Are you sure?') == true) {
                                                                                                                                 document.getElementById('delete-item-{{$task->id}}').submit();
                                                                                                                                 event.preventDefault();
                                                                                                                                 } else {
@@ -34,7 +34,17 @@
                                     </div>
                                     <div class="card-body">
                                         
-                                        <h5 class="card-title col">{{ $task->title }}</h5>
+                                        <h5 class="card-title col">
+                                            {{ $task->title }}
+                                            @can('showTaskChat', $task)
+                                            <a type="button" class="m-1" href="{{ route('admin.tasks.showTaskChat', $task->id) }}" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="get into chat teamleader">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">
+                                                    <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0m4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+                                                    <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9 9 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.4 10.4 0 0 1-.524 2.318l-.003.011a11 11 0 0 1-.244.637c-.079.186.074.394.273.362a22 22 0 0 0 .693-.125m.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6-3.004 6-7 6a8 8 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a11 11 0 0 0 .398-2"/>
+                                                </svg>
+                                            </a>
+                                            @endcan
+                                        </h5>
                                         <x-task-status :status="$task->status" />
                                         <span class="border-start border-3 border-primary ps-2 "> start date: {{ $task->created_at->diffForHumans() }}</span>
                                         <br>
@@ -56,6 +66,8 @@
                                             <br>
                                             <strong>for user:</strong><span class="badge"><a href="{{ route('admin.users.show', $task->user->id) }}" style="text-decoration: none;" >{{ $task->user->name }}</a></span>
                                             <br>
+                                            <strong>deadline:</strong><span> {{ $task->deadline }}</span>
+                                            <br>
                                             <!--this is just for the user not for the admin -->
                                             @if($task->status=="opened")
                                             @can('markTaskAsCompleted-task', $task)
@@ -72,6 +84,14 @@
                         </div>
                     </div>
                 </div>
+                <!--this is if the user not finish the task on the time - the admin should be notified  also-->
+                @if($task->deadline < now() && $task->status!="closed")
+                <div class="position-absolute top-0 start-0 m-2" data-bs-toggle="tooltip" data-bs-placement="top" title="not finished on the time">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#ee2811" class="bi bi-patch-exclamation-fill" viewBox="0 0 16 16">
+                        <path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01zM8 4c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995A.905.905 0 0 1 8 4m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                    </svg>
+                </div>
+                @endif
             </div>
         </div>
     </div>

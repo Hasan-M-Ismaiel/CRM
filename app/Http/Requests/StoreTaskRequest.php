@@ -33,6 +33,7 @@ class StoreTaskRequest extends FormRequest
             'description' => ['required', 'string', 'max:255'],
             'project_id' => ['required', Rule::in($projects)], 
             'user_id' => ['required', Rule::in($projectUsers)],
+            'deadline' => 'required|date|after:now', 
         ];
     }
 }

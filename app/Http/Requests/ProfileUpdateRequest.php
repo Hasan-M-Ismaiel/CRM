@@ -25,16 +25,16 @@ class ProfileUpdateRequest extends FormRequest
             'nickname'          => ['required', 'string', 'max:100'],
             'gender'            => ['required', 'string', 'max:100'],
             'age'               => ['required', 'numeric'],   
-            'phone_number'      => ['required', 'numeric'],
+            'phone_number'      => ['required', 'string'],
             'city'              => ['required', 'string', 'max:100'],
             'country'           => ['required', 'string', 'max:100'],
-            'postal_code'       => ['required', 'numeric'],
+            'postal_code'       => ['required', 'string'],
             'facebook_account'  => ['required', 'string', 'max:100'],
             'linkedin_account'  => ['required', 'string', 'max:100'],
             'github_account'    => ['required', 'string', 'max:100'],
             'twitter_account'   => ['required', 'string', 'max:100'],
             'instagram_account' => ['required', 'string', 'max:100'],
-            'description'       => ['required', 'string', 'max:100'],
+            'description'       => ['required', 'string', 'max:250'],
         ];
     }
 }

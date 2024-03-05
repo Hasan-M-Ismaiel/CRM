@@ -5,90 +5,275 @@
     <div class="row justify-content-center">
         <div class="row">
 
-            <!--users-->
-            <div class="col-lg-3 col-6">
-                <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
-                    <div class="card-header">{{ $users->count()}}</div>
-                    <div class="card-body">
-                        <h5 class="card-title pt-2">USERS</h5>
-                    </div>
-                    <a class="card-footer bg-primary btn " href="{{route('admin.users.index')}}"> More info <i class="bi bi-arrow-right-circle"></i></a>
-                </div>
-            </div>
-            <!--clients-->
-            <div class="col-lg-3 col-6">
-                <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
-                    <div class="card-header">{{ $clients->count()}}</div>
-                    <div class="card-body">
-                        <h5 class="card-title pt-2">CLIENTS</h5>
-                    </div>
-                    <a class="card-footer bg-secondary btn " href="{{route('admin.clients.index')}}"> More info <i class="bi bi-arrow-right-circle"></i></a>
-                </div>
-            </div>
-            <!--projects-->
-            <div class="col-lg-3 col-6">
-                <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
-                    <div class="card-header">{{ $projects->count() }}</div>
-                    <div class="card-body">
-                        <h5 class="card-title pt-2">PROJECTS</h5>
-                    </div>
-                    <a class="card-footer bg-success btn " href="{{route('admin.projects.index')}}"> More info <i class="bi bi-arrow-right-circle"></i></a>
-                </div>
-            </div>
-            <!--tasks-->
-            <div class="col-lg-3 col-6">
-                <div class="card text-white bg-danger mb-3" style="max-width: 18rem;">
-                    <div class="card-header">{{ $tasks->count()}}</div>
-                    <div class="card-body">
-                        <h5 class="card-title pt-2">TASKS</h5>
-                    </div>
-                    <a class="card-footer bg-danger btn " href="{{route('admin.tasks.index')}}"> More info <i class="bi bi-arrow-right-circle"></i></a>
-                </div>
-            </div>
-            <!--skills-->
-            <div class="col-lg-3 col-2">
-                <div class="card text-dark bg-warning mb-3" style="max-width: 18rem;">
-                    <div class="card-header">{{ $skills->count()}}</div>
-                    <div class="card-body">
-                        <h5 class="card-title pt-2">SKILLS</h5>
-                    </div>
-                    <a class="card-footer bg-warning btn " href="{{route('admin.skills.index')}}"> More info <i class="bi bi-arrow-right-circle"></i></a>
-                </div>
-            </div>
-            <!--chart-->
-            <div class="col-lg-9 col-10">
-                <!--best users-->
-                <section  class="bg-gray-100">
-                    <div class="container card my-3 pt-4">
-                        <div class="row">
-                            <div class="col d-flex justify-content-center">
-                                <!--completed tasks-->
-                                <div class="eb-progress-bar-wrapper">
-                                    <div class="eb-progress-bar html" style="--value: {{$taskCompletePercentage}}; --col: #FF5089">
-                                        <progress id="html" min="0" max="100" value="{{$taskCompletePercentage}}"></progress>
-                                    </div>
-                    
-                                    <label for="html" class="eb-progress-bar-title">
-                                        <h2>projects</h2>
-                                    </label>
-                                </div>
+            @foreach(auth()->user()->projects as $project)
+            <a href="{{route('admin.projects.show',$project)}}" style="text-decoration: none;">
+                @if($project->status==0)
+                <div class="card_ green">
+                @else
+                <div class="card_">
+                @endif
+                    <div class="additional py-2">
+                        <div class="user-card">
+                            @if($project->teamleader)
+                            <div class="points_ text-center">
+                                {{$project->teamleader->name}}
                             </div>
-                            <div class="col d-flex justify-content-center">
-                                <!--completed projects-->
-                                <div class="eb-progress-bar-wrapper">
-                                <div class="eb-progress-bar css" style="--value: {{$projectCompletePercentage}}; --col: #FF1659">
-                                    <progress id="css" min="0" max="100" value="{{$projectCompletePercentage}}"></progress>
-                                </div>
-                    
-                                <label for="css" class="eb-progress-bar-title">
-                                    <h2>tasks</h2>
-                                </label>
-                                </div>
-                            </div>        
+                            @else
+                            <div class="points_ text-center">
+                                <p class="text-white">not added yet</p>   <!--this should not be here because in every project it has a teamleader but what if we deleted user _then the teamleader id in the project table will be empty-->
+                            </div>
+                            @endif
+                            <!--user image-->
+                            @if($project->teamleader->profile && $project->teamleader->profile->getFirstMediaUrl("profiles"))
+                            <img src='{{ $project->teamleader->profile->getFirstMediaUrl("profiles") }}' class="img-fluid d-block mx-auto rounded-circle img-thumbnail mb-4"/>
+                            @elseif($project->teamleader->getFirstMediaUrl("users"))
+                            <img  src='{{ $project->teamleader->getMedia("users")[0]->getUrl("thumb") }}' class="img-fluid d-block mx-auto rounded-circle img-thumbnail mb-4" />
+                            @else 
+                            <img  src="{{ asset('images/avatar.jpg') }}" class="img-fluid d-block mx-auto rounded-circle img-thumbnail mb-4"  width="15"/>
+                            @endif
+                        </div>
+                        <div class="more-info">
+                            <h1>{{$project->teamleader->name}}</h1>
+                            @if($project->teamleader->profile)
+                            <div class="coords">
+                            <span>Web developer</span>
+                            <span>{{$project->teamleader->profile->created_at->diffForHumans()}}</span>
+                            </div>
+                            <div class="coords">
+                            <span>{{$project->teamleader->profile->city}}</span>
+                            <span>#</span> <!--here could be the description-->
+                            </div>
+                            @else
+                            <p class="text-white">dose not have profile yet!</p>
+                            @endif
+                            <div class="stats">
+                            <div>
+                                <div class="title">Projects</div>
+                                <i class="fa fa-trophy"></i>
+                                <div class="value">{{$project->teamleader->numberOfCompletedProjects}}</div>
+                            </div>
+                            <div>
+                                <div class="title">Tasks</div>
+                                <i class="fa fa-gamepad"></i>
+                                <div class="value">{{$project->teamleader->numberOfClosedTasks}}</div>
+                            </div>
+                            <div>
+                                <div class="title">Leader</div>
+                                <i class="fa fa-group"></i>
+                                <div class="value">{{$project->teamleader->teamleaderon->count()}}</div>
+                            </div>
+                            <div>
+                                <div class="title">Working</div>
+                                <i class="fa fa-coffee"></i>
+                                <div class="value">{{$project->teamleader->numberOfOpenedTasks}}</div>
+                            </div>
+                            </div>
                         </div>
                     </div>
-                </section>
-            </div>
+                    <div class="general">
+                        <h1>{{$project->title}}</h1>
+                        <!--progress bar-->
+                        <div class="mt-2">
+                            <span class="badge m-1" style="background: #673AB7;">Closed Tasks</span>
+                            <div class="progress blue">
+                                <div class="progress-bar" style="width:{{$project->taskClosedPercentage}}%; background:#1a4966;">
+                                    <div class="progress-value">{{$project->taskClosedPercentage}}%</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <span class="badge m-1" style="background: #673AB7;">Opened Tasks</span>
+                            <div class="progress blue">
+                                <div class="progress-bar" style="width:{{$project->taskOpenedPercentage}}%; background:#1a4966;">
+                                    <div class="progress-value">{{$project->taskOpenedPercentage}}%</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <span class="badge m-1" style="background: #673AB7;">Pending Tasks</span>
+                            <div class="progress blue">
+                                <div class="progress-bar" style="width:{{$project->taskPendedPercentage}}%; background:#1a4966;">
+                                    <div class="progress-value">{{$project->taskPendedPercentage}}%</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-secondary mb-1 mt-5">
+                            <div class="p-0 m-0">total tasks:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="badge m-1" style="background: #673AB7;">{{$project->numberOfTotalTasks}}</span></div>
+                            <div class="p-0 m-0">opened tasks:&nbsp; <span class="badge m-1" style="background: #673AB7;">{{$project->numberOfOpenedTasks}}</span></div>
+                            <div class="p-0 m-0">pending tasks: <span class="badge m-1" style="background: #673AB7;">{{$project->numberOfPendingTasks}}</span></div>
+                            <div class="p-0 m-0">closed tasks:&nbsp;&nbsp;&nbsp; <span class="badge m-1" style="background: #673AB7;">{{$project->numberOfClosedTasks}}</span></div>
+                        </div>
+                        
+                    </div>
+                    <div class="position-absolute bottom-0 end-0 mb-4  me-4">
+                        <!--chart-->
+                        <div class="eb-progress-bar-wrapper">
+                            <div class="eb-progress-bar html" style="--value: {{$project->projectCompletePercent}}; --col: #FF5089">
+                                <progress id="html" min="0" max="100" value="{{$project->projectCompletePercent}}"></progress>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            @endforeach
+
+            <!--cards and percentage-->
+            @if(auth()->user()->hasRole('admin') || auth()->user()->teamleaderon()->count()>0)
+                @if(auth()->user()->hasRole('admin'))
+                    <!--users-->
+                    <div class="col-lg-3 col-6">
+                        <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                            <div class="card-header">{{ $users->count()}}</div>
+                            <div class="card-body">
+                                <h5 class="card-title pt-2">USERS</h5>
+                            </div>
+                            <a class="card-footer bg-primary btn " href="{{route('admin.users.index')}}"> More info <i class="bi bi-arrow-right-circle"></i></a>
+                        </div>
+                    </div>
+                    <!--clients-->
+                    <div class="col-lg-3 col-6">
+                        <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+                            <div class="card-header">{{ $clients->count()}}</div>
+                            <div class="card-body">
+                                <h5 class="card-title pt-2">CLIENTS</h5>
+                            </div>
+                            <a class="card-footer bg-secondary btn " href="{{route('admin.clients.index')}}"> More info <i class="bi bi-arrow-right-circle"></i></a>
+                        </div>
+                    </div>
+                    <!--projects-->
+                    <div class="col-lg-3 col-6">
+                        <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+                            <div class="card-header">{{ $projects->count() }}</div>
+                            <div class="card-body">
+                                <h5 class="card-title pt-2">PROJECTS</h5>
+                            </div>
+                            <a class="card-footer bg-success btn " href="{{route('admin.projects.index')}}"> More info <i class="bi bi-arrow-right-circle"></i></a>
+                        </div>
+                    </div>
+                    <!--tasks-->
+                    <div class="col-lg-3 col-6">
+                        <div class="card text-white bg-danger mb-3" style="max-width: 18rem;">
+                            <div class="card-header">{{ $tasks->count()}}</div>
+                            <div class="card-body">
+                                <h5 class="card-title pt-2">TASKS</h5>
+                            </div>
+                            <a class="card-footer bg-danger btn " href="{{route('admin.tasks.index')}}"> More info <i class="bi bi-arrow-right-circle"></i></a>
+                        </div>
+                    </div>
+                    <!--skills-->
+                    <div class="col-lg-3 col-2">
+                        <div class="card text-dark bg-warning mb-3" style="max-width: 18rem;">
+                            <div class="card-header">{{ $skills->count()}}</div>
+                            <div class="card-body">
+                                <h5 class="card-title pt-2">SKILLS</h5>
+                            </div>
+                            <a class="card-footer bg-warning btn " href="{{route('admin.skills.index')}}"> More info <i class="bi bi-arrow-right-circle"></i></a>
+                        </div>
+                    </div>
+                    <!--chart-->
+                    <div class="col-lg-9 col-10">
+                        <section  class="bg-gray-100">
+                            <div class="container card my-3 pt-4">
+                                <div class="row">
+                                    <div class="col d-flex justify-content-center">
+                                        <!--completed projects-->
+                                        <div class="eb-progress-bar-wrapper">
+                                            <div class="eb-progress-bar html" style="--value: {{auth()->user()->projectCompletePercentage}}; --col: #FF5089">
+                                                <progress id="html" min="0" max="100" value="{{auth()->user()->projectCompletePercentage}}"></progress>
+                                            </div>
+                                            <label for="html" class="eb-progress-bar-title">
+                                                <h2>{{ $projects->count() }}/projects</h2>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col d-flex justify-content-center">
+                                        <!--completed tasks-->
+                                        <div class="eb-progress-bar-wrapper">
+                                        <div class="eb-progress-bar css" style="--value: {{auth()->user()->closedTasksForAllProjectsPercentage}}; --col: #FF1659">
+                                            <progress id="css" min="0" max="100" value="{{auth()->user()->closedTasksForAllProjectsPercentage}}"></progress>
+                                        </div>
+                                        <label for="css" class="eb-progress-bar-title">
+                                            <h2>{{$tasks->count()}} tasks</h2>
+                                        </label>
+                                        </div>
+                                    </div>        
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                @elseif(auth()->user()->teamleaderon()->count()>0)
+                    <!--you are teamleader on projects-->
+                    <div class="col-lg-3 col-6">
+                        <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+                            <div class="card-header">{{ auth()->user()->projects()->count() }}/<h5 class="card-title pt-2">PROJECTS</h5></div>
+                            <div class="card-body">
+                                <h5 class="card-title pt-2">PROJECTS You are teamleader on : <span class="badge m-1" style="background: #673AB7;">{{auth()->user()->teamleaderon()->count()}}</span></h5>
+                                <h5 class="card-title pt-2">PROJECTS You are in            : <span class="badge m-1" style="background: #673AB7;">{{ auth()->user()->projects()->count() - auth()->user()->teamleaderon()->count()}}</span></h5>
+                            </div>
+                            <a class="card-footer bg-success btn " href="{{route('admin.projects.index')}}"> More info <i class="bi bi-arrow-right-circle"></i></a>
+                        </div>
+                    </div>
+                    <!--tasks-->
+                    <div class="col-lg-3 col-6">
+                        <div class="card text-white bg-danger mb-3" style="max-width: 18rem;">
+                            <div class="card-header">{{ auth()->user()->numberOfTasksForAllProjects }}/<h5 class="card-title pt-2">TASKS</h5></div>
+                            <div class="card-body">
+                                <h5 class="card-title pt-2">Tasks assigned to you: <span class="badge m-1" style="background: #673AB7;">{{auth()->user()->numberOfAssignedTasks}}</span></h5>
+                                <h5 class="card-title pt-2">Completed Tasks assigned to you: <span class="badge m-1" style="background: #673AB7;">{{auth()->user()->numberOfClosedTasks}}</h5>
+                                <h5 class="card-title pt-2">Pending Tasks assigned to you: <span class="badge m-1" style="background: #673AB7;">{{auth()->user()->numberOfPendingTasks}}</h5>
+                                <h5 class="card-title pt-2">Open Tasks assigned to you: <span class="badge m-1" style="background: #673AB7;">{{auth()->user()->numberOfOpenedTasks}}</h5>
+                                <h5 class="card-title pt-2">Tasks you created by you: <span class="badge m-1" style="background: #673AB7;">{{ auth()->user()->numberOfTasksForAllProjects - auth()->user()->numberOfAssignedTasks}}</h5>
+                                <h5 class="card-title pt-2">Completed Tasks created by you:<span class="badge m-1" style="background: #673AB7;">{{ auth()->user()->numberOfCompleteTasksCreatedByTeamleader }}</h5>
+                                
+                            </div>
+                            <a class="card-footer bg-danger btn " href="{{route('admin.tasks.index')}}"> More info <i class="bi bi-arrow-right-circle"></i></a>
+                        </div>
+                    </div>
+                    <!--skills-->
+                    <div class="col-lg-3 col-2">
+                        <div class="card text-dark bg-warning mb-3" style="max-width: 18rem;">
+                            <div class="card-header">{{ $skills->count()}}/SKILLS</div>
+                            <div class="card-body">
+                                <h5 class="card-title pt-2">SKILLS</h5>
+                            </div>
+                            <a class="card-footer bg-warning btn " href="{{route('admin.skills.index')}}"> More info <i class="bi bi-arrow-right-circle"></i></a>
+                        </div>
+                    </div>
+                    <!--chart-->
+                    <div class="row">
+                        <!--best users-->
+                        <section  class="bg-gray-100">
+                            <div class="container card my-3 pt-4">
+                                <div class="row">
+                                    <div class="col d-flex justify-content-center">
+                                        <!--completed projects-->
+                                        <div class="eb-progress-bar-wrapper">
+                                            <div class="eb-progress-bar html" style="--value: {{auth()->user()->CompleteProjectsTeamleaderPercentage}}; --col: #FF5089">
+                                                <progress id="html" min="0" max="100" value="{{auth()->user()->CompleteProjectsTeamleaderPercentage}}"></progress>
+                                            </div>
+                                            <label for="html" class="eb-progress-bar-title">
+                                                <h2>{{ auth()->user()->projects()->count() }}/projects</h2>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col d-flex justify-content-center">
+                                        <!--completed tasks-->
+                                        <div class="eb-progress-bar-wrapper">
+                                        <div class="eb-progress-bar css" style="--value: {{auth()->user()->closedTasksForAllProjectsPercentage}}; --col: #FF1659">
+                                            <progress id="css" min="0" max="100" value="{{auth()->user()->closedTasksForAllProjectsPercentage}}"></progress>
+                                        </div>
+                                        <label for="css" class="eb-progress-bar-title">
+                                            <h2>{{ auth()->user()->numberOfTasksForAllProjects }}/tasks</h2>
+                                        </label>
+                                        </div>
+                                    </div>        
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                @endif
+            @endif
+
             <!--todo list + calender-->
             <div class="row">
                 <div class="col">
@@ -268,8 +453,6 @@
                     </div>
                 </section>
             </div>
-
-            
         </div>
     </div>
 </div>

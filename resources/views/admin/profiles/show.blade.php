@@ -31,7 +31,7 @@
                                 {{ $profile->nickname }}
                             </h5>
                             <h6>
-                                Web Developer and Designer  <!--add {{ $profile->profession }}-->
+                                {{ $profile->profession }}
                                 <div>
                                     <span class="x-star-card">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16" >
@@ -197,7 +197,7 @@
                                                 <label>Profession</label>
                                             </div>
                                             <div class="col-md-6">
-                                                <p>Web Developer and Designer / skills</p>  <!--add {{ $profile->profession }}-->
+                                                <p>{{ $profile->profession }}</p> 
                                             </div>
                                         </div>
                                         <div class="row">

@@ -24,7 +24,7 @@ class UserController extends Controller
         $this->authorize('viewAny', User::class);
         //make it paginated
         // $users = User::with('category','tags')->get();
-        $users = User::all();
+        $users = User::with('projects','tasks')->get();
 
         return view('admin.users.index', [
             'users' => $users,
@@ -59,25 +59,39 @@ class UserController extends Controller
     {
         //the authorization is in the form request 
 
-        // store the new user in the database
-        $user = User::create([
-            'name' => $request->validated('name'),
-            'email' => $request->validated('email'),
-            'password' => Hash::make($request->validated('password')),
-        ]);
-        
         //if the user choose image then save it in the database media table
-        // if ($request->hasFile('image')) {
-            // $user->addMediaFromRequest('image')->toMediaCollection('users');
-            // dd(request()->image);
-            $temporaryFile = TemporaryFile::where('folder', request()->image)->first();
-            if($temporaryFile){
-                $user->addMedia(storage_path('app/avatars/tmp/' . request()->image . '/' . $temporaryFile->filename))
-                    ->toMediaCollection('users');
-                rmdir(storage_path('app/avatars/tmp/' . request()->image));
-                $temporaryFile->delete();
-            }
-        // } 
+        // if ($request->hasFile('image')) {    // hasFile('image') does not work here because using the filepond 
+        
+        // $user->addMediaFromRequest('image')->toMediaCollection('users');
+        // dd(request()->image);
+        $temporaryFile = TemporaryFile::where('folder', request()->image)->first();
+        // dd($temporaryFile);
+        if($temporaryFile){
+            $user = User::create([
+                'name' => $request->validated('name'),
+                'email' => $request->validated('email'),
+                'password' => Hash::make($request->validated('password')),
+            ]);
+            $user->addMedia(storage_path('app/avatars/tmp/' . $temporaryFile->folder . '/' . $temporaryFile->filename))
+                ->toMediaCollection('users');
+
+            rmdir(storage_path('app/avatars/tmp/' . $temporaryFile->folder));
+            $temporaryFile->delete();
+            // store the new user in the database
+        } else {
+            // store the new user in the database
+            $user = User::create([
+                'name' => $request->validated('name'),
+                'email' => $request->validated('email'),
+                'password' => Hash::make($request->validated('password')),
+            ]);
+        }
+            // store the new user in the database
+            // $user = User::create([
+            //     'name' => $request->validated('name'),
+            //     'email' => $request->validated('email'),
+            //     'password' => Hash::make($request->validated('password')),
+            // ]);
 
         // get the role that set for the user and assign it 
         $role = Role::findById($request->role_id, 'web');
@@ -221,21 +235,25 @@ class UserController extends Controller
     {
         $this->authorize('delete', $user);
 
-        // $user->todos()->delete();
-        // $user->projects()->detach();
-        // $user->skills()->detach();
+        if($user->teamleaderon()->count()>0 || $user->tasks()->count()>0){
+            return redirect()->route('admin.users.index')->with('message','the user is a team leader! or have tasks please remove him as a team leader or alter this users for the tasks assigned to him then delelte the user');
+        } else {
+            $user->todos()->delete();
+            $user->projects()->detach();
+            $user->skills()->detach();
 
-        // foreach($user->tasks as $task){
-        //     $task->update([
-        //         'user_id' => null
-        //     ]);
-        // }
-        
-        $user->delete();
-        if($user->tasks->count()>0){
-            return redirect()->route('admin.users.index')->with('message','the user has been deleted successfully But now, there are tasks without user, please assign users');
-        }else{
-            return redirect()->route('admin.users.index')->with('message','the user has been deleted successfully with out any effected tasks');
+            // foreach($user->tasks as $task){
+            //     $task->update([
+            //         'user_id' => null
+            //     ]);
+            // }
+            
+            $user->delete();
+            if($user->tasks->count()>0){
+                return redirect()->route('admin.users.index')->with('message','the user has been deleted successfully But now, there are tasks without user, please assign users');
+            }else{
+                return redirect()->route('admin.users.index')->with('message','the user has been deleted successfully with out any effected tasks');
+            }
         }
     }
 
@@ -262,9 +280,9 @@ class UserController extends Controller
         $var = '<table class="table table-striped mt-2">
         <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">Profile</th>
-                <th scope="col">
+                <th scope="col" id="pcreateProject" class="align-middle">#</th>
+                <th scope="col" id="pcreateProject" class="align-middle">Profile</th>
+                <th scope="col" id="pcreateProject" class="align-middle">
                     <span class="btn px-1 p-0 m-0 text-light" style="background-color: #303c54;" id="getSortedUsers" onclick="getSortedUsers()">
                     Name
                         <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-arrow-bar-down" viewBox="0 0 16 16">
@@ -272,8 +290,8 @@ class UserController extends Controller
                         </svg>
                     </span>
                 </th>
-                <th scope="col">Email</th>
-                <th scope="col">
+                <th scope="col" id="pcreateProject" class="align-middle">Email</th>
+                <th scope="col" id="pcreateProject" class="align-middle">
                     <span class="btn px-1 p-0 m-0 text-light" style="background-color: #303c54;">
                         Role
                         <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-arrow-bar-down" viewBox="0 0 16 16">
@@ -281,9 +299,9 @@ class UserController extends Controller
                         </svg>
                     </span>
                 </th>
-                <th scope="col">Tasks</th>
-                <th scope="col">Skills</th>
-                <th scope="col">Action</th>
+                <th scope="col" id="pcreateProject" class="align-middle">Tasks</th>
+                <th scope="col" id="pcreateProject" class="align-middle">Skills</th>
+                <th scope="col" id="pcreateProject" class="align-middle">Action</th>
             </tr>
             </thead>
             <tbody>';
@@ -409,9 +427,20 @@ class UserController extends Controller
             //buttons
             $var .= '<td class="align-middle">';
             $var .= '<div style="display: flex;">';
-            $var .= '<a type="button" class="btn btn-primary m-1" href="'. route('admin.users.show', $user->id) .'" role="button">Show</a>';
-            $var .= '<a type="button" class="btn btn-secondary m-1" href="'.route('admin.users.edit', $user->id) .'" role="button">Edit</a>';
-            $var .= '<a class="btn btn-danger m-1" type="button"';
+            $var .= '<a type="button" class="btn btn-primary m-1" href="'. route('admin.users.show', $user->id) .'"  data-bs-toggle="tooltip" data-bs-placement="top" title="show" >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                        </svg>
+                    </a>';
+            $var .= '<a type="button" class="btn btn-secondary m-1" href="'.route('admin.users.edit', $user->id) .'"  data-bs-toggle="tooltip" data-bs-placement="top" title="edit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                        </svg>
+                    </a>';
+            $var .= '<a type="button" class="m-1" data-bs-toggle="tooltip" data-bs-placement="top" title="delete" data-bs-toggle="tooltip" data-bs-placement="top" title="delete">';
+            $var .= '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash-fill text-danger" viewBox="0 0 16 16"';
             $var .= 'onclick="if (confirm('."'Are you sure?'".') == true) {';
             $var .= 'document.getElementById('."'delete-item-".$user->id."').submit();";
             $var .= 'event.preventDefault();';
@@ -419,8 +448,9 @@ class UserController extends Controller
             $var .= 'return;';
             $var .= '}';
             $var .= '">Delete';
+            $var .= ' <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                    </svg>';
             $var .= '</a>';
-
             $var .= '<form id="delete-item-'.$user->id.'" action="'. route('admin.users.destroy', $user).'" class="d-none" method="POST">';
             $var .= '<input type="hidden" name="_method" value="DELETE">';
             $var .= '<input type="hidden" name="_token" value="'. csrf_token() .'">';

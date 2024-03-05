@@ -65,7 +65,11 @@
                                         @endforeach
                                     </select>
                                 </div>
-
+                               <!--deadline-->
+                               <div class="form-group mt-4">
+                                    <label for="deadline"><strong>Deadline</strong></label>
+                                    <input type="date" name="deadline" class="form-control" id="deadline" placeholder="task's deadline here"  value="{{ old('deadline') }}">
+                                </div>
                                 <!--here is the generated content will be-->
                                 <div class="form-group mt-4" id="users">
                                 </div>
@@ -96,7 +100,6 @@
         background-color: #eaeaea;
     }
 </style>
-
 
 <!--get users according to the project selection-->
 <script>

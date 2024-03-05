@@ -165,12 +165,14 @@ class TaskController extends Controller
         $this->authorize('delete', $task);
 
         $taskUser = $task->user;
+        $teamleaderTask = $task->project->teamleader;
         $taskProject = $task->project;
         $taskTitle = $task->title;
 
         $task->delete();
 
-        // $taskUser->notify(new TaskDeletedNotification($taskTitle, $taskProject));
+        $taskUser->notify(new TaskDeletedNotification($taskTitle, $taskProject));
+        $teamleaderTask->notify(new TaskDeletedNotification($taskTitle, $taskProject));
         
         return redirect()->route('admin.tasks.index')->with('message','the task has been deleted successfully');
 
@@ -179,8 +181,20 @@ class TaskController extends Controller
     //[todo]
     public function remove()
     {
+
         // $this->destroy( request()->task_id);
         $task = Task::find(request()->task_id);
+
+        $this->authorize('delete', $task);
+
+        $taskUser = $task->user;
+        $teamleaderTask = $task->project->teamleader;
+        $taskProject = $task->project;
+        $taskTitle = $task->title;
+
+        $taskUser->notify(new TaskDeletedNotification($taskTitle, $taskProject));
+        $teamleaderTask->notify(new TaskDeletedNotification($taskTitle, $taskProject));
+        
         // with out having to add gate to authServiceProvider | in the view you can use the if(auth()->user()->id == $task->project->teamleader_id) because the person how responsible for accept the task can delete it 
         // if(auth()->user()->id == $task->project->teamleader_id){
         $task->delete();
@@ -199,12 +213,14 @@ class TaskController extends Controller
         if($task->project->teamleader->id == auth()->user()->id || auth()->user()->hasRole('admin')){
             $task->update([
                 'status' => "closed",
+                'finished_at' => now(),
             ]);
+            
         } else {
             return abort(404);
         }
 
-        return back()->with('message', 'the task status has been updated');
+        return back()->with('message', 'the task status has been closed');
     }
 
     // authorized 

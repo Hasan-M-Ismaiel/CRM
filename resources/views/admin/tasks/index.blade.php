@@ -37,8 +37,10 @@
 @if ($tasks->count()>0)
   <x-tasks-table :tasks="$tasks"  />
   @else 
-      <span class="text-center mb-5" style="color: #673AB7;"> <strong><h4> There is no tasks yet <span> &#128513;</span></h4></strong></span>
-  @endif
+  <div class="card text-center mt-4 p-4">
+    <h5> <span class="badge m-1" style="background: #673AB7;">There is no tasks yet</span> &#128513;</h5>
+ </div>
+@endif
 
   
 <script>

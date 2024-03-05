@@ -61,7 +61,7 @@ class TaskAssigned extends Notification implements ShouldBroadcast, ShouldQueue
             'task_id' => $this->task->id,
             'task_title' => $this->task->title,
             'project_id' => $this->task->project->id,
-            'project_name' => $this->task->project->title,
+            'project_title' => $this->task->project->title,
         ];
     }
 

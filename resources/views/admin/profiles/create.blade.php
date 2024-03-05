@@ -24,8 +24,9 @@
                     <div class="card-body pt-4 my-3 mx-3 px-3">
                         <h2 id="heading">{{ $page }}</h2>
                         <p id="pcreateProject">create your profile</p>
-                        <form class="row g-3" action='{{ route("admin.profiles.store") }}' method="POST">
+                        <form class="row g-3" action='{{ route("admin.profiles.store") }}' method="POST" enctype="multipart/form-data">
                             @csrf
+                            <!--basic information-->
                             <div class="row border-bottom p-4 rounded mx-3 my-2 ">
                                 <div class="col-md-6">
                                     <label for="nickname"><strong>Nickname</strong></label>
@@ -52,6 +53,7 @@
                                     <input type="text" name="phone_number" class="form-control" id="phone_number" placeholder="add the phone_number of the profile" value="{{ old('phone_number') }}">
                                 </div>
                             </div>
+                            <!--location-->
                             <div class="row border-bottom p-4 rounded mx-3 my-2 ">
                                 <div class="col-md-6">
                                     <label for="city"><strong>City</strong></label>
@@ -61,7 +63,7 @@
                                     <label for="country"><strong>Country</strong></label>
                                     <input type="text" name="country" class="form-control" id="country" placeholder="add the country of the profile" value="{{ old('country') }}">
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-6 mt-2">
                                     <label for="postal_code"><strong>Postal</strong></label>
                                     <input type="text" name="postal_code" class="form-control" id="postal_code" placeholder="add the postal of the profile" value="{{ old('postal_code') }}">
                                 </div>
@@ -139,12 +141,19 @@
                                     </div>
                                 </div>
                             </div>
+                            <!--descripe your self-->
                             <div class="row border-bottom p-4 rounded mx-3 my-2 ">
+                                <!--profession-->
+                                <div class="col-md-12">
+                                    <label for="profession"><strong>Profession</strong></label>
+                                    <input type="text" name="profession" class="form-control" id="profession" placeholder="add the profession of the profile" value="{{ old('profession') }}">
+                                </div>
                                 <div class="col-md-12">
                                     <label for="description"><strong>Descripe your self</strong></label>
                                     <textarea id="description" name="description" class="form-control" aria-label="With textarea" value="{{ old('description') }}"></textarea>
                                 </div>
                             </div>
+                            <!--select avatar-->
                             <div class="">
                                 <div class="col-md-12">
                                     <input id="image" name="image" class="form-control" type="file">  
