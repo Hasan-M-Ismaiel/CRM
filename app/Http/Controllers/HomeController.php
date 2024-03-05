@@ -53,11 +53,11 @@ class HomeController extends Controller
         $projectCompletePercentage =  Project::projectCompletePercentage();
 
 
-        $users = User::all();
-        $projects = Project::all();
+        $users = User::with('projects','tasks')->get();
+        $projects = Project::with('users','tasks')->get();;
         $skills = Skill::all();
         $clients = Client::all();
-        $tasks = Task::all();
+        $tasks = Task::with('project','user')->get();;
         return view('home', [
             'users' => $users,
             'projects' => $projects,

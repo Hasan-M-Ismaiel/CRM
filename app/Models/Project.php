@@ -42,6 +42,7 @@ class Project extends Model
     {
         return $this->belongsTo(User::class);
     }
+    //
 
     protected function statusOfProject(): Attribute
     {
@@ -68,14 +69,6 @@ class Project extends Model
                                                                 
     }
 
-    protected function numberOfCompletedProjectTasks(): Attribute
-    {
-        $numberOfCompletedProjectTasks = $this->tasks->where('status','closed')->count();
-
-        return Attribute::make(
-            get: fn () => $numberOfCompletedProjectTasks
-        );
-    }
 
     protected function numberOfTotalProjectTasks(): Attribute
     {
@@ -86,10 +79,23 @@ class Project extends Model
         );
     }
 
+    protected function numberOfCompletedProjectTasks(): Attribute
+    {
+        $numberOfCompletedProjectTasks = $this->tasks->where('status','closed')->count();
+
+        return Attribute::make(
+            get: fn () => $numberOfCompletedProjectTasks
+        );
+    }
 
     protected function projectCompletePercent(): Attribute
     {
-        $projectCompletePercent = round(($this->numberOfCompletedProjectTasks *100)/$this->numberOfTotalProjectTasks);
+        // if there is no tasks yet in the project
+        if($this->numberOfTotalProjectTasks!=0){
+            $projectCompletePercent = round(($this->numberOfCompletedProjectTasks *100)/$this->numberOfTotalProjectTasks);
+        } else {
+            $projectCompletePercent = 0;
+        }
 
         return Attribute::make(
             get: fn () => $projectCompletePercent
@@ -103,6 +109,111 @@ class Project extends Model
         
         return Attribute::make(
             get: fn () => $numberOfUnFinishedTasks
+        );
+    }
+
+
+    // number of total tasks for this project
+    protected function numberOfTotalTasks(): Attribute
+    {
+        
+        $numberOfTotalTasks = $this->tasks->count();
+        
+        return Attribute::make(
+            get: fn () => $numberOfTotalTasks
+        );
+    }
+
+    // number of closed tasks for this project
+    protected function numberOfClosedTasks(): Attribute
+    {
+        
+        $numberOfClosedTasks = $this->tasks->where('status', 'closed')->count();
+        
+        return Attribute::make(
+            get: fn () => $numberOfClosedTasks
+        );
+    }
+
+    // percentage of task completing
+    protected function taskClosedPercentage(): Attribute
+    {
+        
+        if($this->numberOfTotalTasks!=0){
+            $taskClosedPercentage = round(($this->numberOfClosedTasks *100)/$this->numberOfTotalTasks);
+        } else {
+            $taskClosedPercentage = 0;
+        }
+
+        return Attribute::make(
+            get: fn () => $taskClosedPercentage
+        );
+    }
+
+    // number of closed tasks for this project
+    protected function numberOfPendingTasks(): Attribute
+    {
+        
+        $numberOfPendingTasks = $this->tasks->where('status', 'pending')->count();
+        
+        return Attribute::make(
+            get: fn () => $numberOfPendingTasks
+        );
+    }
+
+    // percentage of task completing
+    protected function taskPendedPercentage(): Attribute
+    {
+        
+        if($this->numberOfTotalTasks!=0){
+            $taskPendedPercentage = round(($this->numberOfPendingTasks *100)/$this->numberOfTotalTasks);
+        } else {
+            $taskPendedPercentage = 0;
+        }
+
+        return Attribute::make(
+            get: fn () => $taskPendedPercentage
+        );
+    }
+
+    // number of opened tasks for this project
+    protected function numberOfOpenedTasks(): Attribute
+    {
+        
+        $numberOfOpenedTasks = $this->tasks->where('status', 'opened')->count();
+        
+        return Attribute::make(
+            get: fn () => $numberOfOpenedTasks
+        );
+    }
+
+    // percentage of task completing
+    protected function taskOpenedPercentage(): Attribute
+    {
+        
+        if($this->numberOfTotalTasks!=0){
+            $taskOpenedPercentage = round(($this->numberOfOpenedTasks *100)/$this->numberOfTotalTasks);
+        } else {
+            $taskOpenedPercentage = 0;
+        }
+
+        return Attribute::make(
+            get: fn () => $taskOpenedPercentage
+        );
+    }
+
+    // percentage of task completing
+    protected function taskCompletePercentage(): Attribute
+    {
+        
+        if($this->numberOfTotalTasks!=0){
+            $taskCompletePercentage = round(($this->numberOfClosedTasks *100)/$this->numberOfTotalTasks);
+        } else {
+            $taskCompletePercentage = 0;
+        }
+
+        return Attribute::make(
+            get: fn () => $taskCompletePercentage
         );
     }
 }

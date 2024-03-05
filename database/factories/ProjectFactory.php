@@ -21,10 +21,11 @@ class ProjectFactory extends Factory
         return [
             'title' => fake()->company(),
             'description' => fake()->paragraph(),
-            'deadline' => fake()->date(),
+            'deadline' => fake()->dateTimeBetween('now','+1 years'),
             // 'user_id' => rand(1, 11),
             'client_id' => rand(1, 10),
             'status' => random_int(0,1),
+            'teamleader_id' => random_int(1,10),
         ];
     }
 }

@@ -29,7 +29,7 @@
                                                     <span><a href="{{ route('admin.users.show', $user->id) }}" style="text-decoration: none;">{{ $user->name }} @if(!$loop->last) <strong>|</strong> @endif </a></span>
                                                 @endforeach
                                             @else
-                                                <strong>no users assigned yet.</strong>
+                                                <h5> <span class="badge m-1" style="background: #673AB7;">No users assigned yet</span> </h5>
                                             @endif
                                             
                                             <br>

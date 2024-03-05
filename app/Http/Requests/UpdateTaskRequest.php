@@ -36,6 +36,7 @@ class UpdateTaskRequest extends FormRequest
             // 'user_id' => ['required', Rule::in($projectUsers)],
             'user_id' => ['required'],
             'status' => ['required', 'string'],
+            'deadline' => 'required|date|after:now', 
         ];
     }
 }

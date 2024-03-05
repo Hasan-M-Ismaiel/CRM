@@ -12,6 +12,9 @@ export default defineConfig({
                 'resources/css/editProject.css',
                 'resources/css/radioButton.styl',
                 'resources/css/chat.css',
+                'resources/css/carddashboard.css',
+                'resources/css/notificationTemplate.css',
+                
             ],
             refresh: true,
         }),

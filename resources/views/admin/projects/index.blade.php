@@ -39,9 +39,11 @@
 <!--projects table section-->
 <x-projects-table :projects="$projects"  />
 @else 
-<strong> There is no projects in your company </strong>
-<hr>
-@endif
+ <div class="card text-center mt-4 p-4">
+    <h5> <span class="badge m-1" style="background: #673AB7;">There is no projects in the company</span> </h5>
+ </div>
+ @endif
+ <hr>
 
 
 <script>

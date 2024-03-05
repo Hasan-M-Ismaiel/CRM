@@ -7,6 +7,7 @@ use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\ProfileStoreRequest;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Profile;
+use App\Models\TemporaryFile;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -52,8 +53,16 @@ class ProfileController extends Controller
         $profile = auth()->user()->profile()->create($request->validated());
 
         //if the user choose image then save it in the database media table
-        if ($request->hasFile('image')) {
-            $profile->addMediaFromRequest('profileImage')->toMediaCollection('profiles');
+        if (request()->image) {
+            $temporaryFile = TemporaryFile::where('folder', request()->image)->first();
+            if($temporaryFile){
+                $profile->addMedia(storage_path('app/avatars/tmp/' . $temporaryFile->folder . '/' . $temporaryFile->filename))
+                    ->toMediaCollection('profiles');
+
+                rmdir(storage_path('app/avatars/tmp/' . $temporaryFile->folder));
+                $temporaryFile->delete();
+                // store the new user in the database
+            } 
         } else {
 
             if($request->avatar_image){
@@ -63,6 +72,8 @@ class ProfileController extends Controller
                 $profile->addMedia($pathToFile)->toMediaCollection('profiles');
             }
         }
+
+        
 
         return redirect()->route('admin.profiles.show', $profile->user)->with('message', 'the profile has been created sucessfully');;
     }
@@ -109,9 +120,19 @@ class ProfileController extends Controller
         // store the new profile in the database
         $updatedProfile = $profile->update($request->validated());
         //if the user choose image then save it in the database media table
-        if ($request->hasFile('image')) {
-            $profile->addMediaFromRequest('profileImage')->toMediaCollection('profiles');
+         //if the user choose image then save it in the database media table
+         if (request()->image) {
+            $temporaryFile = TemporaryFile::where('folder', request()->image)->first();
+            if($temporaryFile){
+                $profile->addMedia(storage_path('app/avatars/tmp/' . $temporaryFile->folder . '/' . $temporaryFile->filename))
+                    ->toMediaCollection('profiles');
+
+                rmdir(storage_path('app/avatars/tmp/' . $temporaryFile->folder));
+                $temporaryFile->delete();
+                // store the new user in the database
+            } 
         } else {
+            
             if($request->avatar_image){
                 //copy the image file from the basic images folder to the folder "avatars" that the media library take from - this because the library delete the image after using it 
                 File::copy(public_path('assets/avatars_basic/'.$request->avatar_image.'.jpg'), public_path('assets/avatars/'.$request->avatar_image.'.jpg'));

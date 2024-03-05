@@ -43,8 +43,12 @@
                                     <label for="description"><strong>Description</strong></label>
                                     <textarea rows="5" cols="50" name="description" class="form-control" id="description" placeholder="task's description here" >{{ $task->description }}</textarea>
                                 </div>
+                                <!-- task deadline-->
+                                <div class="form-group mt-4 mx-3">
+                                    <label for="deadline"><strong>Deadline</strong></label>
+                                    <input type="date" name="deadline" class="form-control" id="deadline" placeholder="task's deadline here" value="{{ $task->deadline }}" />
+                                </div>
                             </div>
-
                             <!--appear only for the admin-->
                             @if(auth()->user()->hasRole('admin'))
                             <!--change project-->
@@ -65,7 +69,6 @@
                                 </div>
                             </div>
                             @endif
-
                             <!--choose user-->
                             <div class="form-card border rounded pb-2 mt-3 border border-success">
                                 <div class="border px-2 pb-2 pt-3 rounded" style="background-color: #b9c9e5; background-image: linear-gradient(to bottom right, #b9c9e5, #e4eaf5);">
@@ -110,7 +113,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <!--task status-->
                             <div class="leftsided__">
                                 <label  class="labelexpandedd__">
@@ -147,7 +149,6 @@
                                     </input>
                                 </label>
                             </div>
-
                             <!--task update button-->
                             <x-forms.update-button />
                         </form>

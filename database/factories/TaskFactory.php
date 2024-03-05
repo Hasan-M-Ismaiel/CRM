@@ -22,6 +22,7 @@ class TaskFactory extends Factory
         return [
             'title' => fake()->sentence(),
             'description' => fake()->paragraph(),
+            'deadline' => fake()->dateTimeBetween('now','+1 years'),
             'project_id' => rand(1, 10),
             'user_id' => rand(1, 11),
             'status' => $status,

@@ -26,6 +26,8 @@ class TaskGroupsStoreRequest extends FormRequest
             "titles.*"  => "required|string|min:2", //least 2 characters
             "descriptions"    => "required|array",
             "descriptions.*"  => "required|string|min:2", //least 2 characters
+            "deadlines"    => "required|array",
+            "deadlines.*"  => "required|date|after:now",
             "user_ids"    => "required|array",
             "user_ids.*"  => "required|integer", //least 2 characters
         ];

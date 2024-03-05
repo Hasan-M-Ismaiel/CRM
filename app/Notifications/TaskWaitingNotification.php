@@ -54,7 +54,7 @@ class TaskWaitingNotification extends Notification implements ShouldBroadcast, S
             'task_id' => $this->task->id,
             'task_title' => $this->task->title,
             'project_id' => $this->task->project->id,
-            'project_name' => $this->task->project->title,
+            'project_title' => $this->task->project->title,
         ];
     }
 

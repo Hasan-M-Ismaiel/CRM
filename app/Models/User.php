@@ -51,7 +51,7 @@ class User extends Authenticatable implements HasMedia
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    
+
     public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('thumb')
@@ -60,7 +60,7 @@ class User extends Authenticatable implements HasMedia
                 ->nonQueued();
     }
 
-
+    // start realationships----------------------------------------------
     public function projects ()
     {
         return $this->belongsToMany(Project::class);
@@ -113,7 +113,10 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->hasMany(Todo::class);
     }
+    // end realationships----------------------------------------------
 
+
+    // # of assigned projects
     protected function numberOfAssignedProjects(): Attribute
     {
         $numeberOfAssignedProjects = $this->projects()->count();
@@ -122,7 +125,8 @@ class User extends Authenticatable implements HasMedia
         );
     }
 
-    protected function numberOfCompletededProjects(): Attribute
+    // # of completed projects
+    protected function numberOfCompletedProjects(): Attribute
     {
         $numeberOfCompletedProjects = $this->projects()
                             ->where('status', true)
@@ -132,25 +136,30 @@ class User extends Authenticatable implements HasMedia
             get: fn () => $numeberOfCompletedProjects
         );
     }
-    
+
+    // check if assigned to project
     public function checkifAssignedToProject(Project $project)
     {
         $numeberOfAssignedProjects = $this->projects()
                     ->where('projects.id', $project->id)
                     ->count();
-        return $numeberOfAssignedProjects>0 ? false : true; 
+        return $numeberOfAssignedProjects>0 ? false : true;
     }
 
+
+    // # of assigned tasks
     public function numberOfAssignedTasks():Attribute
     {
         $numberOfAssignedTasks = $this->tasks()
-                    ->count();
+                                        ->count();
 
         return Attribute::make(
             get: fn () => $numberOfAssignedTasks
         );
     }
 
+
+    // # of pending tasks
     public function numberOfPendingTasks():Attribute
     {
         $numberOfPendingTasks = $this->tasks()
@@ -161,6 +170,8 @@ class User extends Authenticatable implements HasMedia
             get: fn () => $numberOfPendingTasks
         );
     }
+
+    // # of opened tasks
     public function numberOfOpenedTasks():Attribute
     {
         $numberOfOpenedTasks = $this->tasks()
@@ -171,6 +182,8 @@ class User extends Authenticatable implements HasMedia
             get: fn () => $numberOfOpenedTasks
         );
     }
+
+    // # of closed tasks
     public function numberOfClosedTasks():Attribute
     {
         $numberOfClosedTasks = $this->tasks()
@@ -182,8 +195,7 @@ class User extends Authenticatable implements HasMedia
         );
     }
 
-    
-    // tasks notifications 
+    // # of tasks notifications
     public function numberOfTaskMessageNotifications():Attribute
     {
 
@@ -194,7 +206,7 @@ class User extends Authenticatable implements HasMedia
         );
     }
 
-    // team notifications 
+    // # of team notifications
     public function numberOfTeamMessageNotifications():Attribute
     {
 
@@ -205,7 +217,7 @@ class User extends Authenticatable implements HasMedia
         );
     }
 
-    // total notifications
+    // # of total notifications
     public function numberOfTotalMessageNotifications():Attribute
     {
 
@@ -217,4 +229,106 @@ class User extends Authenticatable implements HasMedia
             get: fn () => $numberOfTotalMessageNotifications
         );
     }
+
+    // this is for teamleader only
+    // number of tasks for all the projects that he is teamleader on it
+    public function numberOfTasksForAllProjects():Attribute
+    {
+        $totalTasks=0;
+        $totalTasks = $this->tasks()->count();
+
+        if($this->teamleaderon()->count()>0){
+            foreach($this->teamleaderon as $project){
+                foreach($project->tasks as $projecttask){
+                    if($projecttask->user->id != $this->id){
+                        $totalTasks +=1;
+                    }
+                }
+            }
+        }
+
+        return Attribute::make(
+            get: fn () => $totalTasks
+        );
+    }
+
+    public function numberOfClosedTasksForAllProjects():Attribute
+    {
+
+        // the tasks related to him and related to the project that he is teamleader on
+        $totalClosedTasks=0;
+        if($this->teamleaderon()->count()>0){
+            foreach($this->teamleaderon as $project){
+                $totalClosedTasks += $project->tasks->where('status', 'closed')->count();
+                foreach($this->tasks as $task){
+                    if($task->project->id != $project->id){
+                        $totalClosedTasks += 1 ;
+                    }
+                }
+            }
+        }
+
+        return Attribute::make(
+            get: fn () => $totalClosedTasks
+        );
+    }
+
+    // %
+    protected function closedTasksForAllProjectsPercentage(): Attribute
+    {
+        if($this->numberOfTasksForAllProjects != 0){
+            $closedTasksForAllProjectsPercentage = round((($this->numberOfClosedTasks + $this->numberOfCompleteTasksCreatedByTeamleader) *100)/$this->numberOfTasksForAllProjects);
+        } else{
+            $closedTasksForAllProjectsPercentage = 0 ;
+        }
+
+
+        return Attribute::make(
+            get: fn () => $closedTasksForAllProjectsPercentage
+        );
+    }
+
+    // %
+    protected function projectCompletePercentage(): Attribute
+    {
+        if($this->numberOfAssignedProjects !=0){
+            $projectCompletePercentage = round(($this->numberOfCompletedProjects *100)/$this->numberOfAssignedProjects);
+        } else {
+            $projectCompletePercentage = 0;
+        }
+
+        return Attribute::make(
+            get: fn () => $projectCompletePercentage
+        );
+    }
+
+    // %
+    protected function numberOfCompleteTasksCreatedByTeamleader(): Attribute
+    {
+        $numberOfCompleteTasksCreatedByTeamleader = 0;
+        if($this->teamleaderon()->count()>0){
+            foreach($this->teamleaderon as $project){
+                foreach($project->tasks as $task){
+                    if($task->status =="closed"){
+                        $numberOfCompleteTasksCreatedByTeamleader +=1;    
+                    }
+                }
+            }
+        }
+
+        return Attribute::make(
+            get: fn () => $numberOfCompleteTasksCreatedByTeamleader
+        );
+    }
+
+    // %
+    protected function CompleteProjectsTeamleaderPercentage(): Attribute
+    {
+        
+        $completeProjectsTeamleaderPercentage = round(($this->numberOfCompletedProjects * 100)/$this->numberOfAssignedProjects);
+        return Attribute::make(
+            get: fn () => $completeProjectsTeamleaderPercentage
+        );
+    }
+
 }
