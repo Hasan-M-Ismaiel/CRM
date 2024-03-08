@@ -33,9 +33,21 @@ class UpdateProjectRequest extends FormRequest
             // 'user_id'       => ['sometimes', Rule::in($users)],
             'client_id'     => ['sometimes', Rule::in($clients)],
             'teamleader_id' => "sometimes",
+
+            'name' =>'string',
+            
             "new_skills"    => "array",
             "new_skills.*"  => "required|string|distinct|min:2|unique:skills,name",
-            'name' =>'string',
         ];
+    }
+
+    public function withValidator ($validator)
+    {
+        $validator->setImplicitAttributesFormatter(function ($attribute){
+            [$field, $line] = explode('.', $attribute);
+            if($field == 'new_skills'){
+                return 'the skill number ' . ($line + 1 );
+            } 
+        });
     }
 }

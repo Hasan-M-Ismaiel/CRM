@@ -322,7 +322,7 @@ class UserController extends Controller
             if($user->profile && $user->profile->getFirstMediaUrl("profiles")){
                 $var .= '<div class="p-2">';
                 $var .= '<div class="avatar avatar-md">';
-                $var .= '<img src="'. $user->profile->getFirstMediaUrl("profiles").'" alt="DP"  class="avatar-img border border-success shadow mb-1">';
+                $var .= '<img src="'. $user->profile->getFirstMediaUrl("profiles").'" class="avatar-img border border-success shadow mb-1">';
                 $var .= '</div>';
                 if($user->hasRole('admin') && $user->teamleaderon->count()>0){
                     $var .= '<div class="position-absolute top-0 start-0">
@@ -350,7 +350,7 @@ class UserController extends Controller
             }elseif($user->getFirstMediaUrl("users")){
                 $var .= '<div class="p-2">';
                 $var .= '<div class="avatar avatar-md">';
-                $var .= '<img src="'. $user->getMedia("users")[0]->getUrl("thumb") .'"  alt="DP"  class="avatar-img border border-success shadow mb-1">';
+                $var .= '<img src="'. $user->getMedia("users")[0]->getUrl("thumb") .'"  class="avatar-img border border-success shadow mb-1">';
                 $var .= '</div>';
                 if($user->hasRole('admin') && $user->teamleaderon->count()>0){
                     $var .= '<div class="position-absolute top-0 start-0">
@@ -376,7 +376,7 @@ class UserController extends Controller
             }else{
                 $var .= '<div class="p-2">';
                 $var .= '<div class="avatar avatar-md">';
-                $var .= '<img src="'.asset("images/avatar.png").'"  alt="DP"  class="avatar-img border border-success shadow mb-1">';
+                $var .= '<img src="'.asset("images/avatar.png").'"  class="avatar-img border border-success shadow mb-1">';
                 $var .= '</div>';
                 if($user->hasRole('admin') && $user->teamleaderon->count()>0){
                     $var .= '<div class="position-absolute top-0 start-0">

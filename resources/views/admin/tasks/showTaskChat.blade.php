@@ -130,7 +130,7 @@
                                                 <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
                                             @endif
                                                     <div class="font-weight-bold mb-1">{{$message->user->name}}</div>
-                                                        <div>{{$message->message}}</div>
+                                                        <div>{!! nl2br($message->message) !!}</div>
                                                     </div>
                                                     <!--the readed users-->
                                                     <div id="taskmessage-{{$message->id}}">
@@ -152,7 +152,7 @@
                                 <!--place to sent-->
                                 <div class="flex-grow-0 py-3 px-4 border-top" style="background-image: linear-gradient(to left, rgba(255,0,0,0), #303c54);">
                                     <div class="input-group">
-                                        <input name="message" id="message" type="text" class="form-control" placeholder="Type your message">
+                                        <textarea name="message" id="message" type="text" class="form-control emojiareaTask" placeholder="Type your message "></textarea>
                                         <button id="send" class="btn btn-primary">Send</button>
                                     </div>
                                 </div>
@@ -192,7 +192,9 @@
         currentTime = time1.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
         
         // to clear the message box  
-        $('#message').val('');     
+        $('#message').val('');   
+        
+        $('.emojionearea-editor').html(''); 
 
         
         $.ajax({

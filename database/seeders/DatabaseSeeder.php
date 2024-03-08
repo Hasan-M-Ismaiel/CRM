@@ -93,49 +93,49 @@ class DatabaseSeeder extends Seeder
 
         //------------------teamleader role-------------------
         //create teamleader role
-        $teamLeaderRole = Role::create(['name' => 'teamleader']);
+        // $teamLeaderRole = Role::create(['name' => 'teamleader']);
 
-        $teamleaderPermissions = [
-            //'user_create',              
-            //'user_edit',                
-            'user_show',                
-            //'user_delete',              
-            'user_access',              
-            //'project_create',
-            'project_edit',
-            'project_show',
-            //'project_delete',
-            'project_access',
-            //'client_create',
-            //'client_edit',
-            //'client_show',
-            //'client_delete',
-            //'client_access',
-            'task_create',
-            'task_edit',
-            'task_show',
-            'task_delete',
-            'task_access',
-            'skill_create',
-            //'skill_edit',
-            'skill_show',
-            //'skill_delete',
-            'skill_access',
-            'profile_create',
-            'profile_edit',
-            'profile_show',
-            'profile_delete',
-            'profile_access',
-            'teamchat_show',
-            'teamchat_access',
-            'taskchat_show',
-            'taskchat_access',
-            'assign_project_to_user',
-        ];
+        // $teamleaderPermissions = [
+        //     //'user_create',              
+        //     //'user_edit',                
+        //     'user_show',                
+        //     //'user_delete',              
+        //     'user_access',              
+        //     //'project_create',
+        //     'project_edit',
+        //     'project_show',
+        //     //'project_delete',
+        //     'project_access',
+        //     //'client_create',
+        //     //'client_edit',
+        //     //'client_show',
+        //     //'client_delete',
+        //     //'client_access',
+        //     'task_create',
+        //     'task_edit',
+        //     'task_show',
+        //     'task_delete',
+        //     'task_access',
+        //     'skill_create',
+        //     //'skill_edit',
+        //     'skill_show',
+        //     //'skill_delete',
+        //     'skill_access',
+        //     'profile_create',
+        //     'profile_edit',
+        //     'profile_show',
+        //     'profile_delete',
+        //     'profile_access',
+        //     'teamchat_show',
+        //     'teamchat_access',
+        //     'taskchat_show',
+        //     'taskchat_access',
+        //     'assign_project_to_user',
+        // ];
 
-        foreach ($teamleaderPermissions as $teamleaderPermission)   {
-            $teamLeaderRole->givePermissionTo($teamleaderPermission);
-        }
+        // foreach ($teamleaderPermissions as $teamleaderPermission)   {
+        //     $teamLeaderRole->givePermissionTo($teamleaderPermission);
+        // }
         //------------------user role--------------------------
         //user area
         //generate user permissions

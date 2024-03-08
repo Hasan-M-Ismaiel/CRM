@@ -383,7 +383,7 @@
     <div class="modal-content text-center">
       <!--Header-->
       <div class="modal-header d-flex justify-content-center bg-danger">
-        <p class="heading">Alert !</p>
+        <p class="heading text-white">Alert !</p>
       </div>
 
       <!--Body-->
@@ -395,7 +395,7 @@
         <!-- <i class="bi bi-bell bi-4x animated rotateIn mb-4"></i> -->
 
         <p>You are trying to unassign users from this project by altering the skills:</p>
-        <p>affected users: </p>
+        <p><strong>affected users: </strong></p>
         <p id="affectedUsers"></p>
       </div>
     </div>

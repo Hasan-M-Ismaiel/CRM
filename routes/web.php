@@ -49,14 +49,14 @@ Route::middleware(['auth'])->group(function () {
             Route::get('clients/getSearchResult', [ClientController::class, 'getSearchResult'])->name('clients.getSearchResult');
             Route::resource('clients', ClientController::class);
             
-            // projects [assign users]
-            Route::get('projects/{project}/assign/create', [ProjectController::class, 'assignCreate'])->name('projects.assignCreate');
-            Route::patch('projects/{project}/assign', [ProjectController::class, 'assignStore'])->name('projects.assignStore');
-            
             //success views - [creating projects]
             Route::get('success_create_project', CreatingProjectStatusesController::class)->name('success_create_project.status');
         });
-
+        
+        // projects [assign users]
+        Route::get('projects/{project}/assign/create', [ProjectController::class, 'assignCreate'])->name('projects.assignCreate');
+        Route::patch('projects/{project}/assign', [ProjectController::class, 'assignStore'])->name('projects.assignStore');
+        
 
         // get the to do list for the user
         Route::post('todos/remove', [TodoController::class,'remove'])->name('todos.remove');

@@ -5,7 +5,7 @@
         <a id="toast_link_to_notification_target" href="" style="text-decoration: none;">
             <!--the toast-->
             <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" style="position: fixed; bottom: 7; right:2;">
-                <div class="toast-header">
+                <div class="toast-header" id="toast-header">
                     <!--image-->
                     <img id="toast_image" src="" class="rounded-circle me-2" alt="image" width="40" height="40">
                     <!--grating-->

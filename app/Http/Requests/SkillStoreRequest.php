@@ -26,4 +26,14 @@ class SkillStoreRequest extends FormRequest
             "names.*"  => "required|string|distinct|min:2", //least 2 characters
         ];
     }
+
+    public function withValidator ($validator)
+    {
+        $validator->setImplicitAttributesFormatter(function ($attribute){
+            [$field, $line] = explode('.', $attribute);
+            if($field == 'names'){
+                return 'the skill name number ' . ($line + 1 );
+            }
+        });
+    }
 }

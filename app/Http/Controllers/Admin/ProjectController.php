@@ -200,8 +200,10 @@ class ProjectController extends Controller
     {
         $this->authorize('update', $project); 
 
+        // old teamleader
         $oldTeamleader = $project->teamleader;
         
+        // if new teamleader presented - get it 
         if($request->teamleader_id != null){
             $teamleader = User::findOrFail($request->teamleader_id);
         }
@@ -231,8 +233,9 @@ class ProjectController extends Controller
                     $projectTeam->save();
                 }
             } else {
-            return redirect()->back()->with('message', 'there are tasks not finished yet.');
+                return redirect()->back()->with('message', 'there are tasks not finished yet.');
             }
+
         // false = open
         }elseif ($request->status == 'false') {
              // if the editor was the teamleader
@@ -275,14 +278,21 @@ class ProjectController extends Controller
             }
         }
 
-        // if the auth user is not in the project team then add it
+        // if the auth user is not in the project team then add it - the auth user here could be a teamleader or an admin
         if(!$project->users->contains(auth()->user())){
             $project->users()->attach(auth()->user());
         }
 
-        $assignedUsers = $request->input('assigned_users');
-        //check if the teamleader remove the admin from the project - we prevent that 
+        $assignedUsers = array();
+        // get the assigned users form the form 
+        if($request->input('assigned_users') != null){
+            $assignedUsers = $request->input('assigned_users');
+            //check if the teamleader remove the admin from the project - we prevent that 
+        }
+
         $assignedUsersModels = User::find($assignedUsers);
+
+        // find the admin - you can easily say: $admin = User::find(1); // because the admin is one in this system
         $adminUser = null;
         $basicUsers = User::all();
         foreach($basicUsers as $basicUser){
@@ -291,28 +301,29 @@ class ProjectController extends Controller
             }
         }
 
-        if(!$assignedUsersModels->contains($adminUser)){
+        // if the assigned users not contain the admin then you have to add it 
+        if($assignedUsersModels != null && !$assignedUsersModels->contains($adminUser)){
             array_push($assignedUsers, $adminUser->id);
+        }
+
+        // if the assigned users not contain the admin then you have to add it 
+        if($assignedUsersModels != null && !$assignedUsersModels->contains($teamleader)){
+            array_push($assignedUsers, $teamleader->id);
+        }
+
+        if($assignedUsersModels == null ){
+            array_push($assignedUsers, $adminUser->id);
+            array_push($assignedUsers, $teamleader->id);
         }
         
         $sendNotification = new NotificationService($project, $assignedUsers);
         $sendNotification->SendNotificationMessages();
         
-        if($request->teamleader_id !=null){
-            if(!$project->users->contains($teamleader)){
-                $project->users()->attach($teamleader);
-            }
-
-            //check if the new teamleader is not the old one [to send the notifications] ||| $teamleader->id != null [because the editor could be the teamleader not the admin]
-            if($teamleader->id != null && $teamleader->id != $oldTeamleader->id){
-                $teamleader->notify(new TeamleaderRoleAssigned($project));
-                $oldTeamleader->notify(new TeamleaderRoleUnAssigned($project));
-            }
-
+        //check if the new teamleader is not the old one [to send the notifications] ||| $teamleader->id != null [because the editor could be the teamleader not the admin]
+        if($teamleader->id != $oldTeamleader->id){
+            $teamleader->notify(new TeamleaderRoleAssigned($project));
+            $oldTeamleader->notify(new TeamleaderRoleUnAssigned($project));
         }
-
-                
-        
 
         return redirect()->route('admin.projects.index')->with('message', 'the project has been updated successfully');
     }
@@ -341,6 +352,8 @@ class ProjectController extends Controller
     // protect this method using meddleware
     public function assignCreate(Project $project)
     {
+        $this->authorize('update', $project);
+
         $users = User::all();
 
         return view('admin.projects.assignCreate', [

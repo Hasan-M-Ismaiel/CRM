@@ -22,14 +22,36 @@ class TaskGroupsStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
+            
             "titles"    => "required|array",
             "titles.*"  => "required|string|min:2", //least 2 characters
+            
             "descriptions"    => "required|array",
             "descriptions.*"  => "required|string|min:2", //least 2 characters
+            
             "deadlines"    => "required|array",
             "deadlines.*"  => "required|date|after:now",
+            
             "user_ids"    => "required|array",
             "user_ids.*"  => "required|integer", //least 2 characters
         ];
     }
+
+    public function withValidator ($validator)
+    {
+     $validator->setImplicitAttributesFormatter(function ($attribute){
+        [$field, $line] = explode('.', $attribute);
+        if($field == 'titles'){
+            return 'title for task ' . ($line + 1 );
+        } elseif($field == 'descriptions'){
+            return 'description for task ' . ($line + 1 );
+        } elseif($field == 'deadlines'){
+            return 'deadlines for task ' . ($line + 1 );
+        } elseif($field == 'user_ids'){
+            return 'user for task ' . ($line + 1 );
+        }
+     });
+    }
+
+    
 }

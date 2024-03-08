@@ -69,12 +69,15 @@
 	
         <!--for the notification template-->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css" integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
+        
+        <!--emoji-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.css" />
 
         <title>Hello, world!</title>
         @vite(['resources/js/app.js', 'resources/css/app.css', 'resources/css/profile.css', 'resources/css/createProject.css', 'resources/sass/app.scss', 'resources/css/editProject.css', 'resources/css/radioButton.styl', 'resources/css/chat.css', 'resources/css/carddashboard.css','resources/css/notificationTemplate.css' ])
 
     </head>
-    <body style onload="loadteams();" class="area">
+    <body style onload="loadteams_tasks();" class="area">
     
         @include('partials.menu')
         <div class="wrapper d-flex flex-column min-vh-100 bg-light">
@@ -208,6 +211,13 @@
             window.NumberOfTaskMessageNotifications = {!! auth()->user()->numberOfTaskMessageNotifications !!}; 
             // number of opened tasks to show in the header section for each user 
             window.NumberOfTasks = {!! auth()->user()->numberOfOpenedTasks !!};
+            
+            // number of total tasks to show in the dropdown header section for each user 
+            window.NumberOfTasksForAllProjects = {!! auth()->user()->numberOfTasksForAllProjects !!};
+
+            // number of total projects to show in the dropdown header section for each user 
+            window.NumberOfAssignedProjects = {!! auth()->user()->numberOfAssignedProjects !!};
+
             // projects ids for the loged in user to show in the header section - from what i remember 
             window.projectIds =  {!! auth()->user()->projects()->pluck('projects.id') !!};
             // tasks ids for the loged in user to show in the header section - from what i remember 
@@ -234,8 +244,10 @@
             }
         </script>
 
+        <!--load teams & tasks-->
         <script>
-            function loadteams(){
+            function loadteams_tasks(){
+
                 $.ajax({
                     url: "{{ route('admin.teams.index') }}",
                     method: 'get',
@@ -247,6 +259,7 @@
                         $('#modal_content_team').append(result[0]);
                     }
                 });
+
                 $.ajax({
                     url: "{{ route('admin.tasks.showTasks') }}",
                     method: 'get',
@@ -268,7 +281,6 @@
             //mark team messages as readed
             function markasread(teamId, authUserId, numberOfReadedMessages){
                 // number of readed messages from this chat 
-                
                 // alert(numberOfReadedMessages);
                 // alert(teamId);
                 // alert(authUserId);
@@ -281,7 +293,7 @@
                         authUserId: authUserId,
                     },
                     success: function(output){
-                        alert('get');
+                        // alert('get');
                         // $('#num_of_team_messages_notifications').html(NumberOfTotalMessageNotifications - numberOfReadedMessages);
                         // $('#num_of_total_messages_notifications').html(NumberOfTotalMessageNotifications - numberOfReadedMessages);
                         // var result = $.parseJSON(output);
@@ -291,7 +303,7 @@
             }
 
             //mark task messages as readed
-            function markasreadtask(taskId, authUserId, numberOfReadedTaskMessages){
+            function markasreadtask(taskId, authUserId, numberOfReadedTaskMessages, url){
                 // number of readed messages from this chat 
                 
                 // alert(numberOfReadedTaskMessages);
@@ -307,6 +319,8 @@
                     },
                     success: function(output){
                         alert('get in task');
+                        window.location.replace(url); 
+
                         // $('#num_of_team_messages_notifications').html(NumberOfTotalMessageNotifications - numberOfReadedMessages);
                         // $('#num_of_total_messages_notifications').html(NumberOfTotalMessageNotifications - numberOfReadedMessages);
                         // var result = $.parseJSON(output);
@@ -334,6 +348,15 @@
 
                 }
             });
+        </script>
+
+        <!--emoji-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.js"></script>
+        <script>
+            // this is for team chat
+            $('.emojiarea').emojioneArea();
+            // this is for task chat
+            $('.emojiareaTask').emojioneArea();
         </script>
 
         <!--for the spinner on each click button - like create - update-->
