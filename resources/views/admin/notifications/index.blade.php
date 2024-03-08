@@ -264,7 +264,7 @@
                               <div class="text-right text-muted pt-1">{{ $notification->created_at->diffForHumans() }}</div>
                           </span>
                       </div>
-                    @elseif ($notification->type == 'App\Notifications\ProjectDeleted')
+                    @elseif ($notification->type == 'App\Notifications\ProjectDeletedNotification')
                       <!--notification item-->
                       <div class="selector p-3 d-flex align-items-center bg-light border-bottom osahan-post-header" id="{{ $notification->id }}">
                           <!--notification image-->
@@ -296,7 +296,7 @@
                               <div class="text-right text-muted pt-1">{{ $notification->created_at->diffForHumans() }}</div>
                           </span>
                       </div>
-                    @elseif ($notification->type == 'App\Notifications\TaskDeleted')
+                    @elseif ($notification->type == 'App\Notifications\TaskDeletedNotification')
                       <!--notification item-->
                       <div class="selector p-3 d-flex align-items-center bg-light border-bottom osahan-post-header" id="{{ $notification->id }}">
                           <!--notification image-->

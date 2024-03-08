@@ -12,7 +12,8 @@
 
     <!-- nav bar items-->
     <ul id="parent" class="sidebar-nav " data-coreui="navigation" data-simplebar="" class="nav flex-column" id="nav_accordion">
-            <div class="area">
+            <!--remove the comment here-->
+            <!-- <div class="area">
                 <ul class="circles">
                         <li></li>
                         <li></li>
@@ -25,7 +26,7 @@
                         <li></li>
                         <li></li>
                 </ul>
-            </div>         
+            </div>          -->
 
             <div class="context">
                 <li class="nav-item ">

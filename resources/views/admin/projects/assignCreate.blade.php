@@ -47,22 +47,31 @@
                                             <!--profile avatar-->
                                             <td class="align-middle">
                                                     @if($user->profile)
-                                                        <a href="{{ route('admin.profiles.show', $user->id) }}" style="text-decoration: none;">
+                                                        <a href="{{ route('admin.profiles.show', $user->id) }}" style="text-decoration: none;" class="position-relative">
                                                     @else
-                                                        <a href="{{ route('admin.statuses.notFound') }}" style="text-decoration: none;">
+                                                        <a href="{{ route('admin.statuses.notFound') }}" style="text-decoration: none;" class="position-relative">
                                                     @endif
 
                                                     @if($user->profile && $user->profile->getFirstMediaUrl("profiles"))
+                                                    <div class="p-2">
                                                         <div class="avatar avatar-md">
-                                                            <img src='{{ $user->profile->getFirstMediaUrl("profiles") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                            <img src='{{ $user->profile->getFirstMediaUrl("profiles") }}' class="avatar-img border border-success shadow mb-1">
                                                         </div>
+                                                        <x-user-badges :user="$user" />
+                                                    </div>
                                                     @elseif($user->getFirstMediaUrl("users"))
-                                                    <div class="avatar avatar-md">
-                                                        <img src='{{ $user->getMedia("users")[0]->getUrl("thumb") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                    <div class="p-2">
+                                                        <div class="avatar avatar-md">
+                                                            <img src='{{ $user->getMedia("users")[0]->getUrl("thumb") }}' class="avatar-img border border-success shadow mb-1">
+                                                        </div>
+                                                        <x-user-badges :user="$user" />
                                                     </div>
                                                     @else
-                                                    <div class="avatar avatar-md">
-                                                        <img src='{{ asset("images/avatar.png") }}' alt="DP"  class="avatar-img border border-success shadow mb-1">
+                                                    <div class="p-2">
+                                                        <div class="avatar avatar-md">
+                                                            <img src='{{ asset("images/avatar.png") }}' class="avatar-img border border-success shadow mb-1">
+                                                        </div>
+                                                        <x-user-badges :user="$user" />
                                                     </div>
                                                     @endif
                                                 </a>

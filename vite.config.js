@@ -14,6 +14,7 @@ export default defineConfig({
                 'resources/css/chat.css',
                 'resources/css/carddashboard.css',
                 'resources/css/notificationTemplate.css',
+                'resources/css/emoji.css',
                 
             ],
             refresh: true,

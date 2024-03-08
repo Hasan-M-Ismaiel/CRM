@@ -186,9 +186,26 @@ class User extends Authenticatable implements HasMedia
     // # of closed tasks
     public function numberOfClosedTasks():Attribute
     {
-        $numberOfClosedTasks = $this->tasks()
-                    ->where('status', 'closed')
-                    ->count();
+        // if the user is admin - get all finished tasks
+        if(auth()->user()->hasRole('admin')){
+            $numberOfClosedTasks = Task::where('status', 'closed')->count();
+        } else {
+            // the tasks assigned to the user
+            $numberOfClosedTasks = $this->tasks()
+                        ->where('status', 'closed')
+                        ->count();
+    
+            // check if the user is teamleader - to get all the tasks he created 
+            if($this->teamleaderon()->count()>0){
+                foreach($this->teamleaderon as $project){
+                    foreach($project->tasks as $projecttask){
+                        if($projecttask->user->id != $this->id && $projecttask->status=='closed'){
+                            $numberOfClosedTasks +=1;
+                        }
+                    }
+                }
+            }
+        }
 
         return Attribute::make(
             get: fn () => $numberOfClosedTasks
@@ -235,13 +252,20 @@ class User extends Authenticatable implements HasMedia
     public function numberOfTasksForAllProjects():Attribute
     {
         $totalTasks=0;
-        $totalTasks = $this->tasks()->count();
-
-        if($this->teamleaderon()->count()>0){
-            foreach($this->teamleaderon as $project){
-                foreach($project->tasks as $projecttask){
-                    if($projecttask->user->id != $this->id){
-                        $totalTasks +=1;
+        
+        if(auth()->user()->hasRole('admin')){
+            $totalTasks = Task::all()->count();
+        } else {
+            // tasks related to the user 
+            $totalTasks = $this->tasks()->count();
+    
+            // check if the user is teamleader - to get all the tasks he created 
+            if($this->teamleaderon()->count()>0){
+                foreach($this->teamleaderon as $project){
+                    foreach($project->tasks as $projecttask){
+                        if($projecttask->user->id != $this->id){
+                            $totalTasks +=1;
+                        }
                     }
                 }
             }
@@ -277,7 +301,8 @@ class User extends Authenticatable implements HasMedia
     protected function closedTasksForAllProjectsPercentage(): Attribute
     {
         if($this->numberOfTasksForAllProjects != 0){
-            $closedTasksForAllProjectsPercentage = round((($this->numberOfClosedTasks + $this->numberOfCompleteTasksCreatedByTeamleader) *100)/$this->numberOfTasksForAllProjects);
+            // $closedTasksForAllProjectsPercentage = round((($this->numberOfClosedTasks + $this->numberOfCompleteTasksCreatedByTeamleader) *100)/$this->numberOfTasksForAllProjects);
+            $closedTasksForAllProjectsPercentage = round(($this->numberOfClosedTasks *100)/$this->numberOfTasksForAllProjects);
         } else{
             $closedTasksForAllProjectsPercentage = 0 ;
         }
@@ -325,7 +350,11 @@ class User extends Authenticatable implements HasMedia
     protected function CompleteProjectsTeamleaderPercentage(): Attribute
     {
         
-        $completeProjectsTeamleaderPercentage = round(($this->numberOfCompletedProjects * 100)/$this->numberOfAssignedProjects);
+        if($this->numberOfAssignedProjects!= 0){
+            $completeProjectsTeamleaderPercentage = round(($this->numberOfCompletedProjects * 100)/$this->numberOfAssignedProjects);
+        } else {
+            $completeProjectsTeamleaderPercentage = 0; 
+        }
         return Attribute::make(
             get: fn () => $completeProjectsTeamleaderPercentage
         );

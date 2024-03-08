@@ -103,7 +103,6 @@
                             <div class="p-0 m-0">pending tasks: <span class="badge m-1" style="background: #673AB7;">{{$project->numberOfPendingTasks}}</span></div>
                             <div class="p-0 m-0">closed tasks:&nbsp;&nbsp;&nbsp; <span class="badge m-1" style="background: #673AB7;">{{$project->numberOfClosedTasks}}</span></div>
                         </div>
-                        
                     </div>
                     <div class="position-absolute bottom-0 end-0 mb-4  me-4">
                         <!--chart-->
@@ -219,11 +218,11 @@
                             <div class="card-header">{{ auth()->user()->numberOfTasksForAllProjects }}/<h5 class="card-title pt-2">TASKS</h5></div>
                             <div class="card-body">
                                 <h5 class="card-title pt-2">Tasks assigned to you: <span class="badge m-1" style="background: #673AB7;">{{auth()->user()->numberOfAssignedTasks}}</span></h5>
-                                <h5 class="card-title pt-2">Completed Tasks assigned to you: <span class="badge m-1" style="background: #673AB7;">{{auth()->user()->numberOfClosedTasks}}</h5>
-                                <h5 class="card-title pt-2">Pending Tasks assigned to you: <span class="badge m-1" style="background: #673AB7;">{{auth()->user()->numberOfPendingTasks}}</h5>
-                                <h5 class="card-title pt-2">Open Tasks assigned to you: <span class="badge m-1" style="background: #673AB7;">{{auth()->user()->numberOfOpenedTasks}}</h5>
-                                <h5 class="card-title pt-2">Tasks you created by you: <span class="badge m-1" style="background: #673AB7;">{{ auth()->user()->numberOfTasksForAllProjects - auth()->user()->numberOfAssignedTasks}}</h5>
-                                <h5 class="card-title pt-2">Completed Tasks created by you:<span class="badge m-1" style="background: #673AB7;">{{ auth()->user()->numberOfCompleteTasksCreatedByTeamleader }}</h5>
+                                <h5 class="card-title pt-2">Completed Tasks assigned to you: <span class="badge m-1" style="background: #673AB7;">{{auth()->user()->numberOfClosedTasks}}</span></h5>
+                                <h5 class="card-title pt-2">Pending Tasks assigned to you: <span class="badge m-1" style="background: #673AB7;">{{auth()->user()->numberOfPendingTasks}}</span></h5>
+                                <h5 class="card-title pt-2">Open Tasks assigned to you: <span class="badge m-1" style="background: #673AB7;">{{auth()->user()->numberOfOpenedTasks}}</span></h5>
+                                <h5 class="card-title pt-2">Tasks created by you: <span class="badge m-1" style="background: #673AB7;">{{ auth()->user()->numberOfTasksForAllProjects - auth()->user()->numberOfAssignedTasks}}</span></h5>
+                                <h5 class="card-title pt-2">Completed Tasks created by you:<span class="badge m-1" style="background: #673AB7;">{{ auth()->user()->numberOfCompleteTasksCreatedByTeamleader }}</span></h5>
                                 
                             </div>
                             <a class="card-footer bg-danger btn " href="{{route('admin.tasks.index')}}"> More info <i class="bi bi-arrow-right-circle"></i></a>

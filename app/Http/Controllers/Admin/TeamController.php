@@ -69,7 +69,7 @@ class TeamController extends Controller
             $createdmessage = Message::create([
                 'team_id' => $team->id,
                 'user_id' => $user->id,
-                'message' => $message,
+                'message' => nl2br($message),
             ]);
 
             $createdmessageId = $createdmessage->id;
@@ -87,7 +87,7 @@ class TeamController extends Controller
                 }
             }    
             // $numberOfUnreadedMessages = $team->numberOfUnreadedTeamMessages;    
-            MessageSent::dispatch($team,$user,$message, $createdmessageId);
+            MessageSent::dispatch($team,$user,nl2br($message), $createdmessageId);
         }else{
             //unauthorized
             abort(403);
@@ -141,7 +141,6 @@ class TeamController extends Controller
 
     public function render ($teams, $teamItems)
     {
-
         if($teams != null && $teams->count()>0){
             foreach($teams as $team){
                 // $teamItems .= '<a id="team-'.$team->id.'" href="'.route('admin.teams.show', $team).'" style="text-decoration: none;" class=" bg-secondary bg-gradient"  onclick="markasread('.$team->id.','. auth()->user()->id.')">';
@@ -165,14 +164,12 @@ class TeamController extends Controller
                 $teamItems .= '</div>';
                 $teamItems .= '</div>';
                 $teamItems .= '</a>';
-                
             }
         }else{
             $teamItems = '<h4 class="text-center mb-5" style="color: #673AB7;">there is no projects assigned to you so get rest now <span style="font-size:100px;">&#128150;</span> </h4>';
         }
-        
-        return $teamItems;
 
+        return $teamItems;
     }
 
 

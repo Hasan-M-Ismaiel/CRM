@@ -9,7 +9,7 @@
         </button>
 
         <!--logo-->
-        <a class="header-brand d-md-none" href="#">
+        <a class="header-brand d-md-none" href="{{route('home')}}">
             <svg width="118" height="46" alt="CoreUI Logo">
                 <use xlink:href="{{ asset('assets/brand/TeamWorkOKWhite.svg#full') }}"></use>
             </svg>
@@ -137,6 +137,8 @@
                             @if(auth()->user()->hasRole('admin'))
                             <?php $tasks = App\Models\Task::all();$tasks->count();?>
                             {{$tasks->count()}}
+                            @elseif(auth()->user()->teamleaderon()->count()>0)
+                            {{auth()->user()->numberOfTasksForAllProjects}}
                             @else
                             {{auth()->user()->numberOfAssignedTasks}}
                             @endif

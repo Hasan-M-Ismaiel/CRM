@@ -40,8 +40,19 @@ class UserRequest extends FormRequest
             'email' => ['required', 'string', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', 'min:8',Password::defaults()],   
             'role_id' => ['required', Rule::in($collection)],
+            
             "new_skills"    => "array",                  //not required but you should add something like - sometimes - if presented check about that 
             "new_skills.*"  => "string|distinct|min:2", //least 2 characters
         ];
+    }
+
+    public function withValidator ($validator)
+    {
+        $validator->setImplicitAttributesFormatter(function ($attribute){
+            [$field, $line] = explode('.', $attribute);
+            if($field == 'new_skills'){
+                return 'the skill number ' . ($line + 1 );
+            }
+        });
     }
 }

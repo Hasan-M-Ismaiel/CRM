@@ -238,7 +238,7 @@ class TaskController extends Controller
             $projects = $user->projects()->get();
             $projects->map(function (Project $project) use($tasks, $user) {
                 foreach($project->tasks as $task){
-                    if($task->user_id == $user->id || $task->project->teamleader->id ==$user->id ){
+                    if($task->user_id == $user->id || $task->project->teamleader->id == $user->id ){
                         $tasks->add($task);
                     }
                 }
@@ -361,7 +361,7 @@ class TaskController extends Controller
             $createdtaskmessage = TaskMessage::create([
                 'task_id' => $task->id,
                 'user_id' => $user->id,
-                'message' => $message,
+                'message' => nl2br($message),
             ]);
 
             $createdtaskmessageId = $createdtaskmessage->id;
@@ -411,7 +411,7 @@ class TaskController extends Controller
                 // }
             }
 
-            TaskMessageSent::dispatch($task,$user,$message, $createdtaskmessageId);
+            TaskMessageSent::dispatch($task,$user,nl2br($message), $createdtaskmessageId);
         }else{
             //unauthorized
             abort(403);   
@@ -425,13 +425,13 @@ class TaskController extends Controller
     {
         if($tasks != null && $tasks->count()>0){
             foreach($tasks as $task){
-                $taskItems .= '<a id="task-'.$task->id.'" href="'.route('admin.tasks.showTaskChat', $task).'" style="text-decoration: none;"  onclick="markasreadtask('.$task->id.','. auth()->user()->id .','. $task->taskmessagenotifications->where('user_id', auth()->user()->id)->count().')">';
+                $taskItems .= '<a class="pointer" id="task-'.$task->id.'"style="text-decoration: none;"  onclick="markasreadtask('.$task->id.','. auth()->user()->id .','. $task->taskmessagenotifications->where('user_id', auth()->user()->id)->count().',`' . route('admin.tasks.showTaskChat', $task).'`)">';
                 $taskItems .= '<div class="row">';
                 $taskItems .= '<div class="col-4 text-right ">';
                 $taskItems .= '<img alt="DP" class="rounded-circle img-fluid" width="45" height="40" src="'. asset('images/taskChat.png') .'">';
                 if($task->numberOfUnreadedTaskMessages==0){
                     $taskItems .= '<em id= "num_of_single_task_notifications-'.$task->id.'" class="badge bg-danger text-white px-2 rounded-4 position-absolute bottom-0 end-0" style="font-size: 0.6em"></em>';
-                }else{
+                } else {
                     $taskItems .= '<em id= "num_of_single_task_notifications-'.$task->id.'" class="badge bg-danger text-white px-2 rounded-4 position-absolute bottom-0 end-0" style="font-size: 0.6em">'.$task->numberOfUnreadedTaskMessages.'</em>';
                 }
                 $taskItems .= '</div>';
@@ -462,15 +462,12 @@ class TaskController extends Controller
             // here you have to notify the admin tha the task is waiting to be accepted
             //notify the team leader
             foreach($task->project->users as $user){    
-                if($user->hasRole('admin')){
+                if($user->hasRole('admin') || $user->id == $task->project->teamleader->id){
                     $user->notify(new TaskWaitingNotification($task));
                 } else {
                     //throwException();  // and catch it // in the case that the admin delete him self - 'admin not exist on this project'
                 }
             }
-
-            // notify the teamleader | the owner of this project 
-            $task->project->teamleader->notify(new TaskWaitingNotification($task));
 
             return back()->with('message', 'the task status has been updated');
 

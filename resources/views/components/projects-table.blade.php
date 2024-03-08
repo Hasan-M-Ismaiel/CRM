@@ -173,7 +173,7 @@
                             </a>
                             @endcan
 
-                            @can('assign_project_to_user')
+                            @can('update', $project)
                             <a type="button" class="m-1" href="{{ route('admin.projects.assignCreate', $project->id) }}" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="assign new user">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-add" viewBox="0 0 16 16">
                                     <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>

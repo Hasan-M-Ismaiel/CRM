@@ -15,7 +15,7 @@ html, body {
 
 .card_ {
   width: 900px;
-  height: 360px;
+  height: 400px;
   background-color: #fff;
   background: linear-gradient(#f8f8f8, #fff);
   box-shadow: 0 8px 16px -8px rgba(0,0,0,0.4);

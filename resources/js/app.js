@@ -1,90 +1,166 @@
 import './bootstrap';
+var audio = new Audio("../../assets/sounds/tone.mp3");
+
 
 //for the notifications
 Echo.private(`App.Models.User.`+window.userID)
     .notification((notification) => {
     if(notification['notification_type'] == 'TaskAssigned'){
-        $("#toast_link_to_notification_target").attr("href",notification['link_to_task']+'?notificationId='+notification['notification_id']);
-        $("#toast_image").attr("src",notification['project_manager_image']);
-        $("#toast_project_manager_name").html(notification['project_manager_name']);
-        $("#toast_content").html("finish this new task "+notification['task_title']);
-        $(".toast").toast('show');
-        // $("#toast_link_to_notification_target").on('click', function(){
-        //     $.ajax({
-        //         url: "{{ route('admin.notifications.markNotification') }}",
-        //         method: 'post',
-        //         data: {
-        //             "_token": "{{ csrf_token() }}",
-        //         notificationId: notification['notification_id'],
-        //         },
-        //         success: function(result){
-        //             alert(result);
-        //         }
-        //     });
-        // });
+        audio.play();
+        setTimeout(function() {
+            $("#toast_link_to_notification_target").attr("href",notification['link_to_task']+'?notificationId='+notification['notification_id']);
+            $("#toast_image").attr("src",notification['project_manager_image']);
+            $("#toast_project_manager_name").html(notification['project_manager_name']);
+            $("#toast-header").addClass("bg-success");
+            $("#toast-header").addClass("text-white");
+    
+            $("#toast_content").css("background-color", "#2ecf56");
+            $("#toast_content").addClass("text-white");
+            $("#toast_content").html("finish this new task "+notification['task_title']);
+            $(".toast").toast('show');
+            // $("#toast_link_to_notification_target").on('click', function(){
+            //     $.ajax({
+            //         url: "{{ route('admin.notifications.markNotification') }}",
+            //         method: 'post',
+            //         data: {
+            //             "_token": "{{ csrf_token() }}",
+            //         notificationId: notification['notification_id'],
+            //         },
+            //         success: function(result){
+            //             alert(result);
+            //         }
+            //     });
+            // });
+    
+            //update the number of notification on the screen
+            $("#num_of_notification").html(window.NumberOfNotifications + 1);
+            window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
+    
+            $("#headerTasksDropdown").html(window.NumberOfTasksForAllProjects + 1);
+            window.NumberOfTasksForAllProjects = window.NumberOfTasksForAllProjects + 1 ;
 
-        //update the number of notification on the screen
-        $("#num_of_notification").html(window.NumberOfNotifications + 1);
-        window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
+    
+            //update the number of tasks on the screen
+            $("#num_of_tasks").html(window.NumberOfTasks + 1);
+            window.NumberOfTasks = window.NumberOfTasks + 1 ;
+        }, 4000);
 
-        $("#headerTasksDropdown").html($("#headerTasksDropdown").val() + 1);
-
-        //update the number of tasks on the screen
-        $("#num_of_tasks").html(window.NumberOfTasks + 1);
-        window.NumberOfTasks = window.NumberOfTasks + 1 ;
 
     } else if (notification['notification_type'] == 'TaskUnAssigned'){
-        $("#toast_link_to_notification_target").attr("href",notification['link_to_project']+'?notificationId='+notification['notification_id']);
-        $("#toast_image").attr("src",notification['project_manager_image']);
-        $("#toast_project_manager_name").html(notification['project_manager_name']);
-        $("#toast_content").html("the task "+notification['task_title']+" is unassigned from you ");
-        $(".toast").toast('show');
+        audio.play();
+        
+        setTimeout(function() {
+            $("#toast_link_to_notification_target").attr("href",notification['link_to_project']+'?notificationId='+notification['notification_id']);
+            $("#toast_image").attr("src",notification['project_manager_image']);
+            $("#toast_project_manager_name").html(notification['project_manager_name']);
+            
+            $("#toast-header").addClass("bg-danger");
+            $("#toast-header").addClass("text-white");
+    
+            $("#toast_content").css("background-color", "#eb4141");
+            $("#toast_content").addClass("text-white");
+    
+            $("#toast_content").html("the task "+notification['task_title']+" is unassigned from you ");
+            $(".toast").toast('show');
+    
+            $("#num_of_notification").html(window.NumberOfNotifications + 1);
+            window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
+    
+            $("#headerTasksDropdown").html(window.NumberOfTasksForAllProjects - 1);
+            window.NumberOfTasksForAllProjects = window.NumberOfTasksForAllProjects - 1 ;
 
-        $("#num_of_notification").html(window.NumberOfNotifications + 1);
-        window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
-
-        $("#headerTasksDropdown").html($("#headerTasksDropdown").val() - 1);
-
-        //update the number of tasks on the screen
-        $("#num_of_tasks").html(window.NumberOfTasks - 1);
-        window.NumberOfTasks = window.NumberOfTasks - 1 ;
+    
+            //update the number of tasks on the screen
+            $("#num_of_tasks").html(window.NumberOfTasks - 1);
+            window.NumberOfTasks = window.NumberOfTasks - 1 ;
+        }, 4000);
 
     } else if (notification['notification_type'] == 'ProjectAssigned'){
-        $("#toast_link_to_notification_target").attr("href",notification['link_to_project']+'?notificationId='+notification['notification_id']);
-        $("#toast_image").attr("src",notification['project_manager_image']);
-        $("#toast_project_manager_name").html(notification['project_manager_name']);
-        $("#toast_content").html(" you are now one of team member for this project "+ notification['project_title']);
-        $(".toast").toast('show');
-        //update the number of notification on the screen
-        $("#num_of_notification").html(window.NumberOfNotifications + 1);
-        window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
+        audio.play();
+        setTimeout(function() {
+            $("#toast_link_to_notification_target").attr("href",notification['link_to_project']+'?notificationId='+notification['notification_id']);
+            $("#toast_image").attr("src",notification['project_manager_image']);
+            $("#toast_project_manager_name").html(notification['project_manager_name']);
+    
+            $("#toast-header").addClass("bg-success");
+            $("#toast-header").addClass("text-white");
+    
+            $("#toast_content").css("background-color", "#2ecf56");
+            $("#toast_content").addClass("text-white");
+    
+            $("#toast_content").html("You are now one of team member for this project "+ notification['project_title']);
+            $(".toast").toast('show');
 
-        $("#headerProjectsDropdown").html($("#headerProjectsDropdown").val() + 1);
+            //update the number of notification on the screen
+            $("#num_of_notification").html(window.NumberOfNotifications + 1);
+            window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
+
+            alert(window.NumberOfAssignedProjects);
+            $("#headerProjectsDropdown").html(window.NumberOfAssignedProjects + 1);
+            window.NumberOfAssignedProjects = window.NumberOfAssignedProjects + 1 ;
+
+        }, 5000);
+
 
     } else if (notification['notification_type'] == 'ProjectUnAssigned'){
-        $("#toast_image").attr("src",notification['project_manager_image']);
-        $("#toast_project_manager_name").html(notification['project_manager_name']);
-        $("#toast_content").html(" you are now not one of team member for this project "+ notification['project_title']);
-        $(".toast").toast('show');
+        audio.play();
+        setTimeout(function() {
+            $("#toast_image").attr("src",notification['project_manager_image']);
+            $("#toast_project_manager_name").html(notification['project_manager_name']);
+    
+            $("#toast-header").addClass("bg-danger");
+            $("#toast-header").addClass("text-white");
+    
+            $("#toast_content").css("background-color", "#eb4141");
+            $("#toast_content").addClass("text-white");
+    
+            $("#toast_content").html(" you are now not one of team member for this project "+ notification['project_title']);
+            $(".toast").toast('show');
+    
+            $("#num_of_notification").html(window.NumberOfNotifications + 1);
+            window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
 
-        $("#num_of_notification").html(window.NumberOfNotifications + 1);
-        window.NumberOfNotifications = window.NumberOfNotifications +1 ;
+            $("#headerProjectsDropdown").html(window.NumberOfAssignedProjects - 1);
+            window.NumberOfAssignedProjects = window.NumberOfAssignedProjects - 1 ;
 
-        $("#headerProjectsDropdown").html($("#headerProjectsDropdown").val() - 1);
+        }, 5000);
+
 
     } else if (notification['notification_type'] == 'TaskWaitingNotification'){
-        $("#toast_link_to_notification_target").attr("href",notification['link_to_task']+'?notificationId='+notification['notification_id']);
-        $("#toast_image").attr("src",notification['project_manager_image']);    // add logo image here
-        $("#toast_project_manager_name").html(notification['project_manager_name']);
-        $("#toast_content").html("There is a task pending and waiting to be closed from project " + notification['project_title']);
-        $(".toast").toast('show');
+        audio.play();
+        setTimeout(function() {
+            $("#toast_link_to_notification_target").attr("href",notification['link_to_task']+'?notificationId='+notification['notification_id']);
+            $("#toast_image").attr("src",notification['project_manager_image']);    // add logo image here
+            $("#toast_project_manager_name").html(notification['project_manager_name']);
+            
+            $("#toast-header").addClass("bg-warning");
+            $("#toast-header").addClass("text-white");
+    
+            $("#toast_content").css("background-color", "#f0e552");
+            $("#toast_content").addClass("text-white");
+            
+            $("#toast_content").html("There is a task pending and waiting to be closed from project " + notification['project_title']);
+            $(".toast").toast('show');
+    
+            $("#num_of_notification").html(window.NumberOfNotifications + 1);
+            window.NumberOfNotifications = window.NumberOfNotifications +1 ;
+        }, 5000);
 
-        $("#num_of_notification").html(window.NumberOfNotifications + 1);
-        window.NumberOfNotifications = window.NumberOfNotifications +1 ;
     } else if (notification['notification_type'] == 'TeamleaderRoleAssigned'){
+
+        audio.play();
+        setTimeout(function() {}, 5000);
+
         $("#toast_link_to_notification_target").attr("href",notification['link_to_project']+'?notificationId='+notification['notification_id']);
         $("#toast_image").attr("src",notification['project_manager_image']);
         $("#toast_project_manager_name").html(notification['project_manager_name']);
+       
+        $("#toast-header").addClass("bg-success");
+        $("#toast-header").addClass("text-white");
+
+        $("#toast_content").css("background-color", "#2ecf56");
+        $("#toast_content").addClass("text-white");
+        
         $("#toast_content").html("You are now the teamleader of this project "+ notification['project_title']);
         $(".toast").toast('show');
 
@@ -92,37 +168,73 @@ Echo.private(`App.Models.User.`+window.userID)
         window.NumberOfNotifications = window.NumberOfNotifications +1 ;
 
     } else if (notification['notification_type'] == 'TeamleaderRoleUnAssigned'){
-        $("#toast_link_to_notification_target").attr("href",notification['link_to_project']+'?notificationId='+notification['notification_id']);
-        $("#toast_image").attr("src",notification['project_manager_image']);
-        $("#toast_project_manager_name").html(notification['project_manager_name']);
-        $("#toast_title").html(" you are now not the teamleader of this project "+notification['project_title']);
-        $(".toast").toast('show');
 
-        $("#num_of_notification").html(window.NumberOfNotifications + 1);
-        window.NumberOfNotifications = window.NumberOfNotifications +1 ;
+        audio.play();
+        setTimeout(function() {
+            $("#toast_link_to_notification_target").attr("href",notification['link_to_project']+'?notificationId='+notification['notification_id']);
+            $("#toast_image").attr("src",notification['project_manager_image']);
+            $("#toast_project_manager_name").html(notification['project_manager_name']);
+            
+            $("#toast-header").addClass("bg-danger");
+            $("#toast-header").addClass("text-white");
+    
+            $("#toast_content").css("background-color", "#eb4141");
+            $("#toast_content").addClass("text-white");
+            
+            $("#toast_content").html(" you are now not the teamleader of this project "+notification['project_title']);
+            $(".toast").toast('show');
+    
+            $("#num_of_notification").html(window.NumberOfNotifications + 1);
+            window.NumberOfNotifications = window.NumberOfNotifications +1 ;
+        }, 5000);
+
 
     } else if (notification['notification_type'] == 'ProjectDeleted'){
-        $("#toast_image").attr("src",notification['project_manager_image']);
-        $("#toast_project_manager_name").html(notification['project_manager_name']);
-        $("#toast_content").html("The project " + notification['project_title']+ " has been deleted");
-        $(".toast").toast('show');
 
-        $("#num_of_notification").html(window.NumberOfNotifications + 1);
-        window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
-        
-        $("#headerProjectsDropdown").html($("#headerProjectsDropdown").val() - 1);
+        audio.play();
+        setTimeout(function() {
+            $("#toast_image").attr("src",notification['project_manager_image']);
+            $("#toast_project_manager_name").html(notification['project_manager_name']);
+            
+            $("#toast-header").addClass("bg-danger");
+            $("#toast-header").addClass("text-white");
+    
+            $("#toast_content").css("background-color", "#eb4141");
+            $("#toast_content").addClass("text-white");
+    
+            $("#toast_content").html("The project " + notification['project_title']+ " has been deleted");
+            $(".toast").toast('show');
+    
+            $("#num_of_notification").html(window.NumberOfNotifications + 1);
+            window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
+            
+            $("#headerProjectsDropdown").html($("#headerProjectsDropdown").val() - 1);
+        }, 5000);
+
 
     } else if (notification['notification_type'] == 'TaskDeleted'){
-        $("#toast_link_to_notification_target").attr("href",notification['link_to_task']+'?notificationId='+notification['notification_id']);
-        $("#toast_image").attr("src",notification['project_manager_image']);
-        $("#toast_project_manager_name").html(notification['project_manager_name']);
-        $("#toast_content").html("this task: " + notification['task_title'] +' has been deleted' +" from this project: " + notification['project_title']);
-        $(".toast").toast('show');
 
-        $("#num_of_notification").html(window.NumberOfNotifications + 1);
-        window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
+        audio.play();
+        setTimeout(function() {
+            $("#toast_link_to_notification_target").attr("href",notification['link_to_task']+'?notificationId='+notification['notification_id']);
+            $("#toast_image").attr("src",notification['project_manager_image']);
+            $("#toast_project_manager_name").html(notification['project_manager_name']);
+            
+            $("#toast-header").addClass("bg-danger");
+            $("#toast-header").addClass("text-white");
+    
+            $("#toast_content").css("background-color", "#eb4141");
+            $("#toast_content").addClass("text-white");
+            
+            $("#toast_content").html("this task: " + notification['task_title'] +' has been deleted' +" from this project: " + notification['project_title']);
+            $(".toast").toast('show');
+    
+            $("#num_of_notification").html(window.NumberOfNotifications + 1);
+            window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
+    
+            $("#headerTasksDropdown").html($("#headerTasksDropdown").val() - 1);
+        }, 5000);
 
-        $("#headerTasksDropdown").html($("#headerTasksDropdown").val() - 1);
 
         if(window.NumberOfTasks > 0){
             //update the number of tasks on the screen
@@ -134,20 +246,30 @@ Echo.private(`App.Models.User.`+window.userID)
             window.NumberOfTasks = window.NumberOfTasks ;
         }
     } else if (notification['notification_type'] == 'TaskMissed'){
-        $("#toast_link_to_notification_target").attr("href",notification['link_to_task']+'?notificationId='+notification['notification_id']);
-        $("#toast_image").hide();   // add logo image here 
-        $("#toast_project_manager_name").hide();
-        $("#toast_title").html("Task missed");
-        $("#toast_content").html('you have missed this task '.notification['task_title'] + 'from project '.notification['project_title']);
-        $(".toast").toast('show');
-
-        $("#num_of_notification").html(window.NumberOfNotifications + 1);
-        window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
-
-        //update the number of tasks on the screen
-        $("#num_of_tasks").html(window.NumberOfTasks - 1);
-        window.NumberOfTasks = window.NumberOfTasks - 1 ;
-
+        audio.play();
+        setTimeout(function() {
+            $("#toast_link_to_notification_target").attr("href",notification['link_to_task']+'?notificationId='+notification['notification_id']);
+            $("#toast_image").hide();   // add logo image here 
+            $("#toast_project_manager_name").hide();
+            
+            $("#toast-header").addClass("bg-warning");
+            $("#toast-header").addClass("text-white");
+    
+            $("#toast_content").css("background-color", "#f0e552");
+            $("#toast_content").addClass("text-white");
+            
+            
+            $("#toast_title").html("Task missed");
+            $("#toast_content").html('you have missed this task '.notification['task_title'] + 'from project '.notification['project_title']);
+            $(".toast").toast('show');
+    
+            $("#num_of_notification").html(window.NumberOfNotifications + 1);
+            window.NumberOfNotifications = window.NumberOfNotifications + 1 ;
+    
+            //update the number of tasks on the screen
+            $("#num_of_tasks").html(window.NumberOfTasks - 1);
+            window.NumberOfTasks = window.NumberOfTasks - 1 ;
+        }, 5000);
     }
 });
 
@@ -166,6 +288,8 @@ window.projectIds.forEach(element => {
         var userprofile = e.user_profile_url;
         var numberOfSingle;
 
+
+
         // if the user is open this conversation then do not increase the number of unreaded messages on the screen and send ajax request to the back end to make the messages readed in the database and you should send (message readed) event in the server for the sender to know that
         if (window.location.href.indexOf(searchString) > -1) {
             axios.post("markMessagesAsReaded", {
@@ -173,16 +297,21 @@ window.projectIds.forEach(element => {
                 authUserId: window.userID,
               })
               .then((response) => {
-                alert('success');
-                alert('done');
+                // alert('success');
+                // alert('done');
                 console.log(response);
               }, (error) => {
                 console.log(error);
               });
 
         } else {
+            var audioMessageArrived = new Audio("../../assets/sounds/tone.mp3");
+
+            audioMessageArrived.play();
+            // alert('get audioMessageArrived');
             //if the auth is the same as the person who send the message then ignore
             if(window.userID != userId){
+
                 $("#num_of_total_messages_notifications").html(window.NumberOfTotalMessageNotifications + 1);
                 window.window.NumberOfTotalMessageNotifications = window.window.NumberOfTotalMessageNotifications + 1 ;
 
@@ -190,7 +319,7 @@ window.projectIds.forEach(element => {
                 window.NumberOfTeamMessageNotifications = window.NumberOfTeamMessageNotifications + 1 ;
 
                 if(window.NumberOfTaskMessageNotifications==0){
-                    $('#num_of_single_team_notifications-'+teamId).html("new messages");
+                    $('#num_of_single_team_notifications-'+teamId).html("NEW!");
                 }else{
                     $('#num_of_single_team_notifications-'+teamId).html(window.NumberOfTaskMessageNotifications + "+");
                 }
@@ -202,7 +331,7 @@ window.projectIds.forEach(element => {
         var currentTime = time1.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
 
         if(e.user_id == window.userID){ // is the auth // for user experince you can comment this first line and add the message from the sender side that is faster to render the sender message
-            var newMessageFromHere = $('<div class="chat-message-right pb-4"> <div class="ms-2"> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-white small text-nowrap mt-2">'+currentTime+'</div> </div><div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div><div> '+ message+ '</div></div><div id="'+message_id+'"></div></div></div>');
+            var newMessageFromHere = $('<div class="chat-message-right pb-4"> <div class="ms-2"> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-white small text-nowrap mt-2">'+currentTime+'</div> </div><div> <div class="flex-shrink-1 bg-primary text-white rounded rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div><div> '+ message+ '</div></div><div id="'+message_id+'"></div></div></div>');
         }else{
             var newMessageFromHere = $('<div class="chat-message-left pb-4"> <div> <img src="'+userimage+'" class="rounded-circle mr-1 border border-success" width="40" height="40" /> <div class="text-white small text-nowrap mt-2">'+currentTime+'</div> </div><div> <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3"> <div class="font-weight-bold mb-1">'+username +'</div><div> '+ message+ '</div></div><div id="'+message_id+'"></div></div></div>');
         }
@@ -266,6 +395,10 @@ window.taskIds.forEach(element => {
         } else {
             //if the logedin user is the same as the person who send the message then ignore [dont update the number of notifications]
             if(window.userID != userId_task){
+
+                var audioTaskMessageArrived = new Audio("../../assets/sounds/tone.mp3");
+                audioTaskMessageArrived.play();
+
                 // main fab button
                 $("#num_of_total_messages_notifications").html(window.NumberOfTotalMessageNotifications + 1);
                 window.window.NumberOfTotalMessageNotifications = window.window.NumberOfTotalMessageNotifications + 1 ;
@@ -276,7 +409,7 @@ window.taskIds.forEach(element => {
                 // var spotlight= '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fe0131" class="bi bi-circle-fill" viewBox="0 0 16 16"> <circle cx="8" cy="8" r="8"/></svg>';
                 // numberOfSingle = $('#num_of_single_team_notifications-'+teamId).html() + (int) 1;
                 if(window.NumberOfTaskMessageNotifications==0){
-                    $('#num_of_single_task_notifications-'+taskId_task).html("new messages");
+                    $('#num_of_single_task_notifications-'+taskId_task).html("NEW!");
                 }else{
                     $('#num_of_single_task_notifications-'+taskId_task).html(window.NumberOfTaskMessageNotifications + "+");
                 }
